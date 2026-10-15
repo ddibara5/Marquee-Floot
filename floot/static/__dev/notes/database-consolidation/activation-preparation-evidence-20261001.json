@@ -1,0 +1,113 @@
+{
+  "asOf": "2026-10-01T21:55:10Z",
+  "preparationOnly": true,
+  "productionMigrationExecuted": false,
+  "publicationExecuted": false,
+  "liveBindingsInstalled": false,
+  "retiredServices": false,
+  "revokedCredentials": false,
+  "finalWindowEvidence": false,
+  "fullProductionRollbackProven": false,
+  "app": "Marquee",
+  "codeCheckpoint": "5f7b01fc-beca-4bfb-bbd5-ca3ec363b1ba",
+  "publishedClient": {
+    "passed": true,
+    "authenticatedPublishedRendering": true,
+    "site": "https://marquee-ddibara.floot.app",
+    "pages": [
+      "Home",
+      "library",
+      "titles/41"
+    ],
+    "title": "The Apothecary Diaries",
+    "activity": [
+      {
+        "episode": "Festering Resentment",
+        "group": "2026-10-01",
+        "visibleOccurrences": 1,
+        "canonicalDisplay": "S1E40",
+        "sourceEpisode": "S2E16"
+      },
+      {
+        "episode": "Ice",
+        "group": "2026-09-30",
+        "visibleOccurrences": 1,
+        "canonicalDisplay": "S1E39",
+        "sourceEpisode": "S2E15"
+      }
+    ],
+    "detail": {
+      "watched": 39,
+      "released": 48,
+      "remaining": 9,
+      "lastWatchGroups": [
+        "2026-10-01",
+        "2026-09-30"
+      ]
+    },
+    "undatedEarlierWatchSectionRetained": true,
+    "clientAsset": {
+      "path": "/_assets/index-D25tATyU.js",
+      "sha256": "290c8960c4cbf79e6a6cdaab428907003606243aaffcabe5aef2acebf4958cd2",
+      "bytes": 30670
+    },
+    "controlledWriteUndoPerformed": false,
+    "newMigrationReleaseAccepted": false,
+    "rawAuthenticatedHttpStatusObserved": false,
+    "rawSessionBrowserNavigation": "blocked by browser client; not bypassed",
+    "priorExactOwnerPreviewAcceptance": {
+      "owner": 1,
+      "sessionStatus": 200,
+      "asOf": "2026-10-01T20:02:55.656Z"
+    }
+  },
+  "retainedLegacyRelease": {
+    "projectId": "prj_1ZrhbbtLTADMc4EmwnwigzMPXiCz",
+    "deploymentId": "dpl_8zUAb5prgTaNtgJSRhmEqEKk5AKG",
+    "commit": "142d22cc1d6edb1f107c9690623e2143be865809",
+    "state": "READY",
+    "target": "production",
+    "url": "https://marquee-beige.vercel.app",
+    "retainedDomainPresent": true,
+    "freshFinalWindowCheckRequired": true
+  },
+  "environmentReceiptId": "e35e723e-1167-40f7-a053-8469425d90a2",
+  "runtimeBackupPreparation": {
+    "passed": true,
+    "id": "dc63225f-e94a-43be-8b7b-aaa4f0ae4432",
+    "privateFixture": true,
+    "tables": 42,
+    "rows": 37068,
+    "authTablesIncludedAsTypedData": 4,
+    "operationalCatalogs": 6,
+    "exactOperationalHashes": true,
+    "typedRestoreAndReplay": true,
+    "exactCurrentFixtureParity": true,
+    "cipherSha256": "7904d4184c24f85e518ee597215b6140b95e87d2d60e2ece1642c94826e02cb8",
+    "plainSha256": "55e076e440ee2b0bd9e0e9fcff9e809ed6daa374c26250a52cbfd02f25329699",
+    "bytes": 38450100,
+    "transport": "pgcrypto compression only, inside authenticated AES-256-GCM ciphertext; bounded native SQL restore batches",
+    "guards": {
+      "anonymous": 401,
+      "preInstallDisabled": 503,
+      "finalWindowDisabled": 503,
+      "capabilityReplay": 403
+    },
+    "metadataRestoreIsEvidenceOnly": true,
+    "functionalAuthDisasterRestoreProven": false,
+    "failedAttempt": {
+      "id": "0430b626-0429-4705-827f-cfb6b0833179",
+      "archiveSavedAndDecryptVerified": true,
+      "restoreCompleted": false,
+      "error": "Runtime killed during full JSON restore; memory pressure inferred from payload size",
+      "preserved": true,
+      "correctedBy": "compressed transport and bounded SQL restore batches"
+    }
+  },
+  "completedRunnerRetained": {
+    "checks": 13,
+    "id": "0fce3393-6082-421f-a235-9b40907a45f6",
+    "rerun": false
+  },
+  "allPriorEvidencePreserved": true
+}

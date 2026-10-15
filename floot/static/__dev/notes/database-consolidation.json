@@ -1,0 +1,757 @@
+{
+  "currentImplementationCheckpoint": "database-consolidation/production-execution-evidence-20261001.json",
+  "originalRehearsalFieldsAreHistorical": true,
+  "currentProduction": {
+    "asOf": "2026-10-02T13:36Z",
+    "documentationReconciledOn": "2026-10-02",
+    "status": "NATIVE_PRODUCTION_ACCEPTED",
+    "databaseMode": "native",
+    "nativeAuth": true,
+    "nativeEnrollmentEnabled": false,
+    "dualWrites": false,
+    "nativeProvidersOpen": true,
+    "legacyWritersPaused": true,
+    "operationalCheckpoint": "06dfb0dc-d35f-4d65-8ad3-d25268ad4c4b",
+    "evidence": [
+      "production-execution-evidence-20261001.json"
+    ],
+    "currentHandoff": "database-consolidation/production-rollover-handoff-20261001.md",
+    "currentPackage": "database-consolidation/activation-execution-package-20261001.json",
+    "privateRunnersPreserved": "MQ13",
+    "originalServicesCredentialsReleasesRetained": true,
+    "timing": {
+      "pauseSeconds": 628.999,
+      "decision10Met": false,
+      "decisionOverrunSeconds": 28.999,
+      "maximum15Met": true
+    },
+    "fullAuthDisasterRecoveryProven": false,
+    "installedDeviceAcceptanceProven": false,
+    "retirement": false,
+    "credentialsRevoked": false,
+    "nativeEasBuild": false
+  },
+  "historicalRehearsalProductionFlags": {
+    "productionDatabaseSwitched": false,
+    "productionAuthSwitched": false,
+    "functionalChangesPublished": false,
+    "databaseCutoverApproved": false
+  },
+  "prepared_on": "2026-09-30",
+  "app": "marquee",
+  "productionDatabaseSwitched": true,
+  "productionAuthSwitched": false,
+  "functionalChangesPublished": true,
+  "databaseCutoverApproved": true,
+  "snapshotAtomic": false,
+  "rehearsal": {
+    "at": "2026-09-30T20:37:44.887Z",
+    "schema": "prep_marquee_20260930",
+    "results": [
+      {
+        "table": "marquee_episodes",
+        "rows": 4026,
+        "source_and_backup_and_typed_hash": "682ec78400b36a1870f6d964142bcdff",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_franchise_overrides",
+        "rows": 0,
+        "source_and_backup_and_typed_hash": "d41d8cd98f00b204e9800998ecf8427e",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_ingest_raw",
+        "rows": 11146,
+        "source_and_backup_and_typed_hash": "39392fb1f961d91b81505cb9c065fcff",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_mapping_review",
+        "rows": 2874,
+        "source_and_backup_and_typed_hash": "884df0ec84287af50f760f5fbd556ef5",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_movies",
+        "rows": 70,
+        "source_and_backup_and_typed_hash": "0934abf3d2262501784a42179f423a94",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_ratings",
+        "rows": 66,
+        "source_and_backup_and_typed_hash": "e38bf2558082a478906ea11a373f4dbc",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_season_release_schedules",
+        "rows": 1,
+        "source_and_backup_and_typed_hash": "40b211575a69c30c7d8972621eb1a704",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_seasons",
+        "rows": 367,
+        "source_and_backup_and_typed_hash": "9360773c2bda9bffa8912cce6fc02a63",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_shows",
+        "rows": 203,
+        "source_and_backup_and_typed_hash": "0b8be7402dbad72eb2af25deb87e9d7d",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_source_mappings",
+        "rows": 4640,
+        "source_and_backup_and_typed_hash": "abb49b47ac94eebf34419e49e28c7b7d",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_statuses",
+        "rows": 78,
+        "source_and_backup_and_typed_hash": "c9444f5d841ecd7dba90fef31fdd9622",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_sync_runs",
+        "rows": 37,
+        "source_and_backup_and_typed_hash": "1fcec544808227cf945194404f151697",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_sync_state",
+        "rows": 3,
+        "source_and_backup_and_typed_hash": "71d6a0a8dc13ab1827101ce2088a1baa",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_titles",
+        "rows": 273,
+        "source_and_backup_and_typed_hash": "4a986ccefc3a4308570f5dcc54384f06",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_undated_completion_evidence",
+        "rows": 3995,
+        "source_and_backup_and_typed_hash": "8488d0d01bdc4d44fb30910a195d2375",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_undated_completions",
+        "rows": 1667,
+        "source_and_backup_and_typed_hash": "aa3d79aede3e313cfd8022374273a3ad",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_verified_season_totals",
+        "rows": 80,
+        "source_and_backup_and_typed_hash": "11481b37e4a7493d0399d606eb891412",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_watch_date_decisions",
+        "rows": 3,
+        "source_and_backup_and_typed_hash": "80644787b0cf4874436c270868d97d57",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_watch_history",
+        "rows": 2504,
+        "source_and_backup_and_typed_hash": "0b80e41826c0a081dd7f90f0cdc77009",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_watch_history_sources",
+        "rows": 2504,
+        "source_and_backup_and_typed_hash": "5614caa5db5e0f7fb0c17ecec11af219",
+        "foreign_keys_checked": true
+      },
+      {
+        "table": "marquee_watchlist",
+        "rows": 13,
+        "source_and_backup_and_typed_hash": "86f0b090d2424fd049d52f7f896ab01a",
+        "foreign_keys_checked": true
+      }
+    ],
+    "skipped_foreign_keys": [
+      {
+        "table": "marquee_ingest_raw",
+        "reference": "auth.users",
+        "disposition": "Retain legacy UUID in archive; explicit native owner crosswalk required"
+      },
+      {
+        "table": "marquee_ratings",
+        "reference": "auth.users",
+        "disposition": "Retain legacy UUID in archive; explicit native owner crosswalk required"
+      },
+      {
+        "table": "marquee_statuses",
+        "reference": "auth.users",
+        "disposition": "Retain legacy UUID in archive; explicit native owner crosswalk required"
+      },
+      {
+        "table": "marquee_sync_runs",
+        "reference": "auth.users",
+        "disposition": "Retain legacy UUID in archive; explicit native owner crosswalk required"
+      },
+      {
+        "table": "marquee_sync_state",
+        "reference": "auth.users",
+        "disposition": "Retain legacy UUID in archive; explicit native owner crosswalk required"
+      },
+      {
+        "table": "marquee_undated_completion_evidence",
+        "reference": "auth.users",
+        "disposition": "Retain legacy UUID in archive; explicit native owner crosswalk required"
+      },
+      {
+        "table": "marquee_undated_completions",
+        "reference": "auth.users",
+        "disposition": "Retain legacy UUID in archive; explicit native owner crosswalk required"
+      },
+      {
+        "table": "marquee_watch_date_decisions",
+        "reference": "auth.users",
+        "disposition": "Retain legacy UUID in archive; explicit native owner crosswalk required"
+      },
+      {
+        "table": "marquee_watch_history",
+        "reference": "auth.users",
+        "disposition": "Retain legacy UUID in archive; explicit native owner crosswalk required"
+      },
+      {
+        "table": "marquee_watch_history_sources",
+        "reference": "auth.users",
+        "disposition": "Retain legacy UUID in archive; explicit native owner crosswalk required"
+      },
+      {
+        "table": "marquee_watchlist",
+        "reference": "auth.users",
+        "disposition": "Retain legacy UUID in archive; explicit native owner crosswalk required"
+      }
+    ],
+    "public_table_grants": 0,
+    "manifest_sha256": "d6d60679b1511dcebdc8c1fb2939cca3948e308e5b7e5f5fbdc6e6b0e7097340",
+    "production_ready": false
+  },
+  "testEvidence": {
+    "at": "2026-09-30T20:25:00Z",
+    "spec_files_passed": 3,
+    "spec_files_failed": 0,
+    "paths": [
+      "helpers/getTitleProgressSummary.spec.tsx",
+      "helpers/marqueeImportPolicy.spec.tsx",
+      "helpers/crunchyrollAutoMatch.spec.tsx"
+    ]
+  },
+  "pendingGates": [
+    "Approved-window freeze/drain and any then-current remote-half reconciliation; private recovery is proven, a frozen production drain is not.",
+    "Fresh secure app-scoped final-window backups with isolated restores and full-key/value deltas.",
+    "Exact live native42/source21 bindings, retained release/environment checks and authenticated client read/write/undo acceptance against the approved release.",
+    "Separate per-app authorization for installation, publication and production activation; no automatic resume or switch."
+  ],
+  "normalDevelopment": "Continue; schema/auth/ingestion/manual semantics changes require relevant baseline revalidation",
+  "monitoring": {
+    "existingFollowupsUnchanged": true,
+    "permanentHealthCoverage": false,
+    "marqueeGap": "Current follow-up expires after two checks",
+    "october1Passed": true,
+    "october2": "Continuing monitoring; no hard date blocker"
+  },
+  "nativeSnapshot": {
+    "at": "2026-09-30T20:39:23.390Z",
+    "schema": "prep_marquee_20260930",
+    "app": "marquee",
+    "snapshot_atomic": false,
+    "results": [
+      {
+        "table": "native:marquee_titles",
+        "rows": 274,
+        "hash": "f6596cd799b8b3485357a7fbe6f77f2c"
+      },
+      {
+        "table": "native:marquee_seasons",
+        "rows": 378,
+        "hash": "6ec11f1ee9cacb7848eea63eeba8c322"
+      },
+      {
+        "table": "native:marquee_episodes",
+        "rows": 4165,
+        "hash": "f1e816643edd42cadc766b8f325f4dec"
+      },
+      {
+        "table": "native:marquee_watch_events",
+        "rows": 2456,
+        "hash": "7b9a8984e573fe79af09e8b4e11fbb20"
+      },
+      {
+        "table": "native:marquee_title_watch_events",
+        "rows": 56,
+        "hash": "e45f353e2f26fd9be0896fc6d111078e"
+      },
+      {
+        "table": "native:marquee_legacy_completions",
+        "rows": 1683,
+        "hash": "2b2bd4d7c018a05320d02bd14e0a5de0"
+      },
+      {
+        "table": "native:marquee_manual_episode_completions",
+        "rows": 66,
+        "hash": "064914cda3c2a1e208722939c7bd2039"
+      },
+      {
+        "table": "native:marquee_episode_unwatched",
+        "rows": 1,
+        "hash": "89294ce9032768d02d58bca3e1a28cd5"
+      },
+      {
+        "table": "native:marquee_manual_title_statuses",
+        "rows": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table": "native:marquee_series_catchup_corrections",
+        "rows": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table": "native:marquee_legacy_import",
+        "rows": 13630,
+        "hash": "96ca81b5eccfba2a37f81f520d818230"
+      },
+      {
+        "table": "native:marquee_legacy_links",
+        "rows": 4657,
+        "hash": "f4fd6ce8135b4fcca7c6e1c1168fd80b"
+      },
+      {
+        "table": "native:marquee_source_mappings",
+        "rows": 4646,
+        "hash": "47660b7ae19f9b627c88a1c31cc8e5d9"
+      },
+      {
+        "table": "native:marquee_legacy_ratings",
+        "rows": 65,
+        "hash": "70ee4f80a03412c3abbecba57a5f47d1"
+      },
+      {
+        "table": "native:marquee_legacy_statuses",
+        "rows": 78,
+        "hash": "1efc1a95610d5bebf925218ab5ad9ab5"
+      },
+      {
+        "table": "native:marquee_legacy_watchlist",
+        "rows": 13,
+        "hash": "0f2e7f60a776d33f8ec767250a65d1b5"
+      },
+      {
+        "table": "native:marquee_trakt_ratings",
+        "rows": 40,
+        "hash": "1f16f0fbec5b8603d45dbf2ba9a566f2"
+      },
+      {
+        "table": "native:marquee_trakt_watchlist",
+        "rows": 16,
+        "hash": "ba3a799c2eeb98ad3cedb941689fae0f"
+      },
+      {
+        "table": "native:marquee_manual_trakt_outbox",
+        "rows": 5,
+        "hash": "5e2995ce97fcce319d88468a16779afa"
+      },
+      {
+        "table": "native:marquee_trakt_pending",
+        "rows": 0,
+        "hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table": "native:marquee_title_aliases",
+        "rows": 2,
+        "hash": "01c2301c037e1d3dbde5388a8f297b81"
+      },
+      {
+        "table": "native:marquee_title_progress_baseline",
+        "rows": 274,
+        "hash": "0985e4a62a64df80afcbe4499ae34fbc"
+      },
+      {
+        "table": "native:marquee_crunchyroll_raw",
+        "rows": 396,
+        "hash": "a856c5c3745916b19146f88788eebbea"
+      },
+      {
+        "table": "native:marquee_crunchyroll_review",
+        "rows": 158,
+        "hash": "27acb18da48751a6f4cd200517f689a1"
+      },
+      {
+        "table": "native:marquee_crunchyroll_sync_runs",
+        "rows": 27,
+        "hash": "5b5366d65b21233165a5c40d14ec8748"
+      },
+      {
+        "table": "native:marquee_crunchyroll_sync_state",
+        "rows": 1,
+        "hash": "65efee0143b669d3a34d82e9355bb104"
+      },
+      {
+        "table": "native:marquee_trakt_mappings",
+        "rows": 2592,
+        "hash": "b73e034afe79bc90aa74473493c1c6be"
+      },
+      {
+        "table": "native:marquee_trakt_sync_runs",
+        "rows": 37,
+        "hash": "2678d72b9aa8badec55f6447ac01eacf"
+      },
+      {
+        "table": "native:marquee_trakt_sync_state",
+        "rows": 1,
+        "hash": "09810d81cde02d6e84834a5759ab5bd2"
+      },
+      {
+        "table": "native:marquee_trakt_personal_sync_state",
+        "rows": 1,
+        "hash": "bb7ced6c0a19f576a71bac4a28511e87"
+      },
+      {
+        "table": "native:marquee_tmdb_mappings",
+        "rows": 271,
+        "hash": "53e23024cc7026b74b46580f1e05ae49"
+      },
+      {
+        "table": "native:marquee_tmdb_refresh_state",
+        "rows": 271,
+        "hash": "c4cb60e8972cf583637d8f6936c73b8f"
+      },
+      {
+        "table": "native:marquee_import_controls",
+        "rows": 3,
+        "hash": "78c7958e3f0a70cb6ea5081bc26bf9ff"
+      },
+      {
+        "table": "native:marquee_import_runs",
+        "rows": 36,
+        "hash": "213ef0c1dd065c8192f4f35d798bedf8"
+      }
+    ],
+    "manifest_sha256": "ec807a46a0e5c19455b5910916cf0b97d0ecb5aafd9dc3be4648f7bcb7eaa44f",
+    "excluded": "Authentication material, provider tokens, push subscription endpoints/keys, operational payload backups; secure transport remains a cutover gate."
+  },
+  "reconciliation": {
+    "matchedEvents": 2498,
+    "excludedArchiveOnlyEvents": 6,
+    "missingEvents": 0,
+    "conflictingEvents": 0,
+    "nativeOnlyEventsPreserved": 14,
+    "sourceUndatedRepresented": 1667,
+    "nativeUndatedAdditional": 16,
+    "candidateLegacyEpisode": "8d0d1efa-b0d5-4614-aca7-9c7225cf3676",
+    "candidateNativeEpisode": 287,
+    "liveEventsInserted": 0
+  },
+  "readOnlyDelta": {
+    "at": "2026-09-30T20:53:07.948Z",
+    "app": "marquee",
+    "schema": "prep_marquee_20260930",
+    "read_only": true,
+    "snapshot_atomic": false,
+    "production_ready": false,
+    "results": [
+      {
+        "table": "marquee_episodes",
+        "archived": 4026,
+        "live": 4026,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "682ec78400b36a1870f6d964142bcdff"
+      },
+      {
+        "table": "marquee_franchise_overrides",
+        "archived": 0,
+        "live": 0,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "table": "marquee_ingest_raw",
+        "archived": 11146,
+        "live": 11146,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "39392fb1f961d91b81505cb9c065fcff"
+      },
+      {
+        "table": "marquee_mapping_review",
+        "archived": 2874,
+        "live": 2874,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "884df0ec84287af50f760f5fbd556ef5"
+      },
+      {
+        "table": "marquee_movies",
+        "archived": 70,
+        "live": 70,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "0934abf3d2262501784a42179f423a94"
+      },
+      {
+        "table": "marquee_ratings",
+        "archived": 66,
+        "live": 66,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "e38bf2558082a478906ea11a373f4dbc"
+      },
+      {
+        "table": "marquee_season_release_schedules",
+        "archived": 1,
+        "live": 1,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "40b211575a69c30c7d8972621eb1a704"
+      },
+      {
+        "table": "marquee_seasons",
+        "archived": 367,
+        "live": 367,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "9360773c2bda9bffa8912cce6fc02a63"
+      },
+      {
+        "table": "marquee_shows",
+        "archived": 203,
+        "live": 203,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "0b8be7402dbad72eb2af25deb87e9d7d"
+      },
+      {
+        "table": "marquee_source_mappings",
+        "archived": 4640,
+        "live": 4640,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "abb49b47ac94eebf34419e49e28c7b7d"
+      },
+      {
+        "table": "marquee_statuses",
+        "archived": 78,
+        "live": 78,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "c9444f5d841ecd7dba90fef31fdd9622"
+      },
+      {
+        "table": "marquee_sync_runs",
+        "archived": 37,
+        "live": 37,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "1fcec544808227cf945194404f151697"
+      },
+      {
+        "table": "marquee_sync_state",
+        "archived": 3,
+        "live": 3,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "71d6a0a8dc13ab1827101ce2088a1baa"
+      },
+      {
+        "table": "marquee_titles",
+        "archived": 273,
+        "live": 273,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "4a986ccefc3a4308570f5dcc54384f06"
+      },
+      {
+        "table": "marquee_undated_completion_evidence",
+        "archived": 3995,
+        "live": 3995,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "8488d0d01bdc4d44fb30910a195d2375"
+      },
+      {
+        "table": "marquee_undated_completions",
+        "archived": 1667,
+        "live": 1667,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "aa3d79aede3e313cfd8022374273a3ad"
+      },
+      {
+        "table": "marquee_verified_season_totals",
+        "archived": 80,
+        "live": 80,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "11481b37e4a7493d0399d606eb891412"
+      },
+      {
+        "table": "marquee_watch_date_decisions",
+        "archived": 3,
+        "live": 3,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "80644787b0cf4874436c270868d97d57"
+      },
+      {
+        "table": "marquee_watch_history",
+        "archived": 2504,
+        "live": 2504,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "0b80e41826c0a081dd7f90f0cdc77009"
+      },
+      {
+        "table": "marquee_watch_history_sources",
+        "archived": 2504,
+        "live": 2504,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "5614caa5db5e0f7fb0c17ecec11af219"
+      },
+      {
+        "table": "marquee_watchlist",
+        "archived": 13,
+        "live": 13,
+        "insert": 0,
+        "update": 0,
+        "delete": 0,
+        "source_hash": "86f0b090d2424fd049d52f7f896ab01a"
+      }
+    ]
+  },
+  "currentAsOf": "2026-10-02T13:36Z",
+  "historicalPreparation20261001": {
+    "app": "Marquee",
+    "asOf": "2026-10-01T20:56:48.510Z",
+    "status": "PREPARATION_WITH_FINAL_WINDOW_GATES",
+    "codeCheckpoint": "13291d53-f3a3-4634-9fbd-f4406cc193a6",
+    "completePrivateRunner": {
+      "passed": true,
+      "id": "0fce3393-6082-421f-a235-9b40907a45f6",
+      "checks": 13,
+      "nativeShapes": 42,
+      "sourceShapes": 21,
+      "sourceRunId": "2bc1a280-2d33-476b-9516-95cd031739eb",
+      "sameImplementationAsProductionFactory": true,
+      "actualSeparateNativeAndSourceConnections": true,
+      "normalizer": "actual SQL against private source tables",
+      "providerEffects": false,
+      "fullProductionRollbackProven": false,
+      "capabilityReplayStatus": 403,
+      "verified": [
+        "all-run snapshot preflight before mutations",
+        "chronological commit and actual native marker transaction failure",
+        "durable receipt retry acknowledges committed first run and completes second",
+        "zero-mutation completed-batch rerun",
+        "native acknowledgement digest markers and retained journal",
+        "two exact historical provider dates",
+        "40 unaffected native shapes including Auth/manual values exact",
+        "gate/journal restoration",
+        "no automatic resume",
+        "open native window rejected",
+        "public source/native values unchanged except ordinary active-session last_accessed and expired-session bookkeeping"
+      ],
+      "publicSessionComparison": {
+        "activeOnly": true,
+        "excludedFields": [
+          "last_accessed"
+        ]
+      }
+    },
+    "invocation": {
+      "endpoint": "migration-retained-store-rollback_POST",
+      "oneUseCapability": true,
+      "fixedResources": true,
+      "callerSqlSchemasRejected": true,
+      "authorizationEnvironment": "MARQUEE_ROLLBACK_AUTHORIZED_PACKAGE",
+      "authorizationUnset": true,
+      "defaultDisabled": true,
+      "productionInvoked": false,
+      "backupReceipt": "operator attestation, not independently verified proof",
+      "actualPreviewGuards": {
+        "anonymousStatus": 401,
+        "disabledStatus": 503,
+        "disabledError": "ROLLBACK_INVOCATION_DISABLED",
+        "factoryInvoked": false
+      }
+    },
+    "tests": {
+      "specFiles": [
+        "marqueeRollbackInvocation.spec.tsx",
+        "marqueeRemoteRecovery.spec.tsx",
+        "completeTraktSnapshot.spec.tsx",
+        "marqueeTraktStorePolicy.spec.tsx"
+      ],
+      "passed": true,
+      "fullTypecheck": "clean"
+    },
+    "ownerPreviewAcceptance": {
+      "passed": true,
+      "asOf": "2026-10-01T20:02:55.656Z",
+      "exactNativeOwner": 1,
+      "sessionStatus": 200,
+      "historyEvents": 60,
+      "exactOnceRecentEvents": [
+        2603,
+        2602
+      ],
+      "anonymousHistoryStatus": 401,
+      "publishedAuthenticatedResponse": false,
+      "renderingVerified": false
+    },
+    "corrections": [
+      "Registry paths now use explicit pg_namespace/pg_class qualification, not search_path-sensitive regclass::text",
+      "Two initial full runner attempts passed12 recovery checks but failed final live sessions hash; normal last_accessed bookkeeping isolated in comparison",
+      "Initial VM fixture DDL rejected by tool due destructive keywords in function bodies; direct execute_sql used for authorized private installation",
+      "Initial FK attachment used unqualified regclass paths and failed on existing constraints; no public constraint changed; corrected private targets installed"
+    ],
+    "production": {
+      "published": false,
+      "cutover": false,
+      "publicMigrationBindingsInstalled": 0,
+      "servicesRetired": false,
+      "credentialsRevoked": false
+    },
+    "monitoring": {
+      "october2": "continuing monitoring, not a hard date gate"
+    },
+    "remaining": [
+      "Fresh final-window backups/restores/deltas and frozen native/external effects drain",
+      "Exact production binding installation and app release acceptance, including authenticated published client check",
+      "Separate production authorization; Marquee first",
+      "Full production rollback remains unproven; do not infer it from private proof"
+    ]
+  }
+}

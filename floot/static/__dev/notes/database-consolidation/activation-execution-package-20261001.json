@@ -1,0 +1,422 @@
+{
+  "app": "Marquee",
+  "projectId": "9ba56374-eb1b-4942-af2f-e15e4df14755",
+  "asOf": "2026-10-02T13:36Z",
+  "documentationReconciledOn": "2026-10-02",
+  "historicalExecutionAsOfBeforeReconciliation": "2026-10-02T01:12:00Z",
+  "status": "NATIVE_CUTOVER_PUBLISHED_ACCEPTED_FIRST_TRAKT_SYNC_SUCCEEDED",
+  "executionAuthorized": true,
+  "publicationAuthorized": true,
+  "historicalPreparationCodeCheckpoint": "f0d67321-887c-4050-9e8d-ac07810a4f32",
+  "codeCheckpoint": "06dfb0dc-d35f-4d65-8ad3-d25268ad4c4b",
+  "immutablePreparationEvidence": [
+    "activation-preparation-evidence-20261001.json",
+    "retained-runner-checkpoint-20261001.json",
+    "fresh-preinstall-and-delta-evidence-20261001.json"
+  ],
+  "executionOrder": "First; GameDeck gates are independent",
+  "target": {
+    "nativeResource": "Floot Database for Marquee Floot Pilot",
+    "domainSchema": "public",
+    "authSchema": "public",
+    "nativeShapes": 42,
+    "sourceResource": "PostgreSQL Database",
+    "sourceProject": "eiskobjlvxzwvucgpenk",
+    "sourceSchema": "public",
+    "sourceShapes": 21,
+    "nativeBarrier": "barrier_marquee_20260930_v2",
+    "sourceBarrier": "barrier_marquee_legacy_live_20261001",
+    "archivalPrepSchemasNeverApplicationTargets": true
+  },
+  "current": {
+    "domainMode": "native",
+    "enrollmentEnabled": "native Auth retained",
+    "writerBarrierActive": true,
+    "publicBindingInstalled": true,
+    "publishedClient": {
+      "passed": true,
+      "authenticatedPublishedRendering": true,
+      "site": "https://marquee-ddibara.floot.app",
+      "pages": [
+        "Home",
+        "library",
+        "titles/41"
+      ],
+      "title": "The Apothecary Diaries",
+      "activity": [
+        {
+          "episode": "Festering Resentment",
+          "group": "2026-10-01",
+          "visibleOccurrences": 1,
+          "canonicalDisplay": "S1E40",
+          "sourceEpisode": "S2E16"
+        },
+        {
+          "episode": "Ice",
+          "group": "2026-09-30",
+          "visibleOccurrences": 1,
+          "canonicalDisplay": "S1E39",
+          "sourceEpisode": "S2E15"
+        }
+      ],
+      "detail": {
+        "watched": 39,
+        "released": 48,
+        "remaining": 9,
+        "lastWatchGroups": [
+          "2026-10-01",
+          "2026-09-30"
+        ]
+      },
+      "undatedEarlierWatchSectionRetained": true,
+      "clientAsset": {
+        "path": "/_assets/index-D25tATyU.js",
+        "sha256": "290c8960c4cbf79e6a6cdaab428907003606243aaffcabe5aef2acebf4958cd2",
+        "bytes": 30670
+      },
+      "controlledWriteUndoPerformed": true,
+      "newMigrationReleaseAccepted": true,
+      "rawAuthenticatedHttpStatusObserved": true,
+      "rawSessionBrowserNavigation": "blocked by browser client; not bypassed",
+      "priorExactOwnerPreviewAcceptance": {
+        "owner": 1,
+        "sessionStatus": 200,
+        "asOf": "2026-10-01T20:02:55.656Z"
+      },
+      "nativeReleaseEvidence": "production-execution-evidence-20261001.json"
+    }
+  },
+  "proposedReleaseEdits": {
+    "file": "helpers/marqueeDatabaseMode.tsx",
+    "from": {
+      "MARQUEE_TRAKT_STORE": "dual",
+      "MARQUEE_BARRIER_ACTIVE": false
+    },
+    "to": {
+      "MARQUEE_TRAKT_STORE": "native",
+      "MARQUEE_BARRIER_ACTIVE": true
+    },
+    "nativeAuthChange": false,
+    "notEnvironmentVariableSwitches": true
+  },
+  "deployment": {
+    "historicalPreparationDraftRequiredSeparatePublication": true,
+    "reviewedDraftMustBePublishedSeparately": false,
+    "currentOperationalPublicationAccepted": true,
+    "newDocumentationChangesRequireNoPublication": true,
+    "installedNativeMobileBuildUnchanged": true,
+    "EASRequested": false,
+    "retainedLegacy": {
+      "projectId": "prj_1ZrhbbtLTADMc4EmwnwigzMPXiCz",
+      "deploymentId": "dpl_8zUAb5prgTaNtgJSRhmEqEKk5AKG",
+      "commit": "142d22cc1d6edb1f107c9690623e2143be865809",
+      "state": "READY",
+      "target": "production",
+      "url": "https://marquee-beige.vercel.app",
+      "retainedDomainPresent": true,
+      "freshFinalWindowCheckRequired": true
+    },
+    "opaqueLegacyServerEnvironment": "unverified/opaque; no mismatch inferred",
+    "legacyCallbackPatchSelected": false
+  },
+  "nativeBinder": {
+    "file": "prepared-native-live-binding-20261001.sql",
+    "sha256": "e45239ce1533512eaf73568591846c0bee21906616909272f9463e640452da23",
+    "exactRelations": 42,
+    "executed": true
+  },
+  "inertSql": [
+    "prepared-native-live-binding-20261001.sql",
+    "install-legacy-live-bindings-20261001.sql",
+    "prepared-remote-recovery-bindings-20261001.sql",
+    "prepared-final-bridge-delta-20261001.sql"
+  ],
+  "prerequisites": [
+    "Verify installed native safeguards engine/extension/hardening/runtime-admission/runtime-binding against reviewed definitions; do not recreate the already installed schema. Apply only exact reviewed binder in the valid paused window.",
+    "Frozen caller/native/provider admission and drained unresolved work",
+    "Fresh pre-install app-scoped encrypted backup and isolated restore on both affected resources",
+    "Do not erase a journal-bearing registry; drift requires a fresh reviewed barrier/baseline"
+  ],
+  "backup": {
+    "endpoint": "migration-runtime-backup_POST",
+    "authorizationEnvironment": "MARQUEE_FINAL_BACKUP_AUTHORIZED_PACKAGE",
+    "requiredAuthorizedValue": "marquee:activation:20261001",
+    "authorizationUnset": false,
+    "preInstall": {
+      "mode": "pre-install",
+      "scope": "Exact fixed native table map and protected operational/catalog/config state; atomic per native resource",
+      "drainProvenByReceipt": false,
+      "beforeAnyLiveMigrationWrite": true
+    },
+    "finalWindow": {
+      "mode": "final-window",
+      "requires": "Paused valid native control, exact full binding, zero unresolved native/provider work and deadline still valid after snapshot",
+      "separateFrozenSourceSnapshotRequired": true,
+      "finalFullKeyValueDeltaRequired": true
+    },
+    "source": {
+      "endpoint": "migration-backup_POST",
+      "backupBody": {
+        "id": "<new one-use capability UUID>",
+        "action": "backup",
+        "source": "legacy"
+      },
+      "restoreBody": {
+        "id": "<different one-use capability UUID>",
+        "action": "restore",
+        "backupId": "<new legacy backup UUID>"
+      },
+      "marqueeHistoricArchive": "Preserve original131 parts/five assembled rows; original full-row hashes unchanged. Sixth current source row is separately encrypted and exactly typed-restored under backup1deda4d4-f8d2-4556-a6d3-e7d90bdbaf07. Revalidate all six after freeze."
+    },
+    "privateProof": {
+      "id": "dc63225f-e94a-43be-8b7b-aaa4f0ae4432",
+      "shapes": 42,
+      "rows": 37068,
+      "typedRestoreReplay": true,
+      "operationalCatalogs": 6,
+      "fixtureUnchanged": true
+    },
+    "restorationScope": "Exact typed rows and retained protected DDL/control evidence; no automatic activation of restored triggers/jobs/Auth identities or functional disaster reconstruction",
+    "authorizationConnectedForFixedPreInstallBackupOnly": true
+  },
+  "pause": {
+    "maxMinutes": 15,
+    "abortDecisionMinutes": 10,
+    "expiredLeaseProvesDrain": false,
+    "noAutomaticResume": true
+  },
+  "finalGateReceipt": {
+    "approvedPackage": "marquee:activation:20261001",
+    "approvedCheckpoint": "06dfb0dc-d35f-4d65-8ad3-d25268ad4c4b",
+    "preInstallNativeBackupId": "758cfa42-79a8-4f12-a108-2538e834ab3f",
+    "preInstallLegacyBackupId": "4d5576ff-c006-40f5-9028-bc8c96821785",
+    "isolatedRestoreReceipts": {
+      "native": {
+        "backupId": "632a834a-52b4-4839-a922-44d496c7bb17",
+        "schema": "restore_marquee_20260930_632a834a52b4",
+        "restoredTables": 42,
+        "restoredRows": 36854,
+        "authEvidenceTables": 0,
+        "exactRowHashVerified": true,
+        "scope": "typed app data plus protected schema/Auth/config evidence; no production connection or auth switch"
+      },
+      "source": {
+        "backupId": "f7e5d1d6-41e9-4f1e-b5e9-5226f76c5a17",
+        "schema": "restore_marquee_20260930_f7e5d1d641e9",
+        "restoredTables": 21,
+        "restoredRows": 34551,
+        "authEvidenceTables": 15,
+        "exactRowHashVerified": true,
+        "scope": "typed app data plus protected schema/Auth/config evidence; no production connection or auth switch"
+      },
+      "frozen": true
+    },
+    "callerStopDrainReceipt": "production-execution-evidence-20261001.json:pause/bindings",
+    "sourceNativeExactBindingReceipt": "production-execution-evidence-20261001.json:bindings",
+    "frozenNativeBackupId": "632a834a-52b4-4839-a922-44d496c7bb17",
+    "frozenLegacySnapshotId": "f7e5d1d6-41e9-4f1e-b5e9-5226f76c5a17",
+    "fullKeyValueDeltaReceipt": "marquee:production:20261001:632a834a-52b4-4839-a922-44d496c7bb17",
+    "publishedReleaseAcceptanceReceipt": "78d518e6-80b9-40fc-90e1-3f619cfcf472",
+    "ownerWriteUndoReceipt": "production-execution-evidence-20261001.json:acceptance",
+    "retainedAuthBatchDigestReceipt": "Native Auth retained; no GoTrue proof dependency",
+    "privateFreshDeltaRehearsalReceipt": "eed96ff5-35f1-489c-b196-1e5fddeeb296",
+    "authorizationRecord": "production-authorization-20261001.json",
+    "approvalBaselineDocumentationCheckpoint": "b9ae7680-af2b-41eb-a8b7-433beae8e3a1",
+    "exactFinalReleaseCheckpointStillToBeRecorded": false
+  },
+  "rollback": {
+    "endpoint": "migration-retained-store-rollback_POST",
+    "authorizationEnvironment": "MARQUEE_ROLLBACK_AUTHORIZED_PACKAGE",
+    "authorizedValue": "marquee:rollback:20261001",
+    "authorizationUnset": false,
+    "request": {
+      "id": "<new one-use capability UUID>",
+      "finalBackupReceipt": "<actual reviewed UUID>"
+    },
+    "ownerAuthorization": "Existing native Auth retained",
+    "receiptStringsProveBackupOrDrain": false,
+    "automaticRoutingOrResume": false,
+    "productionRollbackProven": false,
+    "afterVerification": "Full retained Trakt remote snapshot catchup with remote receipt and native digest acknowledgement, then dual reopen; preserve native Auth/manual/tombstone/rotated credentials"
+  },
+  "historicalUnresolvedFinalGatesBeforeAcceptance": [
+    "Approved current source/native/provider drain and remote-half state review",
+    "Fresh production backups/restores/deltas/binding",
+    "Actual approved release owner/unauthorized read/write/undo and installed native client compatibility"
+  ],
+  "unresolvedFinalGates": [],
+  "remainingValidationLimits": ["Installed-device acceptance unproven", "Full production/Auth disaster reconstruction unproven", "Permanent Marquee monitoring unassigned"],
+  "monitoring": {
+    "october1RequiredChecksPassed": true,
+    "october2HardCalendarGate": false,
+    "existingFollowUpsRetained": true
+  },
+  "forbiddenWithoutNewExplicitAuthorization": [
+    "Service retirement",
+    "Credential revocation",
+    "Unrelated app changes",
+    "EAS/native mobile builds"
+  ],
+  "fullProductionRollbackProven": false,
+  "allEarlierEvidencePreserved": true,
+  "approvedMaintenanceRelease": {
+    "retainCurrentDatabaseModeUntilDeltaVerified": true,
+    "sourceTableGatesBlockLegacyWrites": true,
+    "allProviderAndSourceAdmissionStoppedSeparately": true,
+    "nativeGatesOpenForControlledAcceptanceOnlyAfterFinalDelta": true,
+    "enrollment": "Existing native Auth only; normal owner session housekeeping is journaled after native gate opens. No new user/password migration."
+  },
+  "authorizationClarificationPending": false,
+  "freshPreInstallProtection": {
+    "source": {
+      "id": "4d5576ff-c006-40f5-9028-bc8c96821785",
+      "app": "marquee",
+      "source": "legacy",
+      "cipherHash": "abac97db9d0e4394ff7924bdd7a184b0759fca9435926720a2e14120b5f26be4",
+      "plainHash": "299ac19a5846e8f4fbd51bd1a0b20bd91da779324fd55be2ab712721cbc4d3e5",
+      "tables": 21,
+      "rows": 34551,
+      "authTables": 15,
+      "bytes": 8276484,
+      "decryptVerified": true,
+      "restore": {
+        "backupId": "4d5576ff-c006-40f5-9028-bc8c96821785",
+        "schema": "restore_marquee_20260930_4d5576ffc006",
+        "restoredTables": 21,
+        "restoredRows": 34551,
+        "authEvidenceTables": 15,
+        "exactRowHashVerified": true,
+        "scope": "typed app data plus protected schema/Auth/config evidence; no production connection or auth switch"
+      },
+      "frozen": false
+    },
+    "native": {
+      "id": "758cfa42-79a8-4f12-a108-2538e834ab3f",
+      "app": "marquee",
+      "source": "native",
+      "cipherHash": "384c9edcf5c31580f6f7cadd330de44c872d1eda01bf1271e4ef7364d617d879",
+      "plainHash": "1c2e0e170342e48a90b65b68deb8edbab0b55418ffd3735b4069e7e43af8e853",
+      "tables": 42,
+      "rows": 36848,
+      "authTables": 0,
+      "bytes": 35045480,
+      "decryptVerified": true,
+      "runtimeShapes": 42,
+      "mode": "pre-install",
+      "scope": "fixed native runtime42, native Auth/manual state and protected operational/DDL evidence",
+      "fullProductionRestoreProven": false,
+      "restore": {
+        "backupId": "758cfa42-79a8-4f12-a108-2538e834ab3f",
+        "schema": "restore_marquee_20260930_758cfa4279a8",
+        "restoredTables": 42,
+        "restoredRows": 36848,
+        "authEvidenceTables": 0,
+        "exactRowHashVerified": true,
+        "scope": "typed app data plus protected schema/Auth/config evidence; no production connection or auth switch"
+      },
+      "frozen": false,
+      "actualFixedPublicBindingsInstalled": false
+    }
+  },
+  "freshDeltaRehearsal": {
+    "receiptId": "eed96ff5-35f1-489c-b196-1e5fddeeb296",
+    "at": "2026-10-01T22:59:53.178Z",
+    "fixture": "exercise_marquee_bridge_20261001",
+    "barrier": "barrier_marquee_bridge_20261001",
+    "sameApplyCore": true,
+    "additions": 3,
+    "replayChanges": 0,
+    "lateConflictAtomic": true,
+    "reverseExact": true,
+    "publicBridgeTablesUnchanged": true,
+    "providerEffects": false,
+    "barrierOpen": true,
+    "completedOriginalRunner13Untouched": true
+  },
+  "productionAuthorization": {
+    "file": "production-authorization-20261001.json",
+    "recordedAt": "2026-10-01T23:38:14Z",
+    "status": "APPROVED_FOR_GATED_PRODUCTION_EXECUTION_NOT_YET_STARTED",
+    "approvedBy": "Dave",
+    "directUserStatement": "Approved, ready to rollover if you are",
+    "precedingDecisionExplained": "Explicit approval to move from preparation into production for both apps: short writer pauses, live migration bindings, verified publication and database cutover; Marquee first, then independently ready GameDeck, only after each app's gates pass.",
+    "supersedes": "Original prohibition on publication, live migration bindings and production cutover for this prepared plan only.",
+    "authorized": {
+      "perAppWriterPauseAndCallerDrain": true,
+      "liveMigrationBindings": true,
+      "publishVerifiedMigrationChanges": true,
+      "databaseCutover": true,
+      "order": [
+        "Marquee",
+        "GameDeck"
+      ],
+      "nativeFlootSignIn": true,
+      "originalServiceGameDeckReloginAccepted": true
+    },
+    "notAuthorized": {
+      "serviceRetirement": true,
+      "credentialRevocation": true,
+      "unrelatedAppChanges": true,
+      "EASOrNativeMobileBuilds": true
+    },
+    "conditions": {
+      "followCurrentAppScopedExecutionPackages": true,
+      "freshFrozenBackupsAndExactIsolatedRestores": true,
+      "actualCallerProviderAndNativeDrain": true,
+      "exactPhysicalBindingVerification": true,
+      "regeneratedFullKeyValueDeltas": true,
+      "approvedReleaseOwnerAndUnauthorizedReadWriteUndoAcceptance": true,
+      "gameDeckFreshActualOwnerProjectSealedBatchDigestProof": true,
+      "secureGameDeckNativeEnrollment": true,
+      "maxPauseMinutes": 15,
+      "abortDecisionMinutes": 10,
+      "noAutomaticResume": true
+    },
+    "handoffState": {
+      "productionPauseStarted": false,
+      "publicationPerformed": false,
+      "liveMigrationBindingsInstalledByThisSession": false,
+      "databaseCutoverPerformed": false,
+      "retirementPerformed": false,
+      "credentialRevocationPerformed": false
+    },
+    "evidenceLimits": {
+      "preInstallCapturesNotFrozen": true,
+      "privateRunnerAndDeltaProofNotProductionRollbackProof": true,
+      "fullProductionRollbackProven": false,
+      "AuthDisasterReconstructionProven": false
+    },
+    "continuity": "Do not ask for the same production authorization again. Re-read live evidence and continue within this approval; ask only for missing credentials or material decisions."
+  },
+  "executionContinuation": {
+    "asOf": "2026-10-02T01:12:00Z",
+    "evidence": "execution-continuation-evidence-20261001.json",
+    "runbook": "execution-continuation-20261001.md",
+    "maintenanceCodePrepared": true,
+    "maintenanceReleasePublished": true,
+    "providerControlInstalled": true,
+    "providerAdmissionOpen": true,
+    "actualPaused": false,
+    "credentialGatesPending": false,
+    "rollbackResourceConnected": true,
+    "cutoverPerformed": true,
+    "sourceWritersHeld": true,
+    "productionEvidence": "production-execution-evidence-20261001.json"
+  },
+  "finalFamilyContinuation": {
+    "asOf": "2026-10-02T13:34Z",
+    "nativeProductionAccepted": true,
+    "nativeProvidersOpen": true,
+    "nativeUnresolvedLeases": 0,
+    "retainedSourceShapes": 21,
+    "sourcePaused": true,
+    "noAutomaticSourceResume": true,
+    "originalExecutionEvidence": "production-execution-evidence-20261001.json",
+    "gameDeckNativeAccepted": true,
+    "gameDeckFinalPauseSeconds": 504.322035,
+    "gameDeckFirstNativeRun": "0f342bc6-d50c-4200-bf70-f4280d6b3d1e",
+    "preserveCompletedGD22MQ13": true,
+    "gameDeckPriorPauseMaximumBreached": true,
+    "noRetirementRevocationNativeBuild": true
+  }
+}

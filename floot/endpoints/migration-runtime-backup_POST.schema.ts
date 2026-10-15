@@ -1,0 +1,1 @@
+import {z} from "zod";export const schema=z.object({id:z.string().uuid(),mode:z.enum(["private-exercise","pre-install","final-window"])}).strict();export type OutputType={backup?:{id:string;runtimeShapes:number;decryptVerified:boolean};restore?:{restoredTables:number;exactRowHashVerified:boolean};privateExercise?:boolean;error?:string;gate?:string};

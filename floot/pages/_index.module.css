@@ -1,0 +1,113 @@
+
+.poster { display:grid; place-items:center; flex:none; width:48px; aspect-ratio:2/3; overflow:hidden; border-radius:4px; background:var(--surface); color:var(--muted-foreground); font:600 24px var(--font-family-display); }
+.poster img { display:block; width:100%; height:100%; object-fit:contain; }
+.visuallyHidden { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+/* Sync freshness line */
+.syncLine { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:44px; margin:-8px 0 8px; font-size:13px; color:var(--muted-foreground); }
+.syncState { display:flex; align-items:center; gap:8px; min-width:0; }
+.syncState strong { color:var(--foreground); font-weight:600; white-space:nowrap; }
+.syncDot { flex:none; width:8px; height:8px; border-radius:999px; background:var(--primary); }
+.syncDot[data-overdue] { background:var(--error); }
+.syncSources { display:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.syncLine a { display:inline-flex; align-items:center; min-height:44px; color:var(--primary); font-weight:500; text-decoration:none; white-space:nowrap; }
+
+/* Up next. Backdrop and poster are both shown whole (contain); only the backdrop frame is decorative. */
+.featured { display:grid; grid-template-columns:var(--poster-main) minmax(0,1fr); grid-template-areas:"poster copy"; gap:16px 24px; align-items:start; padding:24px; background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+.featured[data-backdrop] { grid-template-areas:"backdrop backdrop" "poster copy"; }
+/* Capped at 240px tall so a stacked backdrop (tablets) doesn't dominate. The art itself stays whole; a blurred copy fills the sides. */
+.backdrop { grid-area:backdrop; position:relative; display:block; justify-self:stretch; aspect-ratio:16/9; max-height:240px; overflow:hidden; border-radius:12px; background:color-mix(in srgb, var(--background) 70%, black); }
+.backdrop img { display:block; width:100%; height:100%; }
+.backdropArt { position:relative; object-fit:contain; }
+.backdropFill { position:absolute; inset:0; object-fit:cover; filter:blur(28px) saturate(1.1); opacity:.4; transform:scale(1.15); }
+.featured>.poster { grid-area:poster; width:var(--poster-main); border-radius:8px; }
+.featuredCopy { grid-area:copy; min-width:0; }
+.kindRow { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.kind { color:var(--muted-foreground); font-size:12px; }
+.pill { display:inline-flex; align-items:center; gap:6px; min-height:24px; padding:0 10px; border-radius:999px; background:var(--muted); color:var(--foreground); font-size:12px; font-weight:600; }
+.pill::before { content:""; width:6px; height:6px; border-radius:999px; background:var(--primary); }
+.featuredCopy h2 { margin:6px 0 0; font:700 var(--text-display)/1.1 var(--font-family-display); letter-spacing:-.025em; overflow-wrap:break-word; }
+.episodeLine { margin:8px 0 0; font-size:14px; color:var(--muted-foreground); }
+.episodeLine strong { color:var(--foreground); font-weight:600; }
+.synopsis { margin:8px 0 0; max-width:440px; color:var(--muted-foreground); font-size:13px; line-height:1.5; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden; }
+.homeProgress { max-width:440px; margin-top:16px; }
+.homeProgress>div:first-child { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; font-size:13px; color:var(--muted-foreground); }
+.homeProgress>div:first-child span strong { color:var(--foreground); font-weight:600; }
+.homeProgress>div:first-child>strong { color:var(--primary); flex:none; font-variant-numeric:tabular-nums; }
+.progressTrack { height:6px; background:var(--muted); box-shadow:none; }
+.progressUnknown { margin:16px 0 0; color:var(--muted-foreground); font-size:12px; }
+.featuredActions { margin-top:16px; }
+.featuredActions a { display:inline-flex; align-items:center; gap:8px; min-height:44px; text-decoration:none; }
+/* Side-by-side only when the content column (viewport minus sidebar) has room for poster, copy and backdrop. */
+@media(min-width:1180px) {
+  .featured[data-backdrop] { grid-template-columns:var(--poster-main) minmax(0,1fr) minmax(260px,416px); grid-template-areas:"poster copy backdrop"; align-items:center; }
+}
+
+/* Sections. Phone: one column in the saved order. Wider: main column and a side column, dense so short side sections pair up. */
+.dashboard { display:grid; grid-template-columns:minmax(0,1fr); gap:28px; margin-top:24px; }
+.main,.side,.full { min-width:0; }
+.section { min-width:0; }
+.heading { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:44px; margin-bottom:8px; }
+.heading>div { display:flex; align-items:center; gap:8px; min-width:0; }
+.heading h2 { margin:0; font:700 20px/1.3 var(--font-family-display); letter-spacing:-.02em; }
+.heading a,.empty a { display:inline-flex; align-items:center; gap:4px; min-height:44px; color:var(--muted-foreground); font-size:12px; text-decoration:none; white-space:nowrap; }
+.heading a { min-width:44px; justify-content:flex-end; }
+.rows,.activityList { display:grid; gap:0; }
+.row,.activityRow { display:flex; align-items:center; gap:12px; min-width:0; min-height:56px; padding:12px 0; color:var(--foreground); border-bottom:1px solid var(--border); text-decoration:none; }
+.rows>.row:first-child,.activityList>.activityRow:first-child { padding-top:0; }
+.row:hover,.activityRow:hover { color:var(--primary); }
+.rowCopy,.activityRow>span:nth-child(2) { min-width:0; flex:1; }
+.rowCopy strong,.activityRow strong { display:flex; flex-wrap:wrap; align-items:center; gap:8px; font-size:15px; font-weight:600; line-height:1.35; }
+.rowCopy small,.activityRow small { display:block; margin-top:3px; color:var(--muted-foreground); font-size:13px; line-height:1.45; }
+.rowProgress { max-width:360px; height:4px; margin-top:8px; background:var(--muted); box-shadow:none; }
+.rowAction { color:var(--muted-foreground); flex:none; }
+.badge { display:inline-flex; align-items:center; min-height:22px; padding:0 8px; border:1px solid var(--border); border-radius:999px; color:var(--primary); font-size:12px; font-weight:600; }
+.dateChip { flex:none; display:grid; justify-items:center; width:48px; padding:6px 0; border-radius:10px; background:var(--muted); line-height:1.05; }
+.dateChip small { color:var(--primary); font-size:12px; font-weight:700; text-transform:uppercase; }
+.dateChip strong { font-size:20px; font-weight:800; }
+.countdown { flex:none; color:var(--muted-foreground); font-size:12px; white-space:nowrap; }
+.empty { margin:0; color:var(--muted-foreground); font-size:13px; line-height:1.5; }
+.loadingGrid { display:grid; gap:24px; }
+.error { padding:16px; color:var(--error); background:var(--surface); border:1px solid var(--error); border-radius:8px; }
+
+/* Last 7 days */
+.week { padding:14px 16px 12px; background:var(--surface); border:1px solid var(--border); border-radius:16px; }
+.weekHead { display:flex; align-items:center; justify-content:space-between; }
+.weekHead h2 { margin:0; font:700 15px/1.3 var(--font-family-display); }
+.weekHead a { display:inline-flex; align-items:center; min-height:44px; min-width:44px; justify-content:flex-end; color:var(--primary); font-size:13px; text-decoration:none; }
+.weekBody { display:flex; align-items:flex-end; gap:16px; }
+.weekTotal { flex:none; display:grid; padding-bottom:20px; }
+.weekTotal strong { font:800 30px/1 var(--font-family-display); }
+.weekTotal small { margin-top:4px; color:var(--muted-foreground); font-size:12px; }
+.weekChart { flex:1; min-width:0; }
+.bars,.barLabels { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px; }
+.bars { align-items:end; height:56px; }
+.bars span { display:block; border-radius:4px; background:var(--primary); }
+.bars span[data-empty] { height:4px; border-radius:2px; background:var(--muted); }
+.bars span[data-today][data-empty] { outline:1px dashed var(--muted-foreground); outline-offset:2px; }
+.barLabels { margin-top:6px; font-size:12px; color:var(--muted-foreground); text-align:center; }
+.barLabels span[data-today] { color:var(--foreground); font-weight:600; }
+
+/* Watch List poster shelf: three across on phone, six where the full row fits them. */
+.shelf .activityList { grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.shelf .activityRow { display:block; min-height:0; padding:0; border:0; }
+.shelf .poster { width:100%; border-radius:8px; }
+.shelf .activityRow>span:nth-child(2) { display:block; margin-top:8px; }
+.shelf .activityRow strong { font-size:14px; }
+.shelf .activityRow small { font-size:12px; }
+.shelf .rowAction { display:none; }
+.shelf .activityList>:nth-child(n+4) { display:none; }
+.shelfSkeleton { width:100%; height:auto; aspect-ratio:2/3; border-radius:8px; }
+.customize { display:flex; justify-content:center; margin:32px 0 8px; }
+
+@media(min-width:760px) {
+  .syncSources { display:inline; }
+  .dashboard { grid-template-columns:minmax(0,1fr) minmax(280px,384px); grid-auto-flow:row dense; align-items:start; gap:36px 40px; margin-top:32px; }
+  .main { grid-column:1; }
+  .side { grid-column:2; }
+  .full { grid-column:1/-1; }
+  .shelf .activityList { grid-template-columns:repeat(6,minmax(0,var(--poster-shelf))); justify-content:space-between; gap:20px; }
+  .shelf .activityList>:nth-child(n+4) { display:block; }
+}
+@media(max-width:699px) { .featured { padding:16px; gap:16px; } .featured[data-backdrop] .backdrop { margin:-16px -16px 0; border-radius:0; } .featuredCopy h2 { font-size:24px; } }
+@media(max-width:359px) { .featured { padding:12px; grid-template-columns:108px minmax(0,1fr); gap:12px; } .featured>.poster { width:108px; } .featured[data-backdrop] .backdrop { margin:-12px -12px 0; } .featuredActions a { padding:0 12px; } .featuredActions svg { display:none; } }

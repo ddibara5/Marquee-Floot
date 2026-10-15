@@ -1,0 +1,105 @@
+{
+  "app": "Marquee",
+  "asOf": "2026-10-01T17:29:34.972Z",
+  "preparationOnly": true,
+  "productionChanged": false,
+  "sourceProject": "eiskobjlvxzwvucgpenk",
+  "legacyDomainShapes": 21,
+  "statementMatrix": {
+    "roles": [
+      "authenticated",
+      "service_role",
+      "postgres"
+    ],
+    "phases": [
+      "open",
+      "draining",
+      "paused"
+    ],
+    "operations": [
+      "INSERT",
+      "UPDATE",
+      "DELETE",
+      "TRUNCATE"
+    ],
+    "assertions": 756,
+    "note": "Zero-row statement assertions prove gate coverage, not mutation/API parity for every table; TRUNCATE denied even while open"
+  },
+  "realRowAndPrivilegeChecks": 12,
+  "concurrentPauseChecks": 1,
+  "receipts": [
+    {
+      "app": "marquee",
+      "id": "64922c78-904a-4395-9f8d-935f512d85a3",
+      "checks": 1
+    },
+    {
+      "app": "marquee",
+      "id": "9f19215c-2602-459a-b353-1715fc9acefc",
+      "checks": 12
+    },
+    {
+      "app": "marquee",
+      "id": "8e57653d-3440-4bb8-8466-f974a97f6c2e",
+      "checks": 756
+    }
+  ],
+  "privateInstaller": {
+    "app": "marquee",
+    "tableShapes": 21,
+    "approvalGuardRejected": true,
+    "exactBindingVerified": true,
+    "leftDrainingAndBlocked": true,
+    "privateResumed": true,
+    "disabledJournalRejected": true,
+    "wrongLogicalBindingRejected": true,
+    "bindingsRestored": true,
+    "shapeHash": "typeOid/typeMod, column ordinal/name, nullability, identity and generated metadata; search_path-independent and scoped to this source resource"
+  },
+  "sourceDataCopiedForWriterFixture": false,
+  "privilegedDdlOperators": "trusted; table owner can deliberately disable/drop triggers; ordinary roles cannot",
+  "liveSourceBindingsInstalled": false,
+  "providerTransport": "mocked/not sent",
+  "legacyAuthServiceRestoreProven": false,
+  "isolatedAuthRuntime": {
+    "availableVmBinaries": false,
+    "existingSupabaseBranches": 0,
+    "requiresSeparateEnvironment": true
+  },
+  "fullProductionRollbackProven": false,
+  "failedPreparationAttempts": [
+    {
+      "id": "a083c958-e6ae-47df-b4c1-445534dbac45",
+      "reason": "unqualified copied FK references incorrectly targeted source public relations; transaction rolled back, no receipt; all 40 FKs repaired and verified private before successful cross-resource run"
+    },
+    {
+      "reason": "synthetic sync_state scope violated source CHECK; atomic test rolled back; valid catalog scope corrected"
+    }
+  ],
+  "externalRuntimeBindings": {
+    "clientProjectUrlVerified": true,
+    "projectRef": "eiskobjlvxzwvucgpenk",
+    "bundleSha256": "62929585d96e78db14d4c27d079b5acd22885429a602101ee9c2b2deef7d4df5",
+    "serverEnvironmentPlaintext": "unverified/opaque",
+    "callbackConfigChanged": false
+  },
+  "remaining": [
+    "Running isolated legacy Auth service restore requires a separate compatible environment",
+    "Actual external-effect draining and operational caller dispositions before live installation",
+    "Native/source live binding installation and publication are separately authorized future actions",
+    "Fresh final-window backups/deltas; Marquee October 2 verification and monitoring decision",
+    "Server environment values remain opaque; prepared callback change has not been applied"
+  ],
+  "crossResourceRecovery": {
+    "checks": 12,
+    "receipt": "cea065af-5ac8-4017-8683-e1e79e1ecabd",
+    "sourceRun": "999145fe-b2f5-4ad7-ad35-ce6c755ebc58",
+    "legacyShapes": 21,
+    "actualRemoteConnection": true,
+    "destination": "private Supabase clone",
+    "nativePublicHashesUnchanged": true,
+    "foreignKeysPrivate": true,
+    "providerEffects": false,
+    "fullProductionRollbackProven": false
+  }
+}

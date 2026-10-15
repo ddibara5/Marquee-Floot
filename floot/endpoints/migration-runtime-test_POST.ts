@@ -1,0 +1,37 @@
+import {migrationBackupSql} from "../helpers/migrationCreateBackup";
+import {runIsolatedMigrationTransaction,ingestionDb} from "../helpers/marqueeIngestionScope";
+import {syncTraktHistory} from "../helpers/traktSync";
+import {createHash} from "node:crypto";
+const S="candidate_marquee_20260930_v2";
+export async function handle(request:Request){try{
+ const {id}=await request.json(),token=request.headers.get("Authorization")?.replace(/^Bearer /,"");if(typeof id!=="string"||!token)return Response.json({error:"AUTH_REQUIRED"},{status:401});
+ const sql=migrationBackupSql(),hash=createHash("sha256").update(token).digest("hex");
+ if((await sql`update migration_backups_20260930.capabilities set consumed_at=now() where id=${id} and token_hash=${hash} and consumed_at is null and expires_at>now() returning id`).length!==1)return Response.json({error:"CAPABILITY_INVALID"},{status:403});
+ const hashTables=async()=>{const out=[];for(const t of ["marquee_watch_events","marquee_title_watch_events","marquee_manual_episode_completions","marquee_episode_unwatched","marquee_manual_trakt_outbox","marquee_trakt_oauth"]){const [r]=await sql.unsafe("SELECT count(*) n,md5(coalesce(string_agg(md5(to_jsonb(x)::text),'' ORDER BY md5(to_jsonb(x)::text)),'')) h FROM "+S+"."+t+" x");out.push(r);}return JSON.stringify(out);};
+ const before=await hashTables();
+ const [map]=await sql.unsafe("SELECT ep.id episode_id,ep.episode_number,s.season_number,epmap.trakt_id episode_trakt,showmap.trakt_id show_trakt,t.display_title FROM "+S+".marquee_episodes ep JOIN "+S+".marquee_seasons s ON s.id=ep.season_id JOIN "+S+".marquee_titles t ON t.id=s.title_id JOIN "+S+".marquee_trakt_mappings epmap ON epmap.episode_id=ep.id AND epmap.entity_type='episode' JOIN "+S+".marquee_trakt_mappings showmap ON showmap.title_id=t.id AND showmap.entity_type='show' WHERE lower(t.display_title) NOT IN ('one piece','fairy tail') ORDER BY ep.id LIMIT 1");
+ if(!map)throw Error("FIXTURE_MAPPING_REQUIRED");
+ const proof=await runIsolatedMigrationTransaction(async()=>{
+ const watches=await ingestionDb.selectFrom("marqueeTraktWatchlist").selectAll().where("userId","=",1).where("active","=",true).execute();
+ const ratings=await ingestionDb.selectFrom("marqueeTraktRatings").selectAll().where("userId","=",1).where("rating","is not",null).execute();
+ const make=(r:any)=>({[r.mediaType]:{title:r.sourceTitle,year:r.sourceYear??undefined,ids:{trakt:Number(r.traktId),tmdb:r.tmdbId??undefined}},listed_at:r.listedAt?.toISOString(),rating:r.rating,rated_at:r.ratedAt?.toISOString()});
+ const personal={watchlist_movies:watches.filter(r=>r.mediaType==="movie").map(make),watchlist_shows:watches.filter(r=>r.mediaType==="show").map(make),ratings_movies:ratings.filter(r=>r.mediaType==="movie").map(make),ratings_shows:ratings.filter(r=>r.mediaType==="show").map(make)};
+ const watched_at="1999-01-02T03:04:05.000Z";
+ const episode={id:2100000001,watched_at,type:"episode",episode:{season:map.season_number,number:map.episode_number,ids:{trakt:Number(map.episode_trakt)}},show:{title:map.display_title,ids:{trakt:Number(map.show_trakt)}}};
+ const supplied={episodes:[episode,{...episode,id:2100000002,show:{...episode.show,title:"One Piece"}},{...episode,id:2100000003,show:{...episode.show,title:"Fairy Tail"}}],movies:[],personal};
+ const originalState=await ingestionDb.selectFrom("marqueeTraktSyncState").select("lastHistoryAt").where("userId","=",1).executeTakeFirst();
+ const first=await syncTraktHistory(1,supplied as any),replay=await syncTraktHistory(1,supplied as any);
+ if(first.inserted!==1||replay.inserted!==0)throw Error("REPLAY_OR_MAPPING_GATE");
+ const event=await ingestionDb.selectFrom("marqueeWatchEvents").select(["watchedAt","userId"]).where("sourceEventKey","=","trakt:episode:2100000001").executeTakeFirstOrThrow();
+ if(event.userId!==1||event.watchedAt.toISOString()!==watched_at)throw Error("HISTORICAL_DATE_OR_OWNER_GATE");
+ const excluded=await ingestionDb.selectFrom("marqueeWatchEvents").select("id").where("sourceEventKey","in",["trakt:episode:2100000002","trakt:episode:2100000003"]).execute();if(excluded.length)throw Error("EXCLUSION_GATE");
+ const state=await ingestionDb.selectFrom("marqueeTraktSyncState").select("lastHistoryAt").where("userId","=",1).executeTakeFirst();
+ if(state?.lastHistoryAt?.getTime()!==originalState?.lastHistoryAt?.getTime())throw Error("WATERMARK_REGRESSION");
+ return ["existing Trakt normalizer runs against private runtime candidate","historical timestamp retained instead of today","owner 1 retained","One Piece and Fairy Tail excluded","replay inserts zero","historical import does not regress watermark"];
+ });
+ if(await hashTables()!==before)throw Error("FIXTURE_ROLLBACK_GATE");
+ proof.push("history manual completions unwatch outbox and OAuth restored by test rollback");
+ await sql.unsafe("CREATE TABLE IF NOT EXISTS barrier_marquee_20260930_v2.runtime_test_evidence(test text PRIMARY KEY,passed boolean NOT NULL)");
+ for(const test of proof)await sql`insert into barrier_marquee_20260930_v2.runtime_test_evidence values(${test},true) on conflict(test) do nothing`;
+ return Response.json({passed:true,tests:proof.length,proof,productionWrites:false});
+ }catch(e){console.warn("ISOLATED_RUNTIME_TEST_FAILED",String((e as any).code??"RUNTIME"));return Response.json({error:"ISOLATED_RUNTIME_TEST_FAILED",gate:/^[A-Z_]+$/.test((e as Error).message)?(e as Error).message:"REDACTED"},{status:500});}};

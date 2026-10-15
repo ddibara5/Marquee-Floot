@@ -1,0 +1,809 @@
+{
+  "success": true,
+  "data": {
+    "id": "FcKQLqujv4rBrWCT",
+    "name": "Marquee | Trakt daily six-feed sync",
+    "active": true,
+    "isArchived": false,
+    "tags": [
+      {
+        "id": "8jj79bYrqI2pbpa5",
+        "name": "Marquee",
+        "createdAt": "2026-09-24T17:44:12.558Z",
+        "updatedAt": "2026-09-24T17:44:12.558Z"
+      }
+    ],
+    "settings": {
+      "executionOrder": "v1",
+      "availableInMCP": true,
+      "timezone": "Etc/UTC",
+      "saveManualExecutions": false,
+      "saveDataErrorExecution": "none",
+      "saveDataSuccessExecution": "none",
+      "binaryMode": "separate"
+    },
+    "createdAt": "2026-09-24T16:31:55.645Z",
+    "updatedAt": "2026-09-24T17:50:27.920Z",
+    "activeVersionId": "efb18740-73fb-4b90-8bf8-b7102fc7faec",
+    "versionCreatedAt": "2026-09-24T17:11:45.409Z",
+    "versionName": "Added Daily at 11:17 UTC",
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "56ab26e1-c4aa-4613-9103-2017aa9c5197",
+        "name": "Manual Trakt import",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          0,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "return [{json:{client_id:'rqGTyDLOOlG0YX2nicRBNv1wAkMF00ID43RpzQvE6xE'}}];",
+          "mode": "runOnceForAllItems",
+          "language": "javaScript"
+        },
+        "id": "b65c962f-6065-424a-bc3e-35fb1d37f62f",
+        "name": "Public Trakt app ID",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          240,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "url": "https://api.trakt.tv/sync/history/movies?limit=100",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "trakt-api-key",
+                "value": "={{ $('Public Trakt app ID').first().json.client_id }}"
+              },
+              {
+                "name": "trakt-api-version",
+                "value": "2"
+              },
+              {
+                "name": "Accept",
+                "value": "application/json"
+              },
+              {
+                "name": "User-Agent",
+                "value": "MarqueeTraktSync/1.0 (github.com/ddibara5/marquee)"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true,
+                "responseFormat": "json"
+              }
+            },
+            "pagination": {
+              "pagination": {
+                "parameters": {
+                  "parameters": [
+                    {
+                      "name": "page",
+                      "value": "={{ $pageCount + 1 }}"
+                    }
+                  ]
+                },
+                "paginationCompleteWhen": "other",
+                "completeExpression": "={{ Number($response.headers['x-pagination-page']) >= Number($response.headers['x-pagination-page-count']) }}",
+                "limitPagesFetched": true,
+                "requestInterval": 250
+              }
+            },
+            "timeout": 30000
+          }
+        },
+        "id": "cf77dc63-2c2d-4d59-8667-40714535561b",
+        "name": "History movies",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          480,
+          400
+        ],
+        "executeOnce": true,
+        "credentials": {
+          "oAuth2Api": {
+            "id": "KFnAyQVuN9JspSvC",
+            "name": "Trakt"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "url": "https://api.trakt.tv/sync/history/episodes?limit=100",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "trakt-api-key",
+                "value": "={{ $('Public Trakt app ID').first().json.client_id }}"
+              },
+              {
+                "name": "trakt-api-version",
+                "value": "2"
+              },
+              {
+                "name": "Accept",
+                "value": "application/json"
+              },
+              {
+                "name": "User-Agent",
+                "value": "MarqueeTraktSync/1.0 (github.com/ddibara5/marquee)"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true,
+                "responseFormat": "json"
+              }
+            },
+            "pagination": {
+              "pagination": {
+                "parameters": {
+                  "parameters": [
+                    {
+                      "name": "page",
+                      "value": "={{ $pageCount + 1 }}"
+                    }
+                  ]
+                },
+                "paginationCompleteWhen": "other",
+                "completeExpression": "={{ Number($response.headers['x-pagination-page']) >= Number($response.headers['x-pagination-page-count']) }}",
+                "limitPagesFetched": true,
+                "requestInterval": 250
+              }
+            },
+            "timeout": 30000
+          }
+        },
+        "id": "cd5b99c5-1757-45b3-aed1-304c8a265f71",
+        "name": "History episodes",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          720,
+          400
+        ],
+        "executeOnce": true,
+        "credentials": {
+          "oAuth2Api": {
+            "id": "KFnAyQVuN9JspSvC",
+            "name": "Trakt"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "url": "https://api.trakt.tv/sync/ratings/movies?limit=100",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "trakt-api-key",
+                "value": "={{ $('Public Trakt app ID').first().json.client_id }}"
+              },
+              {
+                "name": "trakt-api-version",
+                "value": "2"
+              },
+              {
+                "name": "Accept",
+                "value": "application/json"
+              },
+              {
+                "name": "User-Agent",
+                "value": "MarqueeTraktSync/1.0 (github.com/ddibara5/marquee)"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true,
+                "responseFormat": "json"
+              }
+            },
+            "pagination": {
+              "pagination": {
+                "parameters": {
+                  "parameters": [
+                    {
+                      "name": "page",
+                      "value": "={{ $pageCount + 1 }}"
+                    }
+                  ]
+                },
+                "paginationCompleteWhen": "other",
+                "completeExpression": "={{ Number($response.headers['x-pagination-page']) >= Number($response.headers['x-pagination-page-count']) }}",
+                "limitPagesFetched": true,
+                "requestInterval": 250
+              }
+            },
+            "timeout": 30000
+          }
+        },
+        "id": "a13af7ba-fd18-4199-bb53-5bf42b7d987f",
+        "name": "Ratings movies",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          960,
+          400
+        ],
+        "executeOnce": true,
+        "credentials": {
+          "oAuth2Api": {
+            "id": "KFnAyQVuN9JspSvC",
+            "name": "Trakt"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "url": "https://api.trakt.tv/sync/ratings/shows?limit=100",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "trakt-api-key",
+                "value": "={{ $('Public Trakt app ID').first().json.client_id }}"
+              },
+              {
+                "name": "trakt-api-version",
+                "value": "2"
+              },
+              {
+                "name": "Accept",
+                "value": "application/json"
+              },
+              {
+                "name": "User-Agent",
+                "value": "MarqueeTraktSync/1.0 (github.com/ddibara5/marquee)"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true,
+                "responseFormat": "json"
+              }
+            },
+            "pagination": {
+              "pagination": {
+                "parameters": {
+                  "parameters": [
+                    {
+                      "name": "page",
+                      "value": "={{ $pageCount + 1 }}"
+                    }
+                  ]
+                },
+                "paginationCompleteWhen": "other",
+                "completeExpression": "={{ Number($response.headers['x-pagination-page']) >= Number($response.headers['x-pagination-page-count']) }}",
+                "limitPagesFetched": true,
+                "requestInterval": 250
+              }
+            },
+            "timeout": 30000
+          }
+        },
+        "id": "127871e3-4da3-4db4-9184-5888634d9b2b",
+        "name": "Ratings shows",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1200,
+          400
+        ],
+        "executeOnce": true,
+        "credentials": {
+          "oAuth2Api": {
+            "id": "KFnAyQVuN9JspSvC",
+            "name": "Trakt"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "url": "https://api.trakt.tv/sync/watchlist/movies?limit=100",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "trakt-api-key",
+                "value": "={{ $('Public Trakt app ID').first().json.client_id }}"
+              },
+              {
+                "name": "trakt-api-version",
+                "value": "2"
+              },
+              {
+                "name": "Accept",
+                "value": "application/json"
+              },
+              {
+                "name": "User-Agent",
+                "value": "MarqueeTraktSync/1.0 (github.com/ddibara5/marquee)"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true,
+                "responseFormat": "json"
+              }
+            },
+            "pagination": {
+              "pagination": {
+                "parameters": {
+                  "parameters": [
+                    {
+                      "name": "page",
+                      "value": "={{ $pageCount + 1 }}"
+                    }
+                  ]
+                },
+                "paginationCompleteWhen": "other",
+                "completeExpression": "={{ Number($response.headers['x-pagination-page']) >= Number($response.headers['x-pagination-page-count']) }}",
+                "limitPagesFetched": true,
+                "requestInterval": 250
+              }
+            },
+            "timeout": 30000
+          }
+        },
+        "id": "2ce23ec9-661a-42d2-b1c1-949122a620e4",
+        "name": "Watchlist movies",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1440,
+          400
+        ],
+        "executeOnce": true,
+        "credentials": {
+          "oAuth2Api": {
+            "id": "KFnAyQVuN9JspSvC",
+            "name": "Trakt"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "url": "https://api.trakt.tv/sync/watchlist/shows?limit=100",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth2Api",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "trakt-api-key",
+                "value": "={{ $('Public Trakt app ID').first().json.client_id }}"
+              },
+              {
+                "name": "trakt-api-version",
+                "value": "2"
+              },
+              {
+                "name": "Accept",
+                "value": "application/json"
+              },
+              {
+                "name": "User-Agent",
+                "value": "MarqueeTraktSync/1.0 (github.com/ddibara5/marquee)"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "fullResponse": true,
+                "responseFormat": "json"
+              }
+            },
+            "pagination": {
+              "pagination": {
+                "parameters": {
+                  "parameters": [
+                    {
+                      "name": "page",
+                      "value": "={{ $pageCount + 1 }}"
+                    }
+                  ]
+                },
+                "paginationCompleteWhen": "other",
+                "completeExpression": "={{ Number($response.headers['x-pagination-page']) >= Number($response.headers['x-pagination-page-count']) }}",
+                "limitPagesFetched": true,
+                "requestInterval": 250
+              }
+            },
+            "timeout": 30000
+          }
+        },
+        "id": "647ebc7e-c3f1-42d7-a31e-12d73375c13d",
+        "name": "Watchlist shows",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1680,
+          400
+        ],
+        "executeOnce": true,
+        "credentials": {
+          "oAuth2Api": {
+            "id": "KFnAyQVuN9JspSvC",
+            "name": "Trakt"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const names=['History movies','History episodes','Ratings movies','Ratings shows','Watchlist movies','Watchlist shows'];const sizes={};for(const n of names){const pages=$(n).all().map(i=>i.json);if(!pages.length)throw Error(n+': no pages');let expected=null,items=[];for(let i=0;i<pages.length;i++){const p=pages[i],h=p.headers||{},body=p.body,count=Number(h['x-pagination-item-count']),current=Number(h['x-pagination-page']),total=Number(h['x-pagination-page-count']);if(!Array.isArray(body)||!Number.isSafeInteger(count)||current!==i+1||!Number.isSafeInteger(total)||total>100||total<0)throw Error(n+': pagination shape page '+(i+1)+' bodyArray '+Array.isArray(body)+' count '+(Number.isSafeInteger(count)?count:'missing')+' current '+(Number.isSafeInteger(current)?current:'missing')+' total '+(Number.isSafeInteger(total)?total:'missing'));if(expected===null)expected=count;else if(count!==expected)throw Error(n+': count shifted');items.push(...body);}if(items.length!==expected)throw Error(n+': truncated feed expected '+expected+' got '+items.length);sizes[n]=items.length;}return [{json:{feeds:sizes,preview_only:true}}];"
+        },
+        "id": "ef98ac70-aff8-48b9-9d17-0ecf0c9de765",
+        "name": "Validate six complete feeds",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1920,
+          400
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "id": "trakt_preview_failure",
+        "name": "Safe Trakt import failure",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1930,
+          750
+        ],
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "const base={source:'trakt',user_id:'c566e7e0-880a-430d-85df-c40484144a91',scope_key:'c566e7e0-880a-430d-85df-c40484144a91',finished_at:$now.toISO(),execution_id:'n8n:failure:'+$execution.id};const allowed=['Build Trakt snapshot','Apply Trakt snapshot','History movies','History episodes','Ratings movies','Ratings shows','Watchlist movies','Watchlist shows','Validate six complete feeds'];const stage=typeof $prevNode==='object'&&allowed.includes($prevNode.name)?$prevNode.name:'unknown';const x=$input.first().json,e=x.error||{},code=Number(e.httpCode||e.statusCode||e.status||x.details?.httpCode);const s=JSON.stringify({error:e,details:x.details});const cf=s.match(/(?:error|code)[^0-9]{0,12}(10[0-9]{2})/i);const diagnostic=s.match(/(History movies|History episodes|Ratings movies|Ratings shows|Watchlist movies|Watchlist shows): (pagination shape page [0-9]+ bodyArray (?:true|false) count (?:[0-9]+|missing) current (?:[0-9]+|missing) total (?:[0-9]+|missing)|truncated feed expected [0-9]+ got [0-9]+|count shifted|no pages)/);const reason=diagnostic?diagnostic[0]:cf?'cloudflare '+cf[1]:/cloudflare/i.test(s)?'cloudflare':/invalid.*api.*key|invalid.*client/i.test(s)?'invalid key':/access.denied|not.authorized/i.test(s)?'authorization':'unknown';return [{json:{...base,status:'failed',error_count:1,error_summary:'Trakt import failed at '+stage+(Number.isSafeInteger(code)?' HTTP '+code:'')+' reason '+reason}}];"
+        }
+      },
+      {
+        "id": "trakt_preview_audit",
+        "name": "Record sanitized Trakt failure",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2170,
+          600
+        ],
+        "parameters": {
+          "method": "POST",
+          "url": "https://eiskobjlvxzwvucgpenk.supabase.co/rest/v1/marquee_sync_runs",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "supabaseApi",
+          "sendBody": true,
+          "contentType": "json",
+          "specifyBody": "json",
+          "jsonBody": "={{ $json }}",
+          "options": {
+            "timeout": 20000,
+            "response": {
+              "response": {
+                "responseFormat": "json"
+              }
+            }
+          }
+        },
+        "credentials": {
+          "supabaseApi": {
+            "id": "BzffyRvqi5Coa0te",
+            "name": "GameDeck Supabase (service)"
+          }
+        }
+      },
+      {
+        "id": "f641c653-9785-4dc5-b7be-51b60f97d5e6",
+        "name": "Build Trakt snapshot",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2160,
+          400
+        ],
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "const names={history_movies:'History movies',history_episodes:'History episodes',ratings_movies:'Ratings movies',ratings_shows:'Ratings shows',watchlist_movies:'Watchlist movies',watchlist_shows:'Watchlist shows'};const feeds={};for(const [feed,node] of Object.entries(names))feeds[feed]=$(node).all().flatMap(item=>item.json.body);const approved=Object.fromEntries([245,364,614,1095,1424,1425,1693,2109,2276,2356,2588,2692,4170,4289,4430,4583,8312,10234,11093,15567,16926,18265,30569,31360,32585,33733,34818,39108,39132,40105,41522,43311,43925,48562,48702,53085,54001,60267,60635,66441,68319,69829,70310,71911,73817,74403,74880,76226,77199,77779,77805,77807,78111,81672,95756,98464,98985,99667,99718,101123,102630,103318,103769,103936,104439,107690,109975,113656,113835,113938,116965,119017,119095,119887,122019,123489,125479,127167,129957,132543,135147,136561,136863,137198,138163,138758,140481,142048,144009,144668,145411,145781,146733,147971,149786,150469,151853,152104,152473,153862,154164,154574,154822,154997,155534,157190,157503,157599,157664,158947,159815,162205,162639,163965,164423,167187,168471,169967,170559,170568,170649,171129,172648,174425,174953,180770,181803,181978,184618,187507,188205,194117,194907,195271,195644,204141,205347,206790,206920,210223,215466,217658,223228,225096,228099,233089,233955,235622,240024,242387,247058,248773,249443,253675,254678,262017,274856,282764,320339,327172].map(id=>[String(id),true]));return [{json:{p_user_id:'c566e7e0-880a-430d-85df-c40484144a91',p_feeds:feeds,p_approved:approved,p_execution_id:'n8n:'+$execution.id}}];"
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "id": "e0c27f2b-d597-4cde-9d68-2e32fe07a350",
+        "name": "Apply Trakt snapshot",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          2400,
+          400
+        ],
+        "parameters": {
+          "method": "POST",
+          "url": "https://eiskobjlvxzwvucgpenk.supabase.co/rest/v1/rpc/marquee_trakt_apply_snapshot",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "supabaseApi",
+          "sendBody": true,
+          "contentType": "json",
+          "specifyBody": "json",
+          "jsonBody": "={{ $json }}",
+          "options": {
+            "timeout": 120000,
+            "response": {
+              "response": {
+                "responseFormat": "json"
+              }
+            }
+          }
+        },
+        "credentials": {
+          "supabaseApi": {
+            "id": "BzffyRvqi5Coa0te",
+            "name": "GameDeck Supabase (service)"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "id": "3089ba80-b649-4c62-a1f1-801d74c3275b",
+        "name": "Daily at 11:17 UTC",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.4,
+        "position": [
+          0,
+          580
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "17 11 * * *"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Public Trakt app ID": {
+        "main": [
+          [
+            {
+              "node": "History movies",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "History movies": {
+        "main": [
+          [
+            {
+              "node": "History episodes",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Safe Trakt import failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "History episodes": {
+        "main": [
+          [
+            {
+              "node": "Ratings movies",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Safe Trakt import failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Ratings movies": {
+        "main": [
+          [
+            {
+              "node": "Ratings shows",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Safe Trakt import failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Ratings shows": {
+        "main": [
+          [
+            {
+              "node": "Watchlist movies",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Safe Trakt import failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Watchlist movies": {
+        "main": [
+          [
+            {
+              "node": "Watchlist shows",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Safe Trakt import failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Watchlist shows": {
+        "main": [
+          [
+            {
+              "node": "Validate six complete feeds",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Safe Trakt import failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validate six complete feeds": {
+        "main": [
+          [
+            {
+              "node": "Build Trakt snapshot",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Safe Trakt import failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Trakt snapshot": {
+        "main": [
+          [
+            {
+              "node": "Apply Trakt snapshot",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Safe Trakt import failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Apply Trakt snapshot": {
+        "main": [
+          null,
+          [
+            {
+              "node": "Safe Trakt import failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Safe Trakt import failure": {
+        "main": [
+          [
+            {
+              "node": "Record sanitized Trakt failure",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Manual Trakt import": {
+        "main": [
+          [
+            {
+              "node": "Public Trakt app ID",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Daily at 11:17 UTC": {
+        "main": [
+          [
+            {
+              "node": "Public Trakt app ID",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  }
+}

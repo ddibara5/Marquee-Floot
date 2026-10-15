@@ -1,0 +1,71 @@
+import superjson from "superjson";
+import {createPasswordLogin} from "../endpoints/auth/login_with_password_POST";
+import {createPasswordLogout} from "../endpoints/auth/logout_POST";
+import {createSessionHandler} from "../endpoints/auth/session_GET";
+import {createServerUserSession} from "./getServerUserSession";
+import {getServerSessionOrThrow} from "./getSetServerSession";
+import type postgres from "postgres";
+import type {Kysely} from "kysely";
+import type {createMigrationWriter} from "./migrationWriter";
+import {createPasswordRegistration} from "../endpoints/auth/register_with_password_POST";
+import {createTrackingHandler} from "../endpoints/tracking_POST";
+
+export async function exerciseAuthApi(sql:ReturnType<typeof postgres>,database:Kysely<any>,writer:ReturnType<typeof createMigrationWriter>,S:string,id:string,check:(ok:boolean,name:string)=>void){
+ const ownerId=1,password="migration-fixture-password";
+ const getSession=createServerUserSession(database as any);
+ const request=(path:string,body?:unknown,cookie?:string)=>new Request("https://fixture.invalid/_api/"+path,{method:body===undefined?"GET":"POST",headers:{origin:"https://fixture.invalid","Content-Type":"application/json",...(cookie?{cookie}: {})},...(body===undefined?{}:{body:superjson.stringify(body)})});
+ const cookieOf=(response:Response)=>response.headers.get("Set-Cookie")?.split(";")[0]??"";
+ const login=writer.endpoint(createPasswordLogin(database),"fixture:actual-login",true);
+ const session=writer.endpoint(createSessionHandler(getSession),"fixture:actual-session",true);
+ const logout=writer.endpoint(createPasswordLogout(database),"fixture:actual-logout",true);
+ const [owner]=await sql.unsafe("select email from "+S+".users where id=$1",[ownerId]);
+ check((await login(request("auth/login",{email:owner.email,password:"wrong-fixture-password"}))).status===401,"actual password endpoint rejects incorrect password");
+ const logged=await login(request("auth/login",{email:owner.email,password}));
+ const loginData=superjson.parse<any>(await logged.text()),authCookie=cookieOf(logged);
+ check(logged.status===200&&loginData.user.id===ownerId&&Object.keys(loginData.user).sort().join(",")==="avatarUrl,displayName,email,id,role"&&!!authCookie&&!JSON.stringify(loginData).includes("passwordHash"),"actual password login preserves response contract and excludes password material");
+ check(/HttpOnly/.test(logged.headers.get("Set-Cookie")??"")&&/Secure/.test(logged.headers.get("Set-Cookie")??"")&&/SameSite=Lax/.test(logged.headers.get("Set-Cookie")??""),"actual login sets secure HTTP-only session cookie");
+ const valid=await session(request("auth/session",undefined,authCookie));
+ check(valid.status===200&&superjson.parse<any>(await valid.text()).user.id===ownerId,"actual session endpoint resolves signed cookie to database identity");
+ const signed=await getServerSessionOrThrow(request("auth/session",undefined,authCookie));
+ await writer.work("fixture:expire-auth-session",()=>sql.unsafe("update "+S+".sessions set expires_at=now()-interval '1 minute' where id=$1",[signed.id]));
+ check((await session(request("auth/session",undefined,authCookie))).status===401,"actual session endpoint rejects expired database session");
+ const relogged=await login(request("auth/login",{email:owner.email,password})),logoutCookie=cookieOf(relogged);
+ const out=await logout(request("auth/logout",{},logoutCookie));
+ check(out.status===200&&/Max-Age=0/.test(out.headers.get("Set-Cookie")??"")&&(await session(request("auth/session",undefined,logoutCookie))).status===401,"actual logout invalidates stored session and clears cookie");
+ const fault=writer.endpoint(createSessionHandler(async()=>{throw Error("MIGRATION_LEASE_LOST");}),"fixture:mid-request-fence",true);
+ check((await fault(request("auth/session",undefined,logoutCookie))).status===503,"mid-request Auth lease failures preserve maintenance response");
+ const retainedLogin=await login(request("auth/login",{email:owner.email,password})),retainedCookie=cookieOf(retainedLogin);
+ check(retainedLogin.status===200,"fresh actual login is available for retained-store rollback verification");
+
+ const register=writer.endpoint(createPasswordRegistration(database as any),"fixture:actual-registration",true);
+ const registration=(suffix:string)=>request("auth/register",{email:"migration-register+"+id+suffix+"@example.invalid",displayName:"Private fixture",password:"private-registration-fixture-password"});
+ const counts=async()=>{const rows=[];for(const table of ["users","user_passwords","sessions"]){const [r]=await sql.unsafe("select count(*) n,md5(coalesce(string_agg(md5(to_jsonb(t)::text),'' order by md5(to_jsonb(t)::text)),'')) h from "+S+"."+table+" t");rows.push(r);}return JSON.stringify(rows);};
+ const before=await counts();
+ await sql.unsafe("alter table "+S+".sessions add constraint fixture_registration_reject check(user_id=1) not valid");
+ try{check((await register(registration("-fail"))).status===400&&await counts()===before,"actual registration failure rolls user password and session back atomically");}
+ finally{await sql.unsafe("alter table "+S+".sessions drop constraint fixture_registration_reject");}
+ const registered=await register(registration("-ok")),registeredData=superjson.parse<any>(await registered.text());
+ check(registered.status===200&&(await session(request("auth/session",undefined,cookieOf(registered)))).status===200&&registeredData.user.role==="user","actual registration creates usable session with unchanged response contract");
+ const prior=await counts();
+ check((await register(registration("-ok"))).status===409&&await counts()===prior,"actual duplicate registration creates no extra credential or session rows");
+ let providerEffects=0;
+ const tracking=writer.endpoint(createTrackingHandler(database as any,getSession,async()=>{providerEffects++;throw Error("FIXTURE_PROVIDER_DISABLED");},async()=>{providerEffects++;return "uncertain";},async()=>{providerEffects++;return {watchlistCount:0,ratingsCount:0};}),"fixture:actual-tracking",true);
+ const change=(input:unknown,cookie=retainedCookie)=>tracking(request("tracking",input,cookie));
+ const [episode]=await sql.unsafe("select e.id,e.season_id,s.title_id from "+S+".marquee_episodes e join "+S+".marquee_seasons s on s.id=e.season_id join "+S+".marquee_titles t on t.id=s.title_id where t.media_type='show' and not exists(select 1 from "+S+".marquee_watch_events w where w.episode_id=e.id and w.user_id=1 and w.source='manual') order by e.id limit 1");
+ check((await change({action:"rating",titleId:episode.title_id,rating:8},"")).status===401,"actual tracking endpoint rejects anonymous manual edits");
+ const rating=await change({action:"rating",titleId:episode.title_id,rating:8});
+ const viewing=await change({action:"viewing",titleId:episode.title_id,status:"dropped"});
+ check(rating.status===200&&viewing.status===200&&superjson.parse<any>(await rating.text()).saved===true,"actual tracking API records manual rating and viewing choice");
+ const [manual]=await sql.unsafe("select score,manual_locked from "+S+".marquee_legacy_ratings where user_id=1 and title_id=$1 and source='manual'",[episode.title_id]);
+ const [view]=await sql.unsafe("select status from "+S+".marquee_manual_title_statuses where user_id=1 and title_id=$1",[episode.title_id]);
+ check(Number(manual.score)===8&&manual.manual_locked===true&&view.status==="dropped","actual tracking stores per-user manual locks and canonical title identity");
+ const imported=async()=>{const [r]=await sql.unsafe("select count(*) n,md5(coalesce(string_agg(md5(to_jsonb(t)::text),'' order by md5(to_jsonb(t)::text)),'')) h from "+S+".marquee_watch_events t where user_id=1 and source<>'manual'");return JSON.stringify(r);};
+ const importedBefore=await imported();
+ const unwatched=await change({action:"unwatch",titleId:episode.title_id,episodeId:episode.id});
+ const [tombstone]=await sql.unsafe("select count(*)::int n from "+S+".marquee_episode_unwatched where user_id=1 and episode_id=$1",[episode.id]);
+ check(unwatched.status===200&&tombstone.n===1&&await imported()===importedBefore,"actual unwatch preserves imported source history and records canonical tombstone");
+ const crossTitle=await sql.unsafe("select id from "+S+".marquee_titles where id<>$1 limit 1",[episode.title_id]);
+ check((await change({action:"unwatch",titleId:crossTitle[0].id,episodeId:episode.id})).status===400,"actual tracking rejects an episode from another canonical title");
+ check(providerEffects===0,"local manual API rehearsal performs no provider transport effects");
+ return {ownerId,password,cookie:retainedCookie,titleId:episode.title_id,episodeId:episode.id};
+} 

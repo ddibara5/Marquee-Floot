@@ -1,0 +1,35 @@
+import { selectCatalogRefresh, type RefreshCandidate } from "./refreshShowCatalogs";
+
+const now = new Date("2026-10-12T14:00:00Z");
+const day = (n: number) => new Date(now.getTime() - n * 86_400_000);
+const show = (over: Partial<RefreshCandidate>): RefreshCandidate => ({
+  titleId: 1, title: "Show", tmdbId: 100, tmdbStatus: "Returning Series",
+  crunchyrollLinked: false, catalogUpdatedAt: day(17), lastWatchedAt: day(5), ...over,
+});
+
+describe("selectCatalogRefresh", () => {
+  it("picks current shows with a stale catalog, most recently watched first", () => {
+    const picked = selectCatalogRefresh([
+      show({ titleId: 1, title: "Old watch", lastWatchedAt: day(200) }),
+      show({ titleId: 2, title: "Ted Lasso", lastWatchedAt: day(4) }),
+      show({ titleId: 3, title: "Never watched", lastWatchedAt: null }),
+    ], now);
+    expect(picked.map((s) => s.title)).toEqual(["Ted Lasso", "Old watch", "Never watched"]);
+  });
+
+  it("skips ended, Crunchyroll-linked, catalog-less and recently refreshed shows", () => {
+    const picked = selectCatalogRefresh([
+      show({ titleId: 1, tmdbStatus: "Ended" }),
+      show({ titleId: 2, crunchyrollLinked: true }),
+      show({ titleId: 3, catalogUpdatedAt: null }),
+      show({ titleId: 4, catalogUpdatedAt: day(1) }),
+      show({ titleId: 5, tmdbId: 0 }),
+    ], now);
+    expect(picked).toEqual([]);
+  });
+
+  it("respects the daily limit", () => {
+    const rows = Array.from({ length: 20 }, (_, i) => show({ titleId: i + 1 }));
+    expect(selectCatalogRefresh(rows, now, 12).length).toBe(12);
+  });
+});

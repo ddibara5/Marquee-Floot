@@ -1,0 +1,61 @@
+// Developer-only rollback verification. No provider writes or committed fixture rows.
+import {sql} from "kysely";
+import {db} from "./db";
+import {importSql} from "./marqueeImportDb";
+import {claimImport,finishImport,failImport} from "./marqueeImportState";
+import {syncCrunchyroll,type Window} from "./crunchyrollSync";
+import {recalculateTitleProgress} from "./recalculateTitleProgress";
+import {validateEvents} from "./marqueeImportPolicy";
+export async function marqueeMigrationVerify(){
+ const runId=await claimImport("crunchyroll","shadow");
+ try{
+ const staged=await importSql()`select payload,metadata from marquee_import_pages where run_id=(select id from marquee_import_runs where source='crunchyroll' and mode='shadow' and status='succeeded' and counts->>'fetched'='380' order by started_at desc limit 1) and feed='history' order by page`;
+ const events=staged.flatMap(p=>p.payload);
+ if(events.length!==380)throw Error("FIXTURE_WINDOW_MISSING");
+ const known=await db.selectFrom("marqueeCrunchyrollRaw").innerJoin("marqueeEpisodes","marqueeEpisodes.id","marqueeCrunchyrollRaw.episodeId").innerJoin("marqueeSeasons","marqueeSeasons.id","marqueeEpisodes.seasonId")
+ .select(["marqueeCrunchyrollRaw.payload","marqueeCrunchyrollRaw.episodeId","marqueeSeasons.titleId","marqueeSeasons.id as seasonId"])
+ .where("marqueeCrunchyrollRaw.classification","=","mapped").where("marqueeCrunchyrollRaw.sourceEventId","in",events.map(e=>e.id)).execute();
+ const target=known[0],other=known.find(r=>r.titleId!==target.titleId);
+ if(!target?.episodeId||!other)throw Error("FIXTURE_TARGET_MISSING");
+ // Kysely camel-cases nested JSON on read; fetch provider-shaped evidence through raw Postgres.
+ const [original]=await importSql()`select payload from marquee_crunchyroll_raw where episode_id=${target.episodeId} and classification='mapped' limit 1`;
+ const historic={...original.payload,id:"marquee-qa-historical",date_played:"2020-01-01T12:00:00Z",fully_watched:true};
+ const excluded=(series:string,id:string)=>({...historic,id,parent_id:series,panel:{id,title:"Excluded fixture",episode_metadata:{series_id:series,identifier:series+"|S1|E1",episode_number:1}}});
+ const partial={...historic,id:"marquee-qa-partial",fully_watched:false};
+ const fixtureEvents=[historic,historic,excluded("GRMG8ZQZR","marquee-qa-one-piece"),excluded("G6DQDD3WR","marquee-qa-fairy-tail"),partial,...events];
+ let rejectedDuplicate=false;try{validateEvents(fixtureEvents);}catch{rejectedDuplicate=true;}
+ if(!rejectedDuplicate)throw Error("FIXTURE_DUPLICATE_GUARD_FAILED");
+ let protectedBefore="",watchedBefore=0;
+ const protectedQuery=sql<{fingerprint:string}>`select md5(jsonb_build_object('statuses',(select jsonb_agg(to_jsonb(x) order by x.title_id) from marquee_manual_title_statuses x),'manual',(select jsonb_agg(to_jsonb(x) order by x.episode_id) from marquee_manual_episode_completions x),'ratings',(select jsonb_agg(to_jsonb(x) order by x.source_id) from marquee_legacy_ratings x),'watchlist',(select jsonb_agg(to_jsonb(x) order by x.source_id) from marquee_legacy_watchlist x),'locked',(select jsonb_agg(to_jsonb(x) order by x.source,x.source_entity_type,x.source_id) from marquee_source_mappings x where manual_locked))::text) fingerprint`;
+ const result=await syncCrunchyroll(1,"sync",{accountId:staged[0].metadata.accountId,events:fixtureEvents} as Window,true,{
+ before:async trx=>{
+ // Remove only this completion inside the rollback transaction to exercise a new insert and repeat.
+ await trx.deleteFrom("marqueeLegacyCompletions").where("userId","=",1).where("episodeId","=",target.episodeId!).execute();
+ await trx.insertInto("marqueeManualTitleStatuses").values([{userId:1,titleId:target.titleId,status:"paused"},{userId:1,titleId:other.titleId,status:"dropped"}]).onConflict(oc=>oc.columns(["userId","titleId"]).doUpdateSet(eb=>({status:eb.ref("excluded.status")}))).execute();
+ await trx.insertInto("marqueeManualEpisodeCompletions").values({userId:1,episodeId:target.episodeId!,seasonId:target.seasonId,bulkScope:"season"}).onConflict(oc=>oc.doNothing()).execute();
+ await trx.insertInto("marqueeWatchEvents").values({userId:1,episodeId:target.episodeId!,source:"trakt",sourceEventKey:"marquee-qa-trakt-overlap",watchedAt:new Date("2020-01-01T12:00:00Z")}).execute();
+ await trx.insertInto("marqueeLegacyWatchlist").values({userId:1,titleId:target.titleId,sourceId:"86b7c2f1-bba1-4f77-9df8-582c74af4609",source:"manual",manualLocked:true,addedAt:new Date("2020-01-01T12:00:00Z")}).onConflict(oc=>oc.doNothing()).execute();
+ await trx.updateTable("marqueeSourceMappings").set({manualLocked:true}).where("source","=","crunchyroll").where("sourceId","=",historic.panel.episode_metadata.identifier).execute();
+ const rating=await trx.selectFrom("marqueeLegacyRatings").select("sourceId").where("source","=","anilist").limit(1).executeTakeFirst();
+ if(!rating)throw Error("FIXTURE_ANILIST_RATING_MISSING");
+ await trx.updateTable("marqueeLegacyRatings").set({score:"9",manualLocked:true}).where("sourceId","=",rating.sourceId).execute();
+ await recalculateTitleProgress(trx,1,target.titleId);
+ watchedBefore=(await trx.selectFrom("marqueeTitles").select("watchedEpisodes").where("id","=",target.titleId).executeTakeFirstOrThrow()).watchedEpisodes??0;
+ protectedBefore=(await protectedQuery.execute(trx)).rows[0].fingerprint;
+ },after:async(trx,outcome)=>{
+ console.log("Rollback audit counters",JSON.stringify(outcome));
+ if(outcome.newCompletions!==1||outcome.newDatedEvents!==0||outcome.excluded!==2)throw Error("FIXTURE_HISTORY_OR_EXCLUSIONS_FAILED");
+ const fixtureRaw=await trx.selectFrom("marqueeCrunchyrollRaw").select(["classification","sourceEventId"]).where("sourceEventId","like","marquee-qa-%").execute();
+ if(fixtureRaw.length!==4||fixtureRaw.filter(r=>r.classification==="excluded").length!==2||fixtureRaw.filter(r=>r.classification==="partial").length!==1)throw Error("FIXTURE_CLASSIFICATION_FAILED");
+ if((await protectedQuery.execute(trx)).rows[0].fingerprint!==protectedBefore)throw Error("FIXTURE_MANUAL_STATE_CHANGED");
+ const watchedAfter=(await trx.selectFrom("marqueeTitles").select("watchedEpisodes").where("id","=",target.titleId).executeTakeFirstOrThrow()).watchedEpisodes??0;
+ if(watchedAfter!==watchedBefore)throw Error("FIXTURE_CROSS_SOURCE_DOUBLE_COUNT");
+ const choices=await trx.selectFrom("marqueeManualTitleStatuses").select("status").where("userId","=",1).where("titleId","in",[target.titleId,other.titleId]).execute();
+ if(!choices.some(c=>c.status==="paused")||!choices.some(c=>c.status==="dropped"))throw Error("FIXTURE_STATUS_OVERRIDE_CHANGED");
+ }});
+ const [remaining]=await importSql()`select count(*)::int n from marquee_crunchyroll_raw where source_event_id like 'marquee-qa-%'`;
+ if(remaining.n!==0)throw Error("FIXTURE_ROLLBACK_FAILED");
+ const counts={fixtureVerification:true,canonicalCommitted:false,checks:{historicalUndated:true,excludedOnePieceFairyTail:true,partialNotCompleted:true,duplicateEvidenceOnce:true,crossSourceCompletionOnce:true,manualPausedDroppedPreserved:true,manualRatingWatchlistMappingsPreserved:true,fixturesRolledBack:true},fixtures:result};
+ await finishImport(runId,counts);return {runId,...counts};
+ }catch(e){console.error("Marquee rollback verification failed",e instanceof Error?e.message:"unknown");await failImport(runId,e);throw e;}
+}

@@ -1,0 +1,7 @@
+.field{position:relative;display:flex;align-items:center;width:100%;min-width:0;margin-bottom:12px}
+.field input{width:100%;min-height:44px;padding-left:39px;padding-right:48px;font-size:14px}
+.field input::-webkit-search-cancel-button{display:none}
+.icon{position:absolute;left:13px;color:var(--muted-foreground);pointer-events:none}
+.clear{position:absolute;right:0;top:0;bottom:0;width:44px;min-height:44px;display:grid;place-items:center;border:0;border-radius:var(--radius);background:transparent;color:var(--muted-foreground);cursor:pointer}
+.clear:hover{background:var(--surface);color:var(--primary)}
+.clear:focus-visible{outline:2px solid var(--primary);outline-offset:-3px}

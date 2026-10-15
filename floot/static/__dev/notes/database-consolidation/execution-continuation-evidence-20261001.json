@@ -1,0 +1,519 @@
+{
+  "app": "Marquee",
+  "projectId": "9ba56374-eb1b-4942-af2f-e15e4df14755",
+  "asOf": "2026-10-02T00:18:34Z",
+  "status": "AUTHORIZED_ADMISSION_PREPARED_OWNER_CREDENTIAL_GATE_PENDING",
+  "authorization": "production-authorization-20261001.json; Dave's direct continuation request authorizes pause/bindings/publication/cutover without duplicate approval.",
+  "publishedOrPausedByThisSession": false,
+  "cutoverPerformed": false,
+  "liveRuntimeBindingInstalled": false,
+  "operationalDdl": {
+    "file": "provider-admission-control-20261001.sql",
+    "installed": true,
+    "resource": "Floot Database for Marquee Floot Pilot",
+    "schema": "barrier_marquee_20260930_v2",
+    "admissionOpen": true,
+    "publicTableAltered": false,
+    "executedAfterFreshPreinstallBackups": true
+  },
+  "unpublishedCode": {
+    "admissionActive": true,
+    "physicalBarrierActive": false,
+    "traktStore": "dual",
+    "files": [
+      "helpers/migrationWriter.tsx",
+      "helpers/marqueeDatabaseMode.tsx",
+      "helpers/marqueeWriter.tsx",
+      "helpers/marqueeImportState.tsx",
+      "helpers/marqueeStart.tsx",
+      "helpers/migrationAdmission.spec.tsx"
+    ],
+    "purpose": "Durable admission before public binding; provider hold independent of native owner acceptance; retain existing import leases and allow prior-epoch admitted provider work to drain.",
+    "maintenanceReleasePublished": false,
+    "maximumPauseMinutes": 15,
+    "abortDecisionMinutes": 10,
+    "noAutomaticResume": true,
+    "mobileBuild": false,
+    "maintenanceCheckpoint": "2b72ee22-4776-4b6f-a3a9-7d7529c28feb"
+  },
+  "protection": {
+    "frozen": false,
+    "native": {
+      "status": 200,
+      "elapsedMs": 36786,
+      "result": {
+        "backup": {
+          "id": "c640a9c1-0149-4a10-93a7-3069ae676af4",
+          "app": "marquee",
+          "source": "native",
+          "filename": "database-migration/marquee/c640a9c1-0149-4a10-93a7-3069ae676af4-native.backup",
+          "cipherHash": "cb011d039efdba48f01ddd78e55655a7377bdcf566a8767bce5b7da25df26a0b",
+          "plainHash": "62c5fba288976e30326f5d86c792c7c2064377203c61a88b6001841e2d870c94",
+          "tables": 42,
+          "rows": 36848,
+          "authTables": 0,
+          "bytes": 35120172,
+          "decryptVerified": true,
+          "runtimeShapes": 42,
+          "mode": "pre-install",
+          "all42BindingsInstalled": false,
+          "finalFrozenDeltaRequired": true,
+          "scope": "fixed native runtime42, native Auth/manual state and protected operational/DDL evidence",
+          "fullProductionRestoreProven": false
+        },
+        "restore": {
+          "backupId": "c640a9c1-0149-4a10-93a7-3069ae676af4",
+          "schema": "restore_marquee_20260930_c640a9c10149",
+          "restoredTables": 42,
+          "restoredRows": 36848,
+          "authEvidenceTables": 0,
+          "exactRowHashVerified": true,
+          "scope": "typed app data plus protected schema/Auth/config evidence; no production connection or auth switch"
+        },
+        "replay": null,
+        "privateExercise": false,
+        "providerEffects": false,
+        "fullProductionRollbackProven": false
+      }
+    },
+    "source": {
+      "elapsedMs": 17329,
+      "backup": {
+        "id": "0ebbdc7d-42a6-4111-9e8e-4b1f87a0b779",
+        "app": "marquee",
+        "source": "legacy",
+        "filename": "database-migration/marquee/0ebbdc7d-42a6-4111-9e8e-4b1f87a0b779-legacy.backup",
+        "cipherHash": "8591cae9a800464824218fc19b49570f46dd3560585506f5be77048f6570b159",
+        "plainHash": "7d7f1ee93b4555c26f7a71933fd804cd910857ec44e7d08af4df312db91d75f0",
+        "tables": 21,
+        "rows": 34551,
+        "authTables": 15,
+        "bytes": 8276668,
+        "decryptVerified": true
+      },
+      "restore": {
+        "backupId": "0ebbdc7d-42a6-4111-9e8e-4b1f87a0b779",
+        "schema": "restore_marquee_20260930_0ebbdc7d42a6",
+        "restoredTables": 21,
+        "restoredRows": 34551,
+        "authEvidenceTables": 15,
+        "exactRowHashVerified": true,
+        "scope": "typed app data plus protected schema/Auth/config evidence; no production connection or auth switch"
+      }
+    },
+    "sourceFullRowHashComparison": [
+      {
+        "table": "marquee_episodes",
+        "rows": "4026",
+        "sha256": "7371aafb38765d175f7dd5d0f1b5a70de1f790caa141d13ef0dd3f40c7363b1d",
+        "restoredRows": "4026",
+        "exact": true
+      },
+      {
+        "table": "marquee_franchise_overrides",
+        "rows": "0",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "restoredRows": "0",
+        "exact": true
+      },
+      {
+        "table": "marquee_ingest_raw",
+        "rows": "11146",
+        "sha256": "7ee7f13ebfceb9b03b616cf99813888b039ada378f3d73eb3936469a47093b0e",
+        "restoredRows": "11146",
+        "exact": true
+      },
+      {
+        "table": "marquee_mapping_review",
+        "rows": "2874",
+        "sha256": "4846865210582413b09d8348deaa9553211d7f54dfabf613715001683c82f5a6",
+        "restoredRows": "2874",
+        "exact": true
+      },
+      {
+        "table": "marquee_movies",
+        "rows": "70",
+        "sha256": "55525f8cec3b6e3706708c9ef7b9cfc612855e3185f99a930d24ce3360f9aea4",
+        "restoredRows": "70",
+        "exact": true
+      },
+      {
+        "table": "marquee_ratings",
+        "rows": "66",
+        "sha256": "0e2739ab271de20a58d6c31d4a362457d399516394c0eeb808ee149752dffc8d",
+        "restoredRows": "66",
+        "exact": true
+      },
+      {
+        "table": "marquee_season_release_schedules",
+        "rows": "1",
+        "sha256": "0d73d35559bad8916616bd6f07332b89c4bfb9f561706d4591f552815d7d71cc",
+        "restoredRows": "1",
+        "exact": true
+      },
+      {
+        "table": "marquee_seasons",
+        "rows": "367",
+        "sha256": "b1c13e4e8d1f0d498f6c3e8bb5a246c7fa0156892e34af39dc3ee699f8177e20",
+        "restoredRows": "367",
+        "exact": true
+      },
+      {
+        "table": "marquee_shows",
+        "rows": "203",
+        "sha256": "680fbdb9a5da041a66125a4f29fb22042d5bff23c8451be8faa24769c806daae",
+        "restoredRows": "203",
+        "exact": true
+      },
+      {
+        "table": "marquee_source_mappings",
+        "rows": "4640",
+        "sha256": "1eff62b8b5a3cec08298e30ec7f4cb84bc30bb879821baa7c5f5173d6000737d",
+        "restoredRows": "4640",
+        "exact": true
+      },
+      {
+        "table": "marquee_statuses",
+        "rows": "78",
+        "sha256": "6d6342793bff720f07b69a5fe65e28d8cf6582c7ea5e527593128f25a527cc3f",
+        "restoredRows": "78",
+        "exact": true
+      },
+      {
+        "table": "marquee_sync_runs",
+        "rows": "38",
+        "sha256": "855b793c2d082bd8894d4c299fb9081b826ad0911c07a42ccea5e278d8200bf9",
+        "restoredRows": "38",
+        "exact": true
+      },
+      {
+        "table": "marquee_sync_state",
+        "rows": "3",
+        "sha256": "4aaa098f6bfabae53c11332cc92776f752a5ec76b1359d51a1d7645269838cbf",
+        "restoredRows": "3",
+        "exact": true
+      },
+      {
+        "table": "marquee_titles",
+        "rows": "273",
+        "sha256": "06c3795fb47c5cdf67bbaf992db4df11024d3adb9ddd47e1d7d34ed54bb13452",
+        "restoredRows": "273",
+        "exact": true
+      },
+      {
+        "table": "marquee_undated_completion_evidence",
+        "rows": "3995",
+        "sha256": "ab2c31454c51828c4203fbbcde4bb5a29c22d4c7239199028eafcb3a87b61705",
+        "restoredRows": "3995",
+        "exact": true
+      },
+      {
+        "table": "marquee_undated_completions",
+        "rows": "1667",
+        "sha256": "1e4ed08e6fe914743ee4ca404fb0f74834580d4f8a9b52731392903c1bc0b182",
+        "restoredRows": "1667",
+        "exact": true
+      },
+      {
+        "table": "marquee_verified_season_totals",
+        "rows": "80",
+        "sha256": "b9966a241a91e3641d0f78740a1557095e3673b4853546e745e250fcf8f9b85c",
+        "restoredRows": "80",
+        "exact": true
+      },
+      {
+        "table": "marquee_watch_date_decisions",
+        "rows": "3",
+        "sha256": "5361df72cba3d4d8714ebaced68f1d13247c1fc2612056dc286ba99806f50615",
+        "restoredRows": "3",
+        "exact": true
+      },
+      {
+        "table": "marquee_watch_history",
+        "rows": "2504",
+        "sha256": "717179fb1e67c283284f51c41c19b4bda76e9954dcf458f1d9cb6d35d9e0b822",
+        "restoredRows": "2504",
+        "exact": true
+      },
+      {
+        "table": "marquee_watch_history_sources",
+        "rows": "2504",
+        "sha256": "2a027663fc621a1282ead2024724ad1f52da50a6311987a1b5a1482f2bb73542",
+        "restoredRows": "2504",
+        "exact": true
+      },
+      {
+        "table": "marquee_watchlist",
+        "rows": "13",
+        "sha256": "dc0b3be71f9f78535640233facb4fa45117c0afda7819547964adc7f00ec1995",
+        "restoredRows": "13",
+        "exact": true
+      }
+    ],
+    "limits": "These captures preceded private operational DDL. Fresh final-window native/source captures and exact isolated restores remain mandatory after enforced drain and exact binding. Restoration proves typed rows plus protected evidence, not functional Auth disaster reconstruction."
+  },
+  "engineVerification": {
+    "control": {
+      "control": {
+        "id": true,
+        "app": "marquee",
+        "mode": "open",
+        "epoch": 0,
+        "abort_at": null,
+        "deadline": null,
+        "paused_at": null,
+        "dual_writes": true,
+        "native_enabled": false,
+        "enrollment_enabled": false
+      },
+      "admission_open": true,
+      "unresolved_leases": "0",
+      "registered": "42",
+      "public_bindings": "0",
+      "journal_rows": "0"
+    },
+    "checks": [
+      {
+        "name": "acquire_lease",
+        "reviewed": true,
+        "bodyMatches": true,
+        "file": "safeguards-extension.sql",
+        "searchPath": [
+          "search_path=\"\""
+        ],
+        "securityDefiner": false
+      },
+      {
+        "name": "admit",
+        "reviewed": true,
+        "bodyMatches": true,
+        "file": "runtime-admission-20261001.sql",
+        "searchPath": [
+          "search_path=\"\""
+        ],
+        "securityDefiner": false
+      },
+      {
+        "name": "admit_bound",
+        "reviewed": true,
+        "bodyMatches": true,
+        "file": "runtime-binding-20261001.sql",
+        "searchPath": [
+          "search_path=\"\""
+        ],
+        "securityDefiner": false
+      },
+      {
+        "name": "advance_sequences",
+        "reviewed": true,
+        "bodyMatches": true,
+        "file": "runtime-admission-20261001.sql",
+        "searchPath": [
+          "search_path=\"\""
+        ],
+        "securityDefiner": false
+      },
+      {
+        "name": "apply",
+        "reviewed": true,
+        "bodyMatches": true,
+        "file": "safeguards-hardening-20261001.sql",
+        "searchPath": [
+          "search_path=\"\""
+        ],
+        "securityDefiner": false
+      },
+      {
+        "name": "drained",
+        "reviewed": true,
+        "bodyMatches": true,
+        "file": "safeguards-extension.sql",
+        "searchPath": [
+          "search_path=\"\""
+        ],
+        "securityDefiner": false
+      },
+      {
+        "name": "full_key_delta",
+        "reviewed": true,
+        "bodyMatches": true,
+        "file": "safeguards-hardening-20261001.sql",
+        "searchPath": [
+          "search_path=\"\""
+        ],
+        "securityDefiner": false
+      },
+      {
+        "name": "gate",
+        "reviewed": true,
+        "bodyMatches": true,
+        "file": "runtime-admission-20261001.sql",
+        "searchPath": [
+          "search_path=\"\""
+        ],
+        "securityDefiner": true
+      },
+      {
+        "name": "pause",
+        "reviewed": true,
+        "bodyMatches": true,
+        "file": "safeguards.sql",
+        "searchPath": [
+          "search_path=\"\""
+        ],
+        "securityDefiner": false
+      },
+      {
+        "name": "record",
+        "reviewed": true,
+        "bodyMatches": true,
+        "file": "safeguards.sql",
+        "searchPath": [
+          "search_path=\"\""
+        ],
+        "securityDefiner": true
+      },
+      {
+        "name": "register",
+        "reviewed": true,
+        "bodyMatches": true,
+        "file": "safeguards.sql",
+        "searchPath": [
+          "search_path=\"\""
+        ],
+        "securityDefiner": false
+      },
+      {
+        "name": "release_lease",
+        "reviewed": true,
+        "bodyMatches": true,
+        "file": "safeguards-extension.sql",
+        "searchPath": [
+          "search_path=\"\""
+        ],
+        "securityDefiner": false
+      },
+      {
+        "name": "require_binding",
+        "reviewed": true,
+        "bodyMatches": true,
+        "file": "runtime-binding-20261001.sql",
+        "searchPath": [
+          "search_path=\"\""
+        ],
+        "securityDefiner": false
+      },
+      {
+        "name": "resume",
+        "reviewed": true,
+        "bodyMatches": true,
+        "file": "safeguards.sql",
+        "searchPath": [
+          "search_path=\"\""
+        ],
+        "securityDefiner": false
+      },
+      {
+        "name": "seal_journal",
+        "reviewed": true,
+        "bodyMatches": true,
+        "file": "safeguards-extension.sql",
+        "searchPath": [
+          "search_path=\"\""
+        ],
+        "securityDefiner": false
+      },
+      {
+        "name": "seal_rollback_transfer",
+        "reviewed": true,
+        "bodyMatches": true,
+        "file": "safeguards-hardening-20261001.sql",
+        "searchPath": [
+          "search_path=\"\""
+        ],
+        "securityDefiner": false
+      }
+    ]
+  },
+  "tests": {
+    "specFilesPassed": [
+      "helpers/migrationAdmission.spec.tsx",
+      "helpers/migrationWriter.spec.tsx",
+      "helpers/marqueeRollbackInvocation.spec.tsx",
+      "helpers/marqueeTraktStorePolicy.spec.tsx"
+    ],
+    "newAdmissionSpecs": 7,
+    "fullTypecheck": "clean",
+    "actualPrivateAdmissionSql": {
+      "acquireAdmitReleasePassed": true,
+      "allTestWritesRolledBack": true,
+      "publicEffects": false
+    },
+    "limitations": "Specs use mocked transport. No new published owner/release acceptance or production rollback is claimed.",
+    "actualUnpublishedAnonymousAcceptance": {
+      "session": 401,
+      "watchHistory": 401,
+      "trackingWrite": 401,
+      "durableLeasesReleased": true,
+      "noOwnerAcceptance": true
+    }
+  },
+  "callerPreflight": {
+    "githubNonterminalStatuses": {
+      "in_progress": 0,
+      "queued": 0,
+      "waiting": 0,
+      "requested": 0,
+      "pending": 0
+    },
+    "githubPagesEach": 1,
+    "n8nMigratedWorkflowsInactive": true,
+    "n8nWaitingExecutions": 0,
+    "nativeImportRunsNonterminal": 0,
+    "nativeTraktRunsNonterminal": 0,
+    "nativeCrunchyrollRunsNonterminal": 0,
+    "traktOutbox": {
+      "removed": 5,
+      "other": 0
+    },
+    "logs": {
+      "from": "2026-10-01T23:38:14Z",
+      "to": "2026-10-02T00:10:12.251Z",
+      "pages": 2,
+      "events": 11,
+      "windowExhausted": true,
+      "unmatchedStartedRequests": 0,
+      "errors": 0,
+      "importOrTaskLines": 0
+    },
+    "actualFrozenDrainProven": false,
+    "unknownManualClientEffectsAbsenceProven": false
+  },
+  "retainedRelease": {
+    "deployment": "dpl_8zUAb5prgTaNtgJSRhmEqEKk5AKG",
+    "state": "READY",
+    "commit": "142d22cc1d6edb1f107c9690623e2143be865809",
+    "productionAlias": "marquee-beige.vercel.app",
+    "freshFinalWindowRecheckRequired": true
+  },
+  "credentials": {
+    "marqueeOwnerBrowser": "Current published Chrome form reports Password is required; actual unpublished preview also signed out. Existing owner1 account matched without exporting user data. Secure user sign-in remains required.",
+    "flootBrowser": "Existing Dave Google session completed Floot sign-in; resource form submitted and connector independently verified.",
+    "rollbackResourceRequest": "9ea6d808-83c7-473c-b4b7-02b33024ee6a",
+    "rollbackResourceEnv": "MARQUEE_ROLLBACK_AUTHORIZED_PACKAGE",
+    "requiredNonsecretPackageValue": "marquee:rollback:20261001",
+    "duplicateApprovalRequested": false,
+    "rollbackResourceConnected": true
+  },
+  "preservation": {
+    "completedMQ13RunnerRerun": false,
+    "completedGD22RunnerRerun": false,
+    "privateDeltaEvidenceModified": false,
+    "olderBackupOrArchiveModified": false,
+    "gameDeckImplementationChanged": false,
+    "serviceRetirement": false,
+    "credentialRevocation": false,
+    "nativeEASBuild": false
+  },
+  "next": "Complete existing-owner Marquee sign-in in the open published Chrome tab. Use the now-connected Floot editor for exact API acceptance without exporting cookies/tokens. Publish and accept the pinned dual/admission maintenance release with mobile:false before timer; then execute continuation runbook and required frozen binding/delta/release gates. Marquee first, GameDeck independently afterward."
+}

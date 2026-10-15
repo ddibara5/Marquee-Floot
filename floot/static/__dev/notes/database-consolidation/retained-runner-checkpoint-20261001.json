@@ -1,0 +1,102 @@
+{
+  "app": "Marquee",
+  "asOf": "2026-10-01T20:56:48.510Z",
+  "status": "PREPARATION_WITH_FINAL_WINDOW_GATES",
+  "codeCheckpoint": "13291d53-f3a3-4634-9fbd-f4406cc193a6",
+  "completePrivateRunner": {
+    "passed": true,
+    "id": "0fce3393-6082-421f-a235-9b40907a45f6",
+    "checks": 13,
+    "nativeShapes": 42,
+    "sourceShapes": 21,
+    "sourceRunId": "2bc1a280-2d33-476b-9516-95cd031739eb",
+    "sameImplementationAsProductionFactory": true,
+    "actualSeparateNativeAndSourceConnections": true,
+    "normalizer": "actual SQL against private source tables",
+    "providerEffects": false,
+    "fullProductionRollbackProven": false,
+    "capabilityReplayStatus": 403,
+    "verified": [
+      "all-run snapshot preflight before mutations",
+      "chronological commit and actual native marker transaction failure",
+      "durable receipt retry acknowledges committed first run and completes second",
+      "zero-mutation completed-batch rerun",
+      "native acknowledgement digest markers and retained journal",
+      "two exact historical provider dates",
+      "40 unaffected native shapes including Auth/manual values exact",
+      "gate/journal restoration",
+      "no automatic resume",
+      "open native window rejected",
+      "public source/native values unchanged except ordinary active-session last_accessed and expired-session bookkeeping"
+    ],
+    "publicSessionComparison": {
+      "activeOnly": true,
+      "excludedFields": [
+        "last_accessed"
+      ]
+    }
+  },
+  "invocation": {
+    "endpoint": "migration-retained-store-rollback_POST",
+    "oneUseCapability": true,
+    "fixedResources": true,
+    "callerSqlSchemasRejected": true,
+    "authorizationEnvironment": "MARQUEE_ROLLBACK_AUTHORIZED_PACKAGE",
+    "authorizationUnset": true,
+    "defaultDisabled": true,
+    "productionInvoked": false,
+    "backupReceipt": "operator attestation, not independently verified proof",
+    "actualPreviewGuards": {
+      "anonymousStatus": 401,
+      "disabledStatus": 503,
+      "disabledError": "ROLLBACK_INVOCATION_DISABLED",
+      "factoryInvoked": false
+    }
+  },
+  "tests": {
+    "specFiles": [
+      "marqueeRollbackInvocation.spec.tsx",
+      "marqueeRemoteRecovery.spec.tsx",
+      "completeTraktSnapshot.spec.tsx",
+      "marqueeTraktStorePolicy.spec.tsx"
+    ],
+    "passed": true,
+    "fullTypecheck": "clean"
+  },
+  "ownerPreviewAcceptance": {
+    "passed": true,
+    "asOf": "2026-10-01T20:02:55.656Z",
+    "exactNativeOwner": 1,
+    "sessionStatus": 200,
+    "historyEvents": 60,
+    "exactOnceRecentEvents": [
+      2603,
+      2602
+    ],
+    "anonymousHistoryStatus": 401,
+    "publishedAuthenticatedResponse": false,
+    "renderingVerified": false
+  },
+  "corrections": [
+    "Registry paths now use explicit pg_namespace/pg_class qualification, not search_path-sensitive regclass::text",
+    "Two initial full runner attempts passed12 recovery checks but failed final live sessions hash; normal last_accessed bookkeeping isolated in comparison",
+    "Initial VM fixture DDL rejected by tool due destructive keywords in function bodies; direct execute_sql used for authorized private installation",
+    "Initial FK attachment used unqualified regclass paths and failed on existing constraints; no public constraint changed; corrected private targets installed"
+  ],
+  "production": {
+    "published": false,
+    "cutover": false,
+    "publicMigrationBindingsInstalled": 0,
+    "servicesRetired": false,
+    "credentialsRevoked": false
+  },
+  "monitoring": {
+    "october2": "continuing monitoring, not a hard date gate"
+  },
+  "remaining": [
+    "Fresh final-window backups/restores/deltas and frozen native/external effects drain",
+    "Exact production binding installation and app release acceptance, including authenticated published client check",
+    "Separate production authorization; Marquee first",
+    "Full production rollback remains unproven; do not infer it from private proof"
+  ]
+}

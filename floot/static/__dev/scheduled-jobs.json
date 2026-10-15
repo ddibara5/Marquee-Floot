@@ -1,0 +1,22 @@
+{
+  "syncTraktDaily": {
+    "enabled": true,
+    "schedule": "17 11 * * *",
+    "timezone": "Etc/UTC"
+  },
+  "refreshTmdbDaily": {
+    "enabled": true,
+    "schedule": "30 6 * * *",
+    "timezone": "America/New_York"
+  },
+  "monitorSyncHealth": {
+    "enabled": true,
+    "schedule": "45 * * * *",
+    "timezone": "Etc/UTC"
+  },
+  "syncCrunchyrollDaily": {
+    "enabled": true,
+    "schedule": "0 9 * * *",
+    "timezone": "Etc/UTC"
+  }
+}

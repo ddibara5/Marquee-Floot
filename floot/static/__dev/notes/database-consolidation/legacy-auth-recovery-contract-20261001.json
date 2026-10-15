@@ -1,0 +1,28 @@
+{
+  "status": "BLOCKED_ON_ISOLATED_AUTH_RUNTIME",
+  "sourceProject": "eiskobjlvxzwvucgpenk",
+  "expectedOwner": "c566e7e0-880a-430d-85df-c40484144a91",
+  "productionAuthUnchanged": true,
+  "existingBranches": 0,
+  "availableVmAuthPostgresRuntime": false,
+  "environmentDecision": "Use an existing compatible isolated runtime, or separately approve creation/cost of a test environment; no branch created",
+  "backupSource": "Existing encrypted verified preparation package referenced in each implementation-checkpoint-20260930.json; never restart or overwrite it",
+  "restoreScope": "App owner Auth associations and protected configuration/signing-key evidence; never replace the shared production project",
+  "acceptance": [
+    "Start a compatible Auth service with isolated database and local/stub SMTP/provider effects",
+    "Decrypt/restore exact owner users/identities/session/refresh/MFA/flow evidence server-side; validate actual service migrations and associations",
+    "Verify protected signing/issuer/audience/redirect/provider configuration recovery; new branch keys alone do not prove original token continuity",
+    "Exercise actual owner authentication, valid/restored session, expiry, refresh rotation/reuse rejection, logout/revocation and non-owner rejection",
+    "Verify retained native Auth remains separate and domain routing never substitutes native integer users into shared GoTrue",
+    "Run composed rollback using the resulting durable service receipt; reject verification while any service proof is missing"
+  ],
+  "excludedProof": [
+    "Legacy production health HTTP200",
+    "Exact Auth JSON rows without running service",
+    "Native bcrypt/cookie parity",
+    "Fresh test account or unrelated new signing keys"
+  ],
+  "saveEvidence": "Sanitized receipts only; no passwords, private signing keys, raw access/refresh tokens or provider credentials in static files/chat",
+  "fullProductionRollbackProven": false,
+  "app": "Marquee"
+}

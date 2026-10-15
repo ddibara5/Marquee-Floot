@@ -1,0 +1,25 @@
+{
+  "app": "Marquee",
+  "asOf": "2026-10-01T17:42:37.358Z",
+  "applied": false,
+  "readOnlyConfigReceipt": "a42ac73a-63b6-4b30-bf51-f5ebcc381ba6",
+  "servedClient": {
+    "clientProjectUrlVerified": true,
+    "projectRef": "eiskobjlvxzwvucgpenk",
+    "bundleSha256": "62929585d96e78db14d4c27d079b5acd22885429a602101ee9c2b2deef7d4df5",
+    "serverEnvironmentPlaintext": "unverified/opaque",
+    "callbackConfigChanged": false
+  },
+  "sourceAuthSiteUrl": "https://gamedeck-kappa.vercel.app/",
+  "currentLegacyAllowlist": [
+    "https://gamedeck-kappa.vercel.app/**",
+    "https://gamedeck-git-*-dave-0d82.vercel.app/**"
+  ],
+  "preparedAuthPatch": null,
+  "marqueeCallbackDisposition": "Marquee uses retained native Auth; no new legacy Auth allowlist entry proposed",
+  "remaining": [
+    "Sensitive server deployment environment values are opaque/unverified",
+    "Validate actual GameDeck owner OTP/callback/native enrollment return behavior before any authorized publication; do not send test email during preparation"
+  ],
+  "configurationChanged": false
+}

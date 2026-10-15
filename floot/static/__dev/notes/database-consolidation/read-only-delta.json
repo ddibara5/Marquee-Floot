@@ -1,0 +1,199 @@
+{
+  "at": "2026-09-30T20:53:07.948Z",
+  "app": "marquee",
+  "schema": "prep_marquee_20260930",
+  "read_only": true,
+  "snapshot_atomic": false,
+  "production_ready": false,
+  "results": [
+    {
+      "table": "marquee_episodes",
+      "archived": 4026,
+      "live": 4026,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "682ec78400b36a1870f6d964142bcdff"
+    },
+    {
+      "table": "marquee_franchise_overrides",
+      "archived": 0,
+      "live": 0,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "table": "marquee_ingest_raw",
+      "archived": 11146,
+      "live": 11146,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "39392fb1f961d91b81505cb9c065fcff"
+    },
+    {
+      "table": "marquee_mapping_review",
+      "archived": 2874,
+      "live": 2874,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "884df0ec84287af50f760f5fbd556ef5"
+    },
+    {
+      "table": "marquee_movies",
+      "archived": 70,
+      "live": 70,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "0934abf3d2262501784a42179f423a94"
+    },
+    {
+      "table": "marquee_ratings",
+      "archived": 66,
+      "live": 66,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "e38bf2558082a478906ea11a373f4dbc"
+    },
+    {
+      "table": "marquee_season_release_schedules",
+      "archived": 1,
+      "live": 1,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "40b211575a69c30c7d8972621eb1a704"
+    },
+    {
+      "table": "marquee_seasons",
+      "archived": 367,
+      "live": 367,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "9360773c2bda9bffa8912cce6fc02a63"
+    },
+    {
+      "table": "marquee_shows",
+      "archived": 203,
+      "live": 203,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "0b8be7402dbad72eb2af25deb87e9d7d"
+    },
+    {
+      "table": "marquee_source_mappings",
+      "archived": 4640,
+      "live": 4640,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "abb49b47ac94eebf34419e49e28c7b7d"
+    },
+    {
+      "table": "marquee_statuses",
+      "archived": 78,
+      "live": 78,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "c9444f5d841ecd7dba90fef31fdd9622"
+    },
+    {
+      "table": "marquee_sync_runs",
+      "archived": 37,
+      "live": 37,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "1fcec544808227cf945194404f151697"
+    },
+    {
+      "table": "marquee_sync_state",
+      "archived": 3,
+      "live": 3,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "71d6a0a8dc13ab1827101ce2088a1baa"
+    },
+    {
+      "table": "marquee_titles",
+      "archived": 273,
+      "live": 273,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "4a986ccefc3a4308570f5dcc54384f06"
+    },
+    {
+      "table": "marquee_undated_completion_evidence",
+      "archived": 3995,
+      "live": 3995,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "8488d0d01bdc4d44fb30910a195d2375"
+    },
+    {
+      "table": "marquee_undated_completions",
+      "archived": 1667,
+      "live": 1667,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "aa3d79aede3e313cfd8022374273a3ad"
+    },
+    {
+      "table": "marquee_verified_season_totals",
+      "archived": 80,
+      "live": 80,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "11481b37e4a7493d0399d606eb891412"
+    },
+    {
+      "table": "marquee_watch_date_decisions",
+      "archived": 3,
+      "live": 3,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "80644787b0cf4874436c270868d97d57"
+    },
+    {
+      "table": "marquee_watch_history",
+      "archived": 2504,
+      "live": 2504,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "0b80e41826c0a081dd7f90f0cdc77009"
+    },
+    {
+      "table": "marquee_watch_history_sources",
+      "archived": 2504,
+      "live": 2504,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "5614caa5db5e0f7fb0c17ecec11af219"
+    },
+    {
+      "table": "marquee_watchlist",
+      "archived": 13,
+      "live": 13,
+      "insert": 0,
+      "update": 0,
+      "delete": 0,
+      "source_hash": "86f0b090d2424fd049d52f7f896ab01a"
+    }
+  ]
+}

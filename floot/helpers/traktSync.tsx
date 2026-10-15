@@ -1,0 +1,684 @@
+import {createTraktTokenProvider} from "./traktTokenProvider";
+import {marqueeWriter} from "./marqueeWriter";
+import { ingestionDb as db, inShadowTransaction } from "./marqueeIngestionScope";
+import { discoverTraktTitle } from "./discoverTraktTitle";
+const maybeDiscoverTraktTitle = (...args: Parameters<typeof discoverTraktTitle>) => inShadowTransaction() ? Promise.resolve(null) : discoverTraktTitle(...args);
+import { syncTraktPersonalState } from "./traktPersonalSync";
+import { syncPendingManualTraktEvents } from "./traktHistoryWriteback";
+import { recalculateTitleProgress } from "./recalculateTitleProgress";
+import { decryptSecret, encryptSecret } from "./secretCrypto";
+import {
+  fetchTraktHistory,
+  refreshTraktToken,
+  traktTokenExpiry,
+  type TraktHistoryItem,
+} from "./traktApi";
+
+export type TraktSyncResult = {
+  runId: number;
+  startAt: Date;
+  fetched: number;
+  inserted: number;
+  updated: number;
+  skipped: number;
+  unmapped: number;
+  lastHistoryAt: Date | null;
+  watchlistCount: number;
+  ratingsCount: number;
+};
+
+const REFRESH_MARGIN_MS = 24 * 60 * 60 * 1000;
+const HISTORY_OVERLAP_MS = 48 * 60 * 60 * 1000;
+const isExcludedTitle = (title?: string) =>
+  ["one piece", "fairy tail"].includes(title?.trim().toLowerCase() ?? "");
+
+const validDate = (value: string | undefined) => {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date : null;
+};
+
+const tokenProvider=createTraktTokenProvider(db);
+export const getTraktAccessToken=(userId:number)=>marqueeWriter.work("provider:trakt-token-refresh",()=>tokenProvider(userId));
+
+const upsertPending = async (
+  userId: number,
+  sourceEventKey: string,
+  mediaType: "show" | "movie" | "episode",
+  sourceTitle: string | undefined,
+  reason: string,
+  item: TraktHistoryItem
+) => {
+  const payload = JSON.parse(JSON.stringify(item));
+
+  await db
+    .insertInto("marqueeTraktPending")
+    .values({
+      userId,
+      sourceEventKey,
+      mediaType,
+      sourceTitle: sourceTitle ?? null,
+      reason,
+      payload,
+      lastSeenAt: new Date(),
+    })
+    .onConflict((oc) =>
+      oc.column("sourceEventKey").doUpdateSet({
+        reason,
+        sourceTitle: sourceTitle ?? null,
+        payload,
+        lastSeenAt: new Date(),
+      })
+    )
+    .execute();
+};
+
+const clearPending = async (sourceEventKey: string) => {
+  await db
+    .deleteFrom("marqueeTraktPending")
+    .where("sourceEventKey", "=", sourceEventKey)
+    .execute();
+};
+
+const resolveShowTitle = async (item: TraktHistoryItem) => {
+  const traktId = item.show?.ids.trakt;
+  const tmdbId = item.show?.ids.tmdb;
+
+  if (traktId) {
+    const known = await db
+      .selectFrom("marqueeTraktMappings")
+      .select(["titleId", "tmdbId"])
+      .where("entityType", "=", "show")
+      .where("traktId", "=", String(traktId))
+      .executeTakeFirst();
+
+    if (known?.titleId) {
+      if (tmdbId) {
+        if (known.tmdbId && known.tmdbId !== tmdbId) return null;
+        const mapped = await db.selectFrom("marqueeTmdbMappings")
+          .select(["tmdbId"]).where("titleId", "=", known.titleId)
+          .executeTakeFirst();
+        if (mapped && mapped.tmdbId !== tmdbId) return null;
+      }
+      return known.titleId;
+    }
+  }
+
+  if (!tmdbId) return maybeDiscoverTraktTitle(item, "show");
+
+  const tmdb = await db
+    .selectFrom("marqueeTmdbMappings")
+    .select(["titleId"])
+    .where("mediaType", "=", "tv")
+    .where("tmdbId", "=", tmdbId)
+    .executeTakeFirst();
+
+  if (!tmdb) return maybeDiscoverTraktTitle(item, "show");
+
+  if (traktId) {
+    await db
+      .insertInto("marqueeTraktMappings")
+      .values({
+        entityType: "show",
+        traktId,
+        titleId: tmdb.titleId,
+        episodeId: null,
+        tmdbId,
+        updatedAt: new Date(),
+      })
+      .onConflict((oc) =>
+        oc.columns(["entityType", "traktId"]).doNothing()
+      )
+      .execute();
+  }
+
+  if (traktId) {
+    const final = await db.selectFrom("marqueeTraktMappings")
+      .select(["titleId"]).where("entityType", "=", "show")
+      .where("traktId", "=", String(traktId)).executeTakeFirst();
+    if (final?.titleId !== tmdb.titleId) return null;
+  }
+  return tmdb.titleId;
+};
+
+const resolveMovieTitle = async (item: TraktHistoryItem) => {
+  const traktId = item.movie?.ids.trakt;
+  const tmdbId = item.movie?.ids.tmdb;
+
+  if (traktId) {
+    const known = await db
+      .selectFrom("marqueeTraktMappings")
+      .select(["titleId", "tmdbId"])
+      .where("entityType", "=", "movie")
+      .where("traktId", "=", String(traktId))
+      .executeTakeFirst();
+
+    if (known?.titleId) {
+      if (tmdbId) {
+        if (known.tmdbId && known.tmdbId !== tmdbId) return null;
+        const mapped = await db.selectFrom("marqueeTmdbMappings")
+          .select(["tmdbId"]).where("titleId", "=", known.titleId)
+          .executeTakeFirst();
+        if (mapped && mapped.tmdbId !== tmdbId) return null;
+      }
+      return known.titleId;
+    }
+  }
+
+  if (!tmdbId) return maybeDiscoverTraktTitle(item, "movie");
+
+  const tmdb = await db
+    .selectFrom("marqueeTmdbMappings")
+    .select(["titleId"])
+    .where("mediaType", "=", "movie")
+    .where("tmdbId", "=", tmdbId)
+    .executeTakeFirst();
+
+  if (!tmdb) return maybeDiscoverTraktTitle(item, "movie");
+
+  if (traktId) {
+    await db
+      .insertInto("marqueeTraktMappings")
+      .values({
+        entityType: "movie",
+        traktId,
+        titleId: tmdb.titleId,
+        episodeId: null,
+        tmdbId,
+        updatedAt: new Date(),
+      })
+      .onConflict((oc) =>
+        oc.columns(["entityType", "traktId"]).doNothing()
+      )
+      .execute();
+  }
+
+  if (traktId) {
+    const final = await db.selectFrom("marqueeTraktMappings")
+      .select(["titleId"]).where("entityType", "=", "movie")
+      .where("traktId", "=", String(traktId)).executeTakeFirst();
+    if (final?.titleId !== tmdb.titleId) return null;
+  }
+  return tmdb.titleId;
+};
+
+const resolveEpisode = async (item: TraktHistoryItem) => {
+  const traktId = item.episode?.ids.trakt;
+  const tmdbId = item.episode?.ids.tmdb;
+  const titleId = await resolveShowTitle(item);
+  if (!titleId) return null;
+
+  if (traktId) {
+    const known = await db
+      .selectFrom("marqueeTraktMappings")
+      .select(["episodeId"])
+      .where("entityType", "=", "episode")
+      .where("traktId", "=", String(traktId))
+      .executeTakeFirst();
+
+    if (known?.episodeId) {
+      const row = await db
+        .selectFrom("marqueeEpisodes")
+        .innerJoin(
+          "marqueeSeasons",
+          "marqueeSeasons.id",
+          "marqueeEpisodes.seasonId"
+        )
+        .select([
+          "marqueeEpisodes.id as episodeId",
+          "marqueeSeasons.titleId as titleId",
+        ])
+        .where("marqueeEpisodes.id", "=", known.episodeId)
+        .executeTakeFirst();
+
+      if (row) {
+        if (row.titleId !== titleId) return null;
+        if (tmdbId) {
+          const episode = await db.selectFrom("marqueeEpisodes")
+            .select(["tmdbId"]).where("id", "=", row.episodeId)
+            .executeTakeFirst();
+          if (episode?.tmdbId && episode.tmdbId !== tmdbId) return null;
+        }
+        return row;
+      }
+    }
+  }
+
+  let row:
+    | {
+        episodeId: number;
+        titleId: number;
+      }
+    | undefined;
+
+  if (tmdbId) {
+    row = await db
+      .selectFrom("marqueeEpisodes")
+      .innerJoin(
+        "marqueeSeasons",
+        "marqueeSeasons.id",
+        "marqueeEpisodes.seasonId"
+      )
+      .select([
+        "marqueeEpisodes.id as episodeId",
+        "marqueeSeasons.titleId as titleId",
+      ])
+      .where("marqueeEpisodes.tmdbId", "=", tmdbId)
+      .where("marqueeSeasons.titleId", "=", titleId)
+      .executeTakeFirst();
+  }
+
+  if (!row) {
+    const seasonNumber = item.episode?.season;
+    const episodeNumber = item.episode?.number;
+
+    if (
+      Number.isInteger(seasonNumber) &&
+      Number.isInteger(episodeNumber)
+    ) {
+      row = await db
+        .selectFrom("marqueeEpisodes")
+        .innerJoin(
+          "marqueeSeasons",
+          "marqueeSeasons.id",
+          "marqueeEpisodes.seasonId"
+        )
+        .select([
+          "marqueeEpisodes.id as episodeId",
+          "marqueeSeasons.titleId as titleId",
+        ])
+        .where("marqueeSeasons.titleId", "=", titleId)
+        .where("marqueeSeasons.seasonNumber", "=", seasonNumber as number)
+        .where("marqueeEpisodes.episodeNumber", "=", episodeNumber as number)
+        .executeTakeFirst();
+    }
+  }
+
+  if (row && tmdbId) {
+    const actual = await db.selectFrom("marqueeEpisodes")
+      .select(["tmdbId"]).where("id", "=", row.episodeId)
+      .executeTakeFirst();
+    if (actual?.tmdbId && actual.tmdbId !== tmdbId) return null;
+  }
+
+  if (row && traktId) {
+    await db
+      .insertInto("marqueeTraktMappings")
+      .values({
+        entityType: "episode",
+        traktId,
+        titleId: null,
+        episodeId: row.episodeId,
+        tmdbId: tmdbId ?? null,
+        updatedAt: new Date(),
+      })
+      .onConflict((oc) => oc.columns(["entityType", "traktId"]).doNothing())
+      .execute();
+    const final = await db.selectFrom("marqueeTraktMappings")
+      .select(["episodeId", "tmdbId"])
+      .where("entityType", "=", "episode")
+      .where("traktId", "=", String(traktId)).executeTakeFirst();
+    if (final?.episodeId !== row.episodeId ||
+        (final.tmdbId && tmdbId && final.tmdbId !== tmdbId)) return null;
+  }
+
+  return row ?? null;
+};
+
+const latestExistingHistory = async (userId: number) => {
+  const [episodeEvent, movieEvent] = await Promise.all([
+    db
+      .selectFrom("marqueeWatchEvents")
+      .select(["watchedAt"])
+      .where("userId", "=", userId)
+      .orderBy("watchedAt", "desc")
+      .executeTakeFirst(),
+    db
+      .selectFrom("marqueeTitleWatchEvents")
+      .select(["watchedAt"])
+      .where("userId", "=", userId)
+      .orderBy("watchedAt", "desc")
+      .executeTakeFirst(),
+  ]);
+
+  const dates = [episodeEvent?.watchedAt, movieEvent?.watchedAt].filter(
+    (value): value is Date => Boolean(value)
+  );
+  if (!dates.length) return null;
+  return dates.reduce((latest, value) => value > latest ? value : latest);
+};
+
+const recalculateShowProgress = async (
+  userId: number,
+  titleIds: Set<number>
+) => {
+  for (const titleId of titleIds) {
+    await recalculateTitleProgress(db, userId, titleId);
+  }
+};
+
+export const syncTraktHistory = async (
+  userId: number,
+  supplied?: { episodes: TraktHistoryItem[]; movies: TraktHistoryItem[]; personal: Parameters<typeof syncTraktPersonalState>[2] }
+): Promise<TraktSyncResult> => {
+  await db
+    .updateTable("marqueeTraktSyncRuns")
+    .set({
+      status: "failed",
+      finishedAt: new Date(),
+      errorSummary: "Stale run cleared before new sync",
+    })
+    .where("userId", "=", userId)
+    .where("status", "=", "running")
+    .where("startedAt", "<", new Date(Date.now() - 15 * 60 * 1000))
+    .execute();
+
+  let runId: number | null = null;
+
+  try {
+    const run = await db
+      .insertInto("marqueeTraktSyncRuns")
+      .values({ userId })
+      .returning(["id"])
+      .executeTakeFirstOrThrow();
+    runId = run.id;
+
+    const accessToken = supplied ? "" : await getTraktAccessToken(userId);
+    if (!supplied) await syncPendingManualTraktEvents(userId, accessToken);
+    const state = await db
+      .selectFrom("marqueeTraktSyncState")
+      .selectAll()
+      .where("userId", "=", userId)
+      .executeTakeFirst();
+    const latestExisting = await latestExistingHistory(userId);
+    const baseline =
+      state?.lastHistoryAt ??
+      latestExisting ??
+      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const startAt = new Date(baseline.getTime() - HISTORY_OVERLAP_MS);
+
+    const [episodeHistory, movieHistory] = supplied ? [supplied.episodes, supplied.movies] : await Promise.all([
+      fetchTraktHistory(accessToken, "episodes", startAt),
+      fetchTraktHistory(accessToken, "movies", startAt),
+    ]);
+
+    let inserted = 0;
+    let updated = 0;
+    let skipped = 0;
+    let unmapped = 0;
+    let maxHistoryAt = state?.lastHistoryAt ?? null;
+    const touchedShows = new Set<number>();
+
+    for (const item of episodeHistory) {
+      const key = "trakt:episode:" + item.id;
+      const watchedAt = validDate(item.watched_at);
+      const manual = item.id ? await db.selectFrom("marqueeManualTraktOutbox")
+        .select("sourceEventKey").where("userId", "=", userId)
+        .where("traktHistoryId", "=", String(item.id)).executeTakeFirst() : null;
+      if (manual) {
+        skipped += 1;
+        if (watchedAt && (!maxHistoryAt || watchedAt > maxHistoryAt)) maxHistoryAt = watchedAt;
+        continue;
+      }
+
+      if (isExcludedTitle(item.show?.title)) {
+        skipped += 1;
+        await clearPending(key);
+        continue;
+      }
+
+      if (!item.id || !watchedAt || !item.episode || !item.show) {
+        await upsertPending(
+          userId,
+          key,
+          "episode",
+          item.show?.title,
+          "Invalid Trakt episode-history payload",
+          item
+        );
+        unmapped += 1;
+        continue;
+      }
+
+      const mapped = await resolveEpisode(item);
+      if (!mapped) {
+        await upsertPending(
+          userId,
+          key,
+          "episode",
+          item.show.title,
+          "Episode is outside the enriched pilot catalog",
+          item
+        );
+        unmapped += 1;
+        if (!maxHistoryAt || watchedAt > maxHistoryAt) maxHistoryAt = watchedAt;
+        continue;
+      }
+
+      const existing = await db
+        .selectFrom("marqueeWatchEvents")
+        .select(["id", "watchedAt"])
+        .where("sourceEventKey", "=", key)
+        .executeTakeFirst();
+
+      if (!existing) {
+        await db
+          .insertInto("marqueeWatchEvents")
+          .values({
+            userId,
+            episodeId: mapped.episodeId,
+            sourceEventKey: key,
+            watchedAt,
+            source: "trakt",
+          })
+          .execute();
+        inserted += 1;
+      } else if (existing.watchedAt.getTime() !== watchedAt.getTime()) {
+        await db
+          .updateTable("marqueeWatchEvents")
+          .set({
+            episodeId: mapped.episodeId,
+            watchedAt,
+            source: "trakt",
+          })
+          .where("id", "=", existing.id)
+          .execute();
+        updated += 1;
+      } else {
+        skipped += 1;
+      }
+
+      touchedShows.add(mapped.titleId);
+      await clearPending(key);
+      if (!maxHistoryAt || watchedAt > maxHistoryAt) maxHistoryAt = watchedAt;
+    }
+
+    for (const item of movieHistory) {
+      const key = "trakt:movie:" + item.id;
+      const watchedAt = validDate(item.watched_at);
+      const manual = item.id ? await db.selectFrom("marqueeManualTraktOutbox")
+        .select("sourceEventKey").where("userId", "=", userId)
+        .where("traktHistoryId", "=", String(item.id)).executeTakeFirst() : null;
+      if (manual) {
+        skipped += 1;
+        if (watchedAt && (!maxHistoryAt || watchedAt > maxHistoryAt)) maxHistoryAt = watchedAt;
+        continue;
+      }
+
+      if (isExcludedTitle(item.movie?.title)) {
+        skipped += 1;
+        await clearPending(key);
+        continue;
+      }
+
+      if (!item.id || !watchedAt || !item.movie) {
+        await upsertPending(
+          userId,
+          key,
+          "movie",
+          item.movie?.title,
+          "Invalid Trakt movie-history payload",
+          item
+        );
+        unmapped += 1;
+        continue;
+      }
+
+      const titleId = await resolveMovieTitle(item);
+      if (!titleId) {
+        await upsertPending(
+          userId,
+          key,
+          "movie",
+          item.movie.title,
+          "Movie is outside the enriched pilot catalog",
+          item
+        );
+        unmapped += 1;
+        if (!maxHistoryAt || watchedAt > maxHistoryAt) maxHistoryAt = watchedAt;
+        continue;
+      }
+
+      const existing = await db
+        .selectFrom("marqueeTitleWatchEvents")
+        .select(["id", "watchedAt"])
+        .where("sourceEventKey", "=", key)
+        .executeTakeFirst();
+
+      if (!existing) {
+        await db
+          .insertInto("marqueeTitleWatchEvents")
+          .values({
+            userId,
+            titleId,
+            sourceEventKey: key,
+            watchedAt,
+            source: "trakt",
+          })
+          .execute();
+        inserted += 1;
+      } else if (existing.watchedAt.getTime() !== watchedAt.getTime()) {
+        await db
+          .updateTable("marqueeTitleWatchEvents")
+          .set({ titleId, watchedAt, source: "trakt" })
+          .where("id", "=", existing.id)
+          .execute();
+        updated += 1;
+      } else {
+        skipped += 1;
+      }
+
+      const title = await db
+        .selectFrom("marqueeTitles")
+        .select(["lastWatchedAt"])
+        .where("id", "=", titleId)
+        .executeTakeFirst();
+
+      if (!title?.lastWatchedAt || watchedAt > title.lastWatchedAt) {
+        await db
+          .updateTable("marqueeTitles")
+          .set({ lastWatchedAt: watchedAt, updatedAt: new Date() })
+          .where("id", "=", titleId)
+          .execute();
+      }
+
+      await clearPending(key);
+      if (!maxHistoryAt || watchedAt > maxHistoryAt) maxHistoryAt = watchedAt;
+    }
+
+    await recalculateShowProgress(userId, touchedShows);
+
+    const personal = await syncTraktPersonalState(userId, accessToken, supplied?.personal);
+
+    const fetched = episodeHistory.length + movieHistory.length;
+    const finishedAt = new Date();
+
+    await db
+      .updateTable("marqueeTraktSyncRuns")
+      .set({
+        status: "succeeded",
+        finishedAt,
+        fetchedCount: fetched,
+        insertedCount: inserted,
+        updatedCount: updated,
+        skippedCount: skipped,
+        unmappedCount: unmapped,
+        errorSummary: null,
+      })
+      .where("id", "=", runId)
+      .execute();
+
+    await db
+      .insertInto("marqueeTraktSyncState")
+      .values({
+        userId,
+        lastHistoryAt: maxHistoryAt,
+        lastSyncAt: finishedAt,
+        lastError: null,
+        consecutiveFailures: 0,
+        updatedAt: finishedAt,
+      })
+      .onConflict((oc) =>
+        oc.column("userId").doUpdateSet({
+          lastHistoryAt: maxHistoryAt,
+          lastSyncAt: finishedAt,
+          lastError: null,
+          consecutiveFailures: 0,
+          updatedAt: finishedAt,
+        })
+      )
+      .execute();
+
+    return {
+      runId,
+      startAt,
+      fetched,
+      inserted,
+      updated,
+      skipped,
+      unmapped,
+      lastHistoryAt: maxHistoryAt,
+      ...personal,
+    };
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Trakt history sync failed";
+
+    if (runId !== null) {
+      await db
+        .updateTable("marqueeTraktSyncRuns")
+        .set({
+          status: "failed",
+          finishedAt: new Date(),
+          errorSummary: message.slice(0, 500),
+        })
+        .where("id", "=", runId)
+        .execute();
+    }
+
+    const state = await db
+      .selectFrom("marqueeTraktSyncState")
+      .select(["consecutiveFailures"])
+      .where("userId", "=", userId)
+      .executeTakeFirst();
+
+    await db
+      .insertInto("marqueeTraktSyncState")
+      .values({
+        userId,
+        lastError: message.slice(0, 500),
+        consecutiveFailures: (state?.consecutiveFailures ?? 0) + 1,
+        updatedAt: new Date(),
+      })
+      .onConflict((oc) =>
+        oc.column("userId").doUpdateSet({
+          lastError: message.slice(0, 500),
+          consecutiveFailures: (state?.consecutiveFailures ?? 0) + 1,
+          updatedAt: new Date(),
+        })
+      )
+      .execute();
+
+    throw error;
+  }
+};

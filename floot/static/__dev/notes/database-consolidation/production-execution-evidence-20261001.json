@@ -1,0 +1,261 @@
+{
+  "asOf": "2026-10-02T01:12:00Z",
+  "app": "Marquee",
+  "projectId": "9ba56374-eb1b-4942-af2f-e15e4df14755",
+  "status": "NATIVE_CUTOVER_PUBLISHED_ACCEPTED_FIRST_TRAKT_SYNC_SUCCEEDED",
+  "checkpoint": "3cedd99d-f1c6-4e0d-a203-fea978a6a9bd",
+  "publishJob": "78d518e6-80b9-40fc-90e1-3f619cfcf472",
+  "url": "https://marquee-ddibara.floot.app",
+  "clientAsset": "/_assets/index-kE2Tx3Re.js",
+  "build": {
+    "traktStore": "native",
+    "physicalBarrier": true,
+    "admission": true
+  },
+  "publishedAcceptance": {
+    "owner": 1,
+    "session": 200,
+    "history": 200,
+    "historyEvents": 60,
+    "anonymousRead": 401,
+    "anonymousWrite": 401,
+    "controlledManualSet": 200,
+    "controlledManualUndo": 200,
+    "titleId": 1,
+    "baselineManualRows": 0,
+    "afterUndoManualRows": 0,
+    "providerEffect": false
+  },
+  "admission": {
+    "nativeMode": "open",
+    "epoch": 0,
+    "providerAdmissionOpen": true,
+    "unresolvedLeases": 0,
+    "allObservedEndpointKindsReleased": true
+  },
+  "archives": {
+    "sourceRows": 6,
+    "nativeOriginalRows": 5,
+    "originalParts": 131,
+    "sixthExactTypedRestore": "restore_marquee_20260930_1deda4d4f8d2",
+    "fullRowHashesMatch": true,
+    "frozen": false
+  },
+  "callers": {
+    "oldCrunchyrollInactive": true,
+    "oldTraktInactive": true,
+    "n8nExecutionPagesExhausted": true,
+    "waiting": 0,
+    "githubNonterminalStatuses": [
+      "in_progress",
+      "queued",
+      "waiting",
+      "requested",
+      "pending"
+    ],
+    "githubAllZero": true
+  },
+  "publishedLogs": {
+    "from": "2026-10-02T00:10:12.251Z",
+    "to": "2026-10-02T00:48:33.791Z",
+    "pages": 2,
+    "events": 166,
+    "exhausted": true,
+    "unmatchedStartedRequests": 0,
+    "providerRequests": 0,
+    "errors": 0
+  },
+  "sourceQuery": {
+    "directConnectorHashTimedOut": true,
+    "vmHashQueryPassed": true,
+    "elapsedMs": 27037
+  },
+  "retainedRelease": {
+    "deployment": "dpl_8zUAb5prgTaNtgJSRhmEqEKk5AKG",
+    "state": "READY",
+    "commit": "142d22cc1d6edb1f107c9690623e2143be865809"
+  },
+  "productionPauseStarted": true,
+  "publicLiveBindingsInstalled": true,
+  "deltaApplied": true,
+  "cutoverPerformed": true,
+  "nativeBuild": false,
+  "retirement": false,
+  "credentialsRevoked": false,
+  "approvalStillValid": true,
+  "remaining": "Verify the next normal unattended cycles. GameDeck independently preflight next; no retirement/revocation/builds.",
+  "releaseCheckpoint": "06dfb0dc-d35f-4d65-8ad3-d25268ad4c4b",
+  "supersededRelease": {
+    "checkpoint": "edcdc91f-082c-4391-a2ec-be6fdce1fab0",
+    "job": "61c662d2-72e8-4f33-aa3e-1279f4096bf4",
+    "routingUnchanged": true,
+    "correctedBeforeAcceptance": true
+  },
+  "pause": {
+    "startedAt": "2026-10-02T00:57:41.693Z",
+    "abortAt": "2026-10-02T01:07:41.693Z",
+    "maxDeadline": "2026-10-02T01:12:41.693Z",
+    "controlledNativeOpenedAt": "2026-10-02T01:05:30.190Z",
+    "dataAndAuthAcceptanceCompleteAt": "2026-10-02T01:07:19.727Z",
+    "providerResumedAt": "2026-10-02T01:08:10.692Z",
+    "holdSeconds": 628.999,
+    "noAutomaticResume": true,
+    "decisionRecordedDuringResume": true,
+    "timingLimit": "Data/Auth acceptance completed before minute10; explicit provider-resume decision/execution was recorded at10m29s. Do not backdate this decision to the earlier acceptance timestamp."
+  },
+  "frozenBackups": {
+    "native": {
+      "status": 200,
+      "elapsedMs": 34705,
+      "result": {
+        "backup": {
+          "id": "632a834a-52b4-4839-a922-44d496c7bb17",
+          "app": "marquee",
+          "source": "native",
+          "filename": "database-migration/marquee/632a834a-52b4-4839-a922-44d496c7bb17-native.backup",
+          "cipherHash": "c0cfe63dbe5e403397c8ee9325d11356f4293dd01e486ccb10d40cf3f5a8e757",
+          "plainHash": "cea36c3d04c703785aa80e3ad4d7e50d8b8d6feb90ed8df314b9dc77915db858",
+          "tables": 42,
+          "rows": 36854,
+          "authTables": 0,
+          "bytes": 35073476,
+          "decryptVerified": true,
+          "runtimeShapes": 42,
+          "mode": "final-window",
+          "all42BindingsInstalled": true,
+          "finalFrozenDeltaRequired": true,
+          "scope": "fixed native runtime42, native Auth/manual state and protected operational/DDL evidence",
+          "fullProductionRestoreProven": false
+        },
+        "restore": {
+          "backupId": "632a834a-52b4-4839-a922-44d496c7bb17",
+          "schema": "restore_marquee_20260930_632a834a52b4",
+          "restoredTables": 42,
+          "restoredRows": 36854,
+          "authEvidenceTables": 0,
+          "exactRowHashVerified": true,
+          "scope": "typed app data plus protected schema/Auth/config evidence; no production connection or auth switch"
+        },
+        "replay": null,
+        "privateExercise": false,
+        "providerEffects": false,
+        "fullProductionRollbackProven": false
+      }
+    },
+    "source": {
+      "status": 200,
+      "elapsedMs": 9457,
+      "result": {
+        "id": "f7e5d1d6-41e9-4f1e-b5e9-5226f76c5a17",
+        "app": "marquee",
+        "source": "legacy",
+        "filename": "database-migration/marquee/f7e5d1d6-41e9-4f1e-b5e9-5226f76c5a17-legacy.backup",
+        "cipherHash": "b330c489f17fa45c779a7d5bfc4cb372a6caf7bfbd8ba63f417b76523339b304",
+        "plainHash": "31e78c1d8be5521b29a3492efbf48238e7f73a21d24a1786dabd7524201ee56d",
+        "tables": 21,
+        "rows": 34551,
+        "authTables": 15,
+        "bytes": 8281928,
+        "decryptVerified": true
+      }
+    },
+    "sourceRestore": {
+      "status": 200,
+      "elapsedMs": 8429,
+      "result": {
+        "backupId": "f7e5d1d6-41e9-4f1e-b5e9-5226f76c5a17",
+        "schema": "restore_marquee_20260930_f7e5d1d641e9",
+        "restoredTables": 21,
+        "restoredRows": 34551,
+        "authEvidenceTables": 15,
+        "exactRowHashVerified": true,
+        "scope": "typed app data plus protected schema/Auth/config evidence; no production connection or auth switch"
+      }
+    }
+  },
+  "bindings": {
+    "native": 42,
+    "source": 21,
+    "sourceFunctionsExact": 7,
+    "nativeShapeDrift": 0,
+    "nativeProtectedOperational": true,
+    "sourceProtectedOperationalTables": 5
+  },
+  "delta": {
+    "batch": "marquee:production:20261001:632a834a-52b4-4839-a922-44d496c7bb17",
+    "applied": 3,
+    "replayChanges": 0,
+    "sourceFull21SetsMatchPreinstall": true,
+    "nativeBeforeAll42Exact": true,
+    "nativeAfterAll42OnlyApprovedThreeInsertions": true,
+    "reconciliation": {
+      "conflicts": 0,
+      "nativeOnlyEvents": 18,
+      "nativeOnlyCompletions": 18,
+      "excludedHistory": 6,
+      "excludedMappings": 9,
+      "canonicalCovered": 4105
+    },
+    "protectedManualHistoryDatesTombstonesOutboxOAuthAuthUnchangedByDelta": true
+  },
+  "acceptance": {
+    "owner": 1,
+    "session": 200,
+    "history": 200,
+    "historyEvents": 60,
+    "anonymousRead": 401,
+    "anonymousWrite": 401,
+    "controlledWrite": 200,
+    "controlledUndo": 200,
+    "titleId": 1,
+    "personalBaselineExactAfterUndo": true,
+    "sessionOnlyAccessTimestampChanges": true,
+    "journalAtAcceptance": {
+      "sessionsUpdates": 15,
+      "manualInserts": 1,
+      "manualDeletes": 1
+    },
+    "pausedActualSessionAndTrackingStatus": 503,
+    "providerHoldActualStatus": 503,
+    "publishedHome": true,
+    "unchangedNativeClientApiContract": true,
+    "onDeviceTestPerformed": false
+  },
+  "historicArchive": {
+    "rows": 6,
+    "parts": 131,
+    "allCompleteRowHashesMatchAfterFreeze": true
+  },
+  "afterResume": {
+    "firstTraktRun": 57,
+    "status": "succeeded",
+    "started": "2026-10-02T01:09:13.471Z",
+    "finished": "2026-10-02T01:09:16.919Z",
+    "unresolvedLeases": 0,
+    "sourceMode": "paused",
+    "sourceJournal": 0,
+    "sourceRemoteReceipts": 0,
+    "n8nOldWorkflowsInactive": true,
+    "nativeImportModes": {
+      "crunchyroll": "live",
+      "trakt": "live",
+      "anilist": "disabled"
+    },
+    "manualImportAudit": {
+      "id": "f2586cd8-7035-42c4-87c6-95ba3cdb4527",
+      "status": "succeeded",
+      "modeField": "shadow",
+      "modeFieldMeaning": "Existing manual-sync lock/audit classification. The actual Trakt sync executes normal native ingestion; it is not the shadow-transaction dry-run path.",
+      "actualSync": 57,
+      "fetched": 2,
+      "inserted": 0,
+      "updated": 0,
+      "skipped": 2,
+      "unmapped": 0,
+      "retainedSourceJournal": 0,
+      "retainedSourceRemoteReceipts": 0
+    }
+  },
+  "fullProductionRollbackProven": false,
+  "authDisasterReconstructionProven": false
+}

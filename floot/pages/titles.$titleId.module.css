@@ -1,0 +1,108 @@
+
+.detailLayout { display:grid; grid-template-columns:minmax(0,1fr); grid-template-areas:"hero" "overview" "progress" "episodes" "history" "catalog"; gap:24px; }
+.hero { grid-area:hero; display:grid; grid-template-columns:var(--poster-main) minmax(0,1fr); gap:12px 24px; align-items:start; margin:0; }
+.heroWithArtwork { background:transparent; }
+.backdrop { display:none; }
+.poster { grid-column:1; grid-row:1/6; display:grid; place-items:center; width:var(--poster-main); aspect-ratio:2/3; overflow:hidden; border-radius:4px; background:var(--surface); color:var(--muted-foreground); font:600 32px var(--font-family-display); }
+.poster>img { display:block; width:100%; height:100%; object-fit:contain; }
+.poster i { display:none; }
+.copy { display:contents; }
+.copy>* { grid-column:2; min-width:0; }
+.kicker { grid-row:1; margin:0; color:var(--muted-foreground); font-size:12px; }
+.copy h1 { grid-row:2; margin:0; font:600 var(--text-display)/1.2 var(--font-family-display); letter-spacing:-.025em; overflow-wrap:break-word; }
+.meta { grid-row:3; display:flex; flex-wrap:wrap; gap:8px 16px; color:var(--muted-foreground); font-size:12px; }
+.meta span { display:inline-flex; align-items:center; gap:4px; }
+.copy>[aria-label="Your title controls"] { grid-row:5; margin:0; }
+.nextEpisode { grid-row:4; display:grid; align-items:start; gap:12px; margin:4px 0; }
+.nextEpisodeWithImage { grid-template-columns:96px minmax(0,1fr); }
+.nextEpisodeWithImage>img { width:100%; aspect-ratio:16/9; object-fit:contain; border-radius:4px; }
+.nextCopy { min-width:0; }
+.movieFacts { grid-row:4; display:grid; gap:12px; margin:4px 0; }
+.movieFacts dt { color:var(--muted-foreground); font-size:12px; }
+.movieFacts dd { margin:2px 0 0; font-size:14px; }
+.nextCopy>span { color:var(--primary); font-size:12px; font-weight:500; }
+.nextCopy h2 { margin:4px 0; font:600 16px/1.3 var(--font-family-display); }
+.nextCopy p { margin:4px 0 0; color:var(--muted-foreground); font-size:12px; line-height:1.5; }
+.nextOverview { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.overview { grid-area:overview; margin:0; font-size:14px; line-height:1.6; color:var(--muted-foreground); }
+.panel { grid-area:progress; min-width:0; padding:16px 0; border-block:1px solid var(--border); }
+.panelHeading { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; }
+.panelHeading h2,.activityHeading h2,.episodeHeading h2,.catalogSection h2 { margin:0; font:600 18px/1.3 var(--font-family-display); letter-spacing:-.02em; }
+.panelHeading>strong { font-size:14px; color:var(--primary); }
+.track { height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+.track span { display:block; height:100%; background:var(--primary); }
+.stats { display:flex; flex-wrap:wrap; gap:16px 24px; margin-top:12px; }
+.stats>div { display:inline-flex; align-items:center; gap:8px; font-size:12px; }
+.stats svg { display:none; }
+.stats strong { font-weight:600; }
+.stats span { color:var(--muted-foreground); }
+.movieActions { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+.trackingMessage { padding:16px; background:var(--surface); border:1px solid var(--border); border-radius:8px; font-size:13px; overflow-wrap:break-word; }
+.activity { grid-area:history; min-width:0; }
+.activityHeading,.episodeHeading { display:flex; justify-content:space-between; align-items:center; gap:16px; min-height:44px; margin-bottom:12px; }
+.episodeHeading>span { color:var(--muted-foreground); font-size:12px; flex:none; }
+.timeline { position:relative; display:grid; gap:24px; list-style:none; margin:0; padding:0 0 0 20px; }
+.timeline::before { content:""; position:absolute; left:4px; top:8px; bottom:8px; width:1px; background:var(--border); }
+.timelineDay { position:relative; }
+.node { position:absolute; left:-19px; top:6px; width:7px; height:7px; background:var(--primary); border-radius:50%; }
+.timelineDay strong { font-size:14px; font-weight:500; }
+.timelineDay p,.activityEmpty { margin:4px 0 0; color:var(--muted-foreground); font-size:12px; line-height:1.5; }
+.episodeSection { grid-area:episodes; min-width:0; }
+.episodeLoading { display:grid; gap:12px; }
+.episodeMessage { padding:12px; margin:0 0 16px; border:1px solid var(--border); border-radius:4px; color:var(--muted-foreground); font-size:12px; line-height:1.5; }
+.seriesActions,.seasonActions { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+.seriesActions button,.seasonActions button { display:inline-flex; gap:8px; max-width:100%; min-height:44px; height:auto; padding:8px 0; border:0; border-bottom:1px solid var(--border); border-radius:0; white-space:normal; text-align:left; font-size:12px; line-height:1.5; }
+.seasonActions>span { flex-basis:100%; color:var(--muted-foreground); font-size:12px; }
+.seasonAccordion { display:grid; gap:12px; }
+.seasonItem { margin:0!important; background:var(--surface)!important; border:1px solid var(--border); border-radius:8px!important; box-shadow:none!important; }
+.seasonTrigger { min-height:64px; padding:16px!important; font-family:var(--font-family-base)!important; }
+.seasonSummary { display:flex; align-items:center; flex-wrap:wrap; justify-content:space-between; gap:8px 16px; min-width:0; flex:1; text-align:left; padding-right:8px; }
+.seasonSummary>div { min-width:0; flex:1; }
+.seasonSummary strong { display:block; font:600 14px/1.4 var(--font-family-display); }
+.seasonSummary>div>span { display:block; margin-top:4px; color:var(--muted-foreground); font-size:12px; line-height:1.5; }
+.seasonProgress { font-size:12px; color:var(--primary); }
+.seasonContent { border-top:1px solid var(--border); }
+.seasonContent>div { padding:16px!important; }
+.episodeList { display:grid; gap:0; }
+.episodeRow { display:grid; grid-template-columns:18px 28px minmax(0,1fr) auto; gap:8px; align-items:center; min-height:64px; padding:12px 0; border-bottom:1px solid var(--border); color:var(--muted-foreground); }
+.episodeRow:last-child { border-bottom:0; }
+.watchedEpisode { color:var(--foreground); }
+.episodeStatus { display:flex; align-items:center; color:var(--primary); }
+.episodeNumber { font-size:12px; font-variant-numeric:tabular-nums; }
+.episodeCopy { min-width:0; }
+.episodeCopy strong { display:block; font-size:14px; font-weight:500; line-height:1.4; }
+.episodeCopy span { display:block; margin-top:4px; color:var(--muted-foreground); font-size:12px; line-height:1.5; }
+.watchIndicator { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
+.watchIndicator>span { display:inline-flex; align-items:center; gap:4px; font-size:12px; }
+.checkInButton { min-width:44px; min-height:44px; color:var(--primary); }
+.catalogSection { grid-area:catalog; min-width:0; padding-top:24px; border-top:1px solid var(--border); }
+.catalogSection h2 { margin-bottom:16px; }
+.catalogFacts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px 24px; margin:0; }
+.catalogFacts div { min-width:0; }
+.catalogFacts dt { margin-bottom:4px; color:var(--muted-foreground); font-size:12px; }
+.catalogFacts dd { margin:0; font-size:14px; line-height:1.5; overflow-wrap:break-word; }
+.catalogLink { display:inline-flex; align-items:center; min-height:44px; gap:8px; margin-top:12px; color:var(--primary); text-decoration:none; font-size:12px; }
+.catalogNotice { color:var(--muted-foreground); font-size:12px; }
+.empty { padding:32px 0; text-align:center; }
+.empty p a { color:var(--primary); }
+.empty h1 { margin:0 0 8px; font:600 var(--text-heading)/1.3 var(--font-family-display); }
+.empty p { margin:0 auto; max-width:32rem; color:var(--muted-foreground); font-size:14px; line-height:1.5; }
+.emptyActions { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-top:24px; }
+.episodeMessage p { margin:0; }
+.countTrigger { min-height:44px; padding:0; border:0; background:transparent; color:var(--primary); font:500 12px var(--font-family-base); cursor:pointer; }
+.countTrigger:focus-visible { outline:2px solid var(--primary); outline-offset:2px; }
+@media(min-width:900px) { .detailLayout { grid-template-columns:minmax(0,3fr) minmax(0,2fr); grid-template-areas:"hero hero" "overview overview" "progress progress" "episodes history" "catalog catalog"; gap:32px; } .catalogFacts { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media(max-width:699px) {
+ .hero { gap:8px 16px; }
+ .copy>.kicker { grid-column:1/-1; grid-row:1; }
+ .copy>h1 { grid-column:1/-1; grid-row:2; }
+ .copy>.meta { grid-column:1/-1; grid-row:3; margin-bottom:8px; }
+ .poster { grid-column:1; grid-row:4; }
+ .nextEpisode { grid-column:2; grid-row:4; grid-template-columns:minmax(0,1fr); margin:0; }
+ .movieFacts { grid-column:2; grid-row:4; margin:0; align-content:start; }
+ .nextEpisodeWithImage>img { display:none; }
+ .copy>[aria-label="Your title controls"] { grid-column:1/-1; grid-row:5; margin-top:8px; }
+ .seasonProgress { flex-basis:100%; }
+ .episodeRow { grid-template-columns:16px 26px minmax(0,1fr) auto; gap:6px; min-height:56px; padding:6px 0; }
+ .catalogFacts { gap:16px; }
+}

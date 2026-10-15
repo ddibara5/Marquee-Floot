@@ -1,0 +1,56 @@
+{
+  "recordedAt": "2026-10-01T23:38:14Z",
+  "status": "APPROVED_FOR_GATED_PRODUCTION_EXECUTION_NOT_YET_STARTED",
+  "approvedBy": "Dave",
+  "directUserStatement": "Approved, ready to rollover if you are",
+  "precedingDecisionExplained": "Explicit approval to move from preparation into production for both apps: short writer pauses, live migration bindings, verified publication and database cutover; Marquee first, then independently ready GameDeck, only after each app's gates pass.",
+  "supersedes": "Original prohibition on publication, live migration bindings and production cutover for this prepared plan only.",
+  "authorized": {
+    "perAppWriterPauseAndCallerDrain": true,
+    "liveMigrationBindings": true,
+    "publishVerifiedMigrationChanges": true,
+    "databaseCutover": true,
+    "order": [
+      "Marquee",
+      "GameDeck"
+    ],
+    "nativeFlootSignIn": true,
+    "originalServiceGameDeckReloginAccepted": true
+  },
+  "notAuthorized": {
+    "serviceRetirement": true,
+    "credentialRevocation": true,
+    "unrelatedAppChanges": true,
+    "EASOrNativeMobileBuilds": true
+  },
+  "conditions": {
+    "followCurrentAppScopedExecutionPackages": true,
+    "freshFrozenBackupsAndExactIsolatedRestores": true,
+    "actualCallerProviderAndNativeDrain": true,
+    "exactPhysicalBindingVerification": true,
+    "regeneratedFullKeyValueDeltas": true,
+    "approvedReleaseOwnerAndUnauthorizedReadWriteUndoAcceptance": true,
+    "gameDeckFreshActualOwnerProjectSealedBatchDigestProof": true,
+    "secureGameDeckNativeEnrollment": true,
+    "maxPauseMinutes": 15,
+    "abortDecisionMinutes": 10,
+    "noAutomaticResume": true
+  },
+  "handoffState": {
+    "productionPauseStarted": false,
+    "publicationPerformed": false,
+    "liveMigrationBindingsInstalledByThisSession": false,
+    "databaseCutoverPerformed": false,
+    "retirementPerformed": false,
+    "credentialRevocationPerformed": false
+  },
+  "evidenceLimits": {
+    "preInstallCapturesNotFrozen": true,
+    "privateRunnerAndDeltaProofNotProductionRollbackProof": true,
+    "fullProductionRollbackProven": false,
+    "AuthDisasterReconstructionProven": false
+  },
+  "continuity": "Do not ask for the same production authorization again. Re-read live evidence and continue within this approval; ask only for missing credentials or material decisions.",
+  "app": "Marquee",
+  "projectId": "9ba56374-eb1b-4942-af2f-e15e4df14755"
+}

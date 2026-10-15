@@ -1,0 +1,50 @@
+
+CREATE TABLE "verify_marquee_20260930_v1".test_results(test text PRIMARY KEY,passed boolean NOT NULL);
+CREATE FUNCTION "verify_marquee_20260930_v1".assert_test(ok boolean,label text) RETURNS void LANGUAGE plpgsql AS $$ BEGIN IF ok IS DISTINCT FROM true THEN RAISE EXCEPTION 'TEST_FAILED:%',label; END IF;INSERT INTO "verify_marquee_20260930_v1".test_results VALUES(label,true);END $$;
+REVOKE EXECUTE ON FUNCTION "verify_marquee_20260930_v1".assert_test(boolean,text) FROM PUBLIC;
+CREATE TABLE "verify_marquee_20260930_v1".native_rows(id bigint PRIMARY KEY,n numeric(30,12),event_date date,manual text,token text);
+INSERT INTO "verify_marquee_20260930_v1".native_rows VALUES(9007199254740993,123456789012345678.123456789012,'2026-08-01','paused','fixture-old'),(2,4,NULL,'undated',NULL),(3,7,'2026-08-03','unwatch',NULL);
+CREATE TABLE "verify_marquee_20260930_v1".retained_rows(LIKE "verify_marquee_20260930_v1".native_rows INCLUDING ALL);
+INSERT INTO "verify_marquee_20260930_v1".retained_rows SELECT * FROM "verify_marquee_20260930_v1".native_rows;
+SELECT "verify_marquee_20260930_v1".register('"verify_marquee_20260930_v1".native_rows','native');
+SELECT "verify_marquee_20260930_v1".register('"verify_marquee_20260930_v1".retained_rows','retained');
+UPDATE "verify_marquee_20260930_v1".native_rows SET manual='completed',token='fixture-rotated',n=123456789012345678.123456789013 WHERE id=9007199254740993;
+DELETE FROM "verify_marquee_20260930_v1".native_rows WHERE id=2;
+INSERT INTO "verify_marquee_20260930_v1".native_rows VALUES(4,8,NULL,'tombstone',NULL);
+UPDATE "verify_marquee_20260930_v1".native_rows SET id=5 WHERE id=3;
+SELECT "verify_marquee_20260930_v1".assert_test((SELECT count(*)=4 FROM "verify_marquee_20260930_v1".journal),'durable insert update delete journal');
+SELECT "verify_marquee_20260930_v1".assert_test((SELECT count(*)=1 FROM "verify_marquee_20260930_v1".journal WHERE operation='UPDATE' AND old_key IS DISTINCT FROM new_key),'primary key move journal');
+SET LOCAL lock_timeout='2s';
+SELECT "verify_marquee_20260930_v1".pause();
+DO $$ DECLARE op text; rejected boolean; BEGIN
+FOREACH op IN ARRAY ARRAY['INSERT INTO "verify_marquee_20260930_v1".native_rows(id) VALUES(99)','UPDATE "verify_marquee_20260930_v1".native_rows SET manual=''bad''','DELETE FROM "verify_marquee_20260930_v1".native_rows','TRUNCATE "verify_marquee_20260930_v1".native_rows'] LOOP
+ rejected=false;BEGIN EXECUTE op; EXCEPTION WHEN SQLSTATE '55000' THEN rejected=true; END;
+ IF NOT rejected THEN RAISE EXCEPTION 'WRITER_WAS_ADMITTED'; END IF;
+END LOOP;END $$;
+SELECT "verify_marquee_20260930_v1".assert_test(true,'direct insert update delete truncate paused');
+DO $$ DECLARE rejected boolean=false; BEGIN BEGIN PERFORM "verify_marquee_20260930_v1".drained(1,0,true);EXCEPTION WHEN OTHERS THEN IF SQLERRM='WRITERS_NOT_DRAINED' THEN rejected=true; ELSE RAISE; END IF; END;
+PERFORM "verify_marquee_20260930_v1".assert_test(rejected,'running import drain gate');END $$;
+DO $$ DECLARE rejected boolean=false; BEGIN BEGIN PERFORM "verify_marquee_20260930_v1".drained(0,1,true);EXCEPTION WHEN OTHERS THEN IF SQLERRM='WRITERS_NOT_DRAINED' THEN rejected=true; ELSE RAISE; END IF; END;
+PERFORM "verify_marquee_20260930_v1".assert_test(rejected,'provider lease drain gate');END $$;
+DO $$ DECLARE rejected boolean=false; BEGIN BEGIN PERFORM "verify_marquee_20260930_v1".drained(0,0,false);EXCEPTION WHEN OTHERS THEN IF SQLERRM='WRITERS_NOT_DRAINED' THEN rejected=true; ELSE RAISE; END IF; END;
+PERFORM "verify_marquee_20260930_v1".assert_test(rejected,'external caller drain gate');END $$;
+SELECT "verify_marquee_20260930_v1".drained(0,0,true);
+CREATE TABLE "verify_marquee_20260930_v1".changes AS SELECT coalesce(jsonb_agg(jsonb_build_object('table','retained','before',b,'after',a) ORDER BY coalesce(b->>'id',a->>'id')),'[]') payload FROM (
+SELECT to_jsonb(old_row) b,to_jsonb(new_row) a FROM "verify_marquee_20260930_v1".retained_rows old_row FULL JOIN "verify_marquee_20260930_v1".native_rows new_row USING(id) WHERE to_jsonb(old_row) IS DISTINCT FROM to_jsonb(new_row)) d;
+SELECT "verify_marquee_20260930_v1".assert_test("verify_marquee_20260930_v1".apply('rollback-1',(SELECT payload FROM "verify_marquee_20260930_v1".changes))=5,'full key reverse delta with deletes pk move token and tombstone');
+SELECT "verify_marquee_20260930_v1".assert_test("verify_marquee_20260930_v1".apply('rollback-1',(SELECT payload FROM "verify_marquee_20260930_v1".changes))=0,'idempotent replay receipt');
+SELECT "verify_marquee_20260930_v1".assert_test(NOT EXISTS((SELECT * FROM "verify_marquee_20260930_v1".native_rows EXCEPT SELECT * FROM "verify_marquee_20260930_v1".retained_rows) UNION ALL (SELECT * FROM "verify_marquee_20260930_v1".retained_rows EXCEPT SELECT * FROM "verify_marquee_20260930_v1".native_rows)),'exact bigint numeric date null and manual preservation');
+DO $$ DECLARE rejected boolean=false;BEGIN BEGIN PERFORM "verify_marquee_20260930_v1".apply('rollback-1','[]');EXCEPTION WHEN OTHERS THEN IF SQLERRM='REPLAY_PAYLOAD_CHANGED' THEN rejected=true;ELSE RAISE;END IF;END;
+PERFORM "verify_marquee_20260930_v1".assert_test(rejected,'changed replay payload rejected');END $$;
+DO $$ DECLARE rejected boolean=false;BEGIN BEGIN PERFORM "verify_marquee_20260930_v1".apply('conflict','[{"table":"retained","before":null,"after":{"id":4,"n":9,"event_date":null,"manual":"bad","token":null}}]');EXCEPTION WHEN OTHERS THEN IF SQLERRM LIKE 'DELTA_CONFLICT:%' THEN rejected=true;ELSE RAISE;END IF;END;
+PERFORM "verify_marquee_20260930_v1".assert_test(rejected,'newer retained state conflict rejected');END $$;
+DO $$ DECLARE rejected boolean=false;BEGIN BEGIN PERFORM "verify_marquee_20260930_v1".apply('atomic','[{"table":"retained","before":null,"after":{"id":99,"n":1,"event_date":null,"manual":null,"token":null}},{"table":"unknown","before":null,"after":{"id":100}}]');EXCEPTION WHEN no_data_found THEN rejected=true;END;
+PERFORM "verify_marquee_20260930_v1".assert_test(rejected AND NOT EXISTS(SELECT 1 FROM "verify_marquee_20260930_v1".retained_rows WHERE id=99),'failed batch rolls back all rows and trigger modes');END $$;
+UPDATE "verify_marquee_20260930_v1".control SET abort_at=now()-interval '1 second';
+DO $$ DECLARE rejected boolean=false;BEGIN BEGIN PERFORM "verify_marquee_20260930_v1".apply('late','[]');EXCEPTION WHEN OTHERS THEN IF SQLERRM='FROZEN_WINDOW_REQUIRED' THEN rejected=true;ELSE RAISE;END IF;END;
+PERFORM "verify_marquee_20260930_v1".assert_test(rejected,'10 minute abort deadline');END $$;
+SELECT "verify_marquee_20260930_v1".resume();
+UPDATE "verify_marquee_20260930_v1".native_rows SET manual='resumed' WHERE id=4;
+SELECT "verify_marquee_20260930_v1".assert_test((SELECT count(*)=4 FROM pg_trigger WHERE tgrelid IN('"verify_marquee_20260930_v1".native_rows'::regclass,'"verify_marquee_20260930_v1".retained_rows'::regclass) AND NOT tgisinternal AND tgenabled='O'),'explicit resume keeps barriers and journals enabled');
+SELECT "verify_marquee_20260930_v1".assert_test(NOT EXISTS(SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace CROSS JOIN LATERAL aclexplode(coalesce(c.relacl,acldefault('r',c.relowner))) a WHERE n.nspname='verify_marquee_20260930_v1' AND a.grantee=0),'zero PUBLIC table grants');
+SELECT test,passed FROM "verify_marquee_20260930_v1".test_results ORDER BY test;

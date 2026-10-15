@@ -1,0 +1,29 @@
+
+.card { display:grid; grid-template-columns:var(--compact-poster-width) minmax(0,1fr); gap:12px; align-items:center; padding:12px 0; min-width:0; color:inherit; text-decoration:none; border-bottom:1px solid var(--border); }
+.card:hover { color:var(--primary); }
+.poster { aspect-ratio:2/3; display:grid; place-items:center; overflow:hidden; border-radius:4px; color:var(--muted-foreground); background:var(--surface); font:600 24px var(--font-family-display); }
+.poster img { display:block; width:100%; height:100%; object-fit:contain; }
+.body { min-width:0; }
+.topline { display:flex; align-items:start; gap:8px; }
+.topline h3 { flex:1; min-width:0; margin:0; font:600 14px/1.4 var(--font-family-display); }
+.score { display:inline-flex; align-items:center; gap:4px; color:var(--primary); font-size:12px; }
+.meta { margin:4px 0 0; font-size:12px; color:var(--muted-foreground); }
+.progressWrap { margin-top:12px; }
+.progressMeta { display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px; color:var(--muted-foreground); font-size:12px; }
+.progressMeta span:first-child { display:inline-flex; align-items:center; gap:4px; }
+.track { height:4px; margin-top:8px; background:var(--border); border-radius:2px; overflow:hidden; }
+.track span { display:block; height:100%; background:var(--primary); }
+.compact { grid-template-columns:var(--compact-poster-width) minmax(0,1fr); }
+
+.compact { display:block; border:0; padding:0; }
+.compact .poster { width:min(100%,var(--poster-shelf)); }
+.compact .body { margin-top:8px; }
+.compact .topline { flex-wrap:wrap; }
+.compact .topline h3 { flex-basis:100%; }
+
+.compact .topline { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:start; gap:8px; }
+/* Meta stays right under the title; progress sits at the card bottom so peers in a row still line up. */
+.compact { display:flex; flex-direction:column; align-items:stretch; }
+.compact .body { flex:1; display:flex; flex-direction:column; }
+.compact .progressWrap { margin-top:auto; padding-top:12px; }
+.compact .progressMeta { justify-content:flex-start; gap:8px; }

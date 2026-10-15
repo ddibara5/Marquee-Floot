@@ -1,0 +1,18 @@
+{
+  "name": "Marquee",
+  "short_name": "Marquee",
+  "description": "Private movie, TV, and anime watch tracker.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#1d171e",
+  "theme_color": "#1d171e",
+  "icons": [
+    {
+      "src": "/_cdn/static/71ebcbb9-5db2-493a-9825-c003ab9a9924-marquee-icon-a4.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

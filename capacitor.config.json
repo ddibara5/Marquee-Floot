@@ -1,0 +1,8 @@
+{
+  "appId": "app.floot.u9ba56374eb1b4942af2fe15e4df14755",
+  "appName": "Marquee",
+  "webDir": "floot/dist",
+  "plugins": {
+    "CapacitorHttp": { "enabled": true }
+  }
+}

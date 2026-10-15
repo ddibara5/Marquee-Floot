@@ -1,0 +1,75 @@
+# Marquee iOS: Floot export (floot/) -> Capacitor shell -> TestFlight.
+# Builds start on a push that changes floot/ (a new Floot export), Marquee.zip or the iOS shell.
+# Codemagic also counts edits to this file as a change, so they start a build too.
+workflows:
+  ios-testflight:
+    name: Marquee iOS to TestFlight
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+      cancel_previous_builds: true
+    when:
+      changeset:
+        includes:
+          - floot/
+          - Marquee.zip
+          - ios/
+          - native/
+          - scripts/
+          - package.json
+          - package-lock.json
+          - capacitor.config.json
+    integrations:
+      app_store_connect: Codemagic
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: app.floot.u9ba56374eb1b4942af2fe15e4df14755
+      vars:
+        BUNDLE_ID: app.floot.u9ba56374eb1b4942af2fe15e4df14755
+        XCODE_PROJECT: ios/App/App.xcodeproj
+        XCODE_SCHEME: App
+      node: 22
+      xcode: latest
+    scripts:
+      - name: Install shell dependencies
+        script: npm ci
+      - name: Build Marquee web app
+        script: npm run build:web
+      - name: App icon from Marquee's Floot icon (flattened, 1024x1024)
+        script: |
+          ICON=floot/dist/_cdn/static/71ebcbb9-5db2-493a-9825-c003ab9a9924-marquee-icon-a4.png
+          sips -z 1024 1024 -s format jpeg "$ICON" --out /tmp/icon.jpg
+          sips -s format png /tmp/icon.jpg --out ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
+      - name: Copy web app into iOS project
+        script: npx cap sync ios
+      - name: Set up code signing
+        script: xcode-project use-profiles --project "$XCODE_PROJECT"
+      - name: Set build number above every uploaded build
+        script: |
+          APP_ID=$(app-store-connect apps list --bundle-id-identifier "$BUNDLE_ID" --strict-match-identifier --json | jq -r 'if type=="array" then .[0].id else .data[0].id end')
+          # Highest number across all uploads, including ones not yet in a TestFlight group
+          # (on Cookbook the latest TestFlight build alone missed one and the upload was refused as a duplicate).
+          TESTFLIGHT=$(app-store-connect get-latest-testflight-build-number "$APP_ID" --all-versions)
+          UPLOADED=$(app-store-connect builds list --app-id "$APP_ID" --json | jq '[(if type=="array" then . else .data end)[].attributes.version | tonumber? | floor] | max // 0')
+          LATEST=$(( TESTFLIGHT > UPLOADED ? TESTFLIGHT : UPLOADED ))
+          echo "Latest TestFlight build: $TESTFLIGHT, highest uploaded build: $UPLOADED"
+          cd ios/App && agvtool new-version -all $((LATEST + 1))
+      - name: Build ipa
+        script: |
+          xcode-project build-ipa \
+            --project "$XCODE_PROJECT" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        # Internal testers only: no external Beta App Review.
+        submit_to_testflight: false

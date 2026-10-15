@@ -1,0 +1,9 @@
+.section { max-width:38rem; margin:0 auto; }
+.label { margin:0 0 16px; color:var(--muted-foreground); font:500 12px var(--font-family-base); }
+.options { border:1px solid var(--border); border-radius:10px; overflow:hidden; background:var(--card); }
+.option { display:flex; justify-content:space-between; width:100%; min-height:56px; padding:10px 16px; border-radius:0; color:var(--foreground); }
+.option + .option { border-top:1px solid var(--border); }
+.option[aria-pressed="true"] { color:var(--primary); background:color-mix(in srgb,var(--primary) 8%,var(--card)); }
+.option span { display:grid; gap:3px; text-align:left; }
+.option strong { font:600 14px var(--font-family-base); }
+.option small { color:var(--muted-foreground); font:400 12px/1.5 var(--font-family-base); }

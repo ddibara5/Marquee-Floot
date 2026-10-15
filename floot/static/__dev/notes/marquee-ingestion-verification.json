@@ -1,0 +1,67 @@
+{
+  "prepared": "2026-09-30",
+  "publicationApproved": false,
+  "productionChanged": false,
+  "sourceControls": "disabled/unverified",
+  "n8nWorkflowsStillActive": [
+    "FcKQLqujv4rBrWCT",
+    "4ydlrCseHNViR3QM"
+  ],
+  "typecheck": "clean",
+  "specsPassed": 13,
+  "fixtureRun": "7dccea4f-11ad-43a3-b81e-a0ca7e214952",
+  "terminalFailureRun": "559219a2-f7c1-4f7b-b4a7-3d8055c66102",
+  "renewedConnectionRun": "c474e24c-93c3-49fa-8b77-a2908a979767",
+  "protectedTableComparisons": 21,
+  "fixturesRemaining": 0,
+  "verificationEvidence": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"results\":[{\"rows\":[{\"table_name\":\"marquee_watch_events\",\"current_hash\":\"77d5054d26cf496b12cf2475d38ebeab\",\"backup_hash\":\"77d5054d26cf496b12cf2475d38ebeab\"},{\"table_name\":\"marquee_title_watch_events\",\"current_hash\":\"3b5307928d691d5d3fd674d0bf29df62\",\"backup_hash\":\"3b5307928d691d5d3fd674d0bf29df62\"},{\"table_name\":\"marquee_source_mappings\",\"current_hash\":\"d67f7fde3390d48360ee643d9fe5bf0d\",\"backup_hash\":\"d67f7fde3390d48360ee643d9fe5bf0d\"},{\"table_name\":\"marquee_legacy_statuses\",\"current_hash\":\"e3906e0255d7211c9bef46ec64047b18\",\"backup_hash\":\"e3906e0255d7211c9bef46ec64047b18\"},{\"table_name\":\"marquee_legacy_ratings\",\"current_hash\":\"812a1bf04c232bd8c221a016a8b80508\",\"backup_hash\":\"812a1bf04c232bd8c221a016a8b80508\"},{\"table_name\":\"marquee_legacy_watchlist\",\"current_hash\":\"efb962910f7785912a3f8a2ebba9cc4a\",\"backup_hash\":\"efb962910f7785912a3f8a2ebba9cc4a\"},{\"table_name\":\"marquee_manual_episode_completions\",\"current_hash\":\"6ce5d0a2fe87b77f853ebefac4dddb08\",\"backup_hash\":\"6ce5d0a2fe87b77f853ebefac4dddb08\"},{\"table_name\":\"marquee_manual_title_statuses\",\"current_hash\":\"d751713988987e9331980363e24189ce\",\"backup_hash\":\"d751713988987e9331980363e24189ce\"},{\"table_name\":\"marquee_episode_unwatched\",\"current_hash\":\"6e0a0e0aa6a65aa6ed73a7cbc81a913b\",\"backup_hash\":\"6e0a0e0aa6a65aa6ed73a7cbc81a913b\"}],\"rowCount\":9,\"command\":\"SELECT\"},{\"rows\":[{\"table_name\":\"marquee_legacy_completions\",\"current_hash\":\"d49765d83efc581816191456d65cf78d\",\"backup_hash\":\"d49765d83efc581816191456d65cf78d\"},{\"table_name\":\"marquee_manual_trakt_outbox\",\"current_hash\":\"073b1764bc84f53412fb267bb7cd9856\",\"backup_hash\":\"073b1764bc84f53412fb267bb7cd9856\"},{\"table_name\":\"marquee_legacy_links\",\"current_hash\":\"9f0e019251e5304356f21af19dd48458\",\"backup_hash\":\"9f0e019251e5304356f21af19dd48458\"},{\"table_name\":\"marquee_trakt_ratings\",\"current_hash\":\"a771a0d026631c383ca0c97c034c0334\",\"backup_hash\":\"a771a0d026631c383ca0c97c034c0334\"},{\"table_name\":\"marquee_trakt_watchlist\",\"current_hash\":\"4a9e3498701e3bb9b14602678e129f50\",\"backup_hash\":\"4a9e3498701e3bb9b14602678e129f50\"}],\"rowCount\":5,\"command\":\"SELECT\"},{\"rows\":[{\"id\":\"c474e24c-93c3-49fa-8b77-a2908a979767\",\"status\":\"succeeded\",\"error_code\":null,\"counts\":{\"held\":162,\"mode\":\"sync\",\"pages\":19,\"mapped\":215,\"shadow\":true,\"fetched\":380,\"partial\":3,\"excluded\":0,\"newEvents\":0,\"datePolicy\":\"48h-source-reported\",\"profileReady\":true,\"newCompletions\":0,\"newDatedEvents\":0,\"checkpointOverlap\":40,\"canonicalCommitted\":false}}],\"rowCount\":1,\"command\":\"SELECT\"},{\"rows\":[{\"source\":\"anilist\",\"mode\":\"disabled\",\"verified_at\":null,\"credential_blocked\":false,\"run_id\":null},{\"source\":\"trakt\",\"mode\":\"disabled\",\"verified_at\":null,\"credential_blocked\":false,\"run_id\":null},{\"source\":\"crunchyroll\",\"mode\":\"disabled\",\"verified_at\":null,\"credential_blocked\":false,\"run_id\":null}],\"rowCount\":3,\"command\":\"SELECT\"},{\"rows\":[{\"fixtures_remaining\":0}],\"rowCount\":1,\"command\":\"SELECT\"}]}"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"rows\":[{\"table_name\":\"marquee_watch_history\",\"current_hash\":\"c9f5fb26efa04ad53ba68d70a406b1ea\",\"backup_hash\":\"c9f5fb26efa04ad53ba68d70a406b1ea\"},{\"table_name\":\"marquee_watch_history_sources\",\"current_hash\":\"3f683abf7fda4c6b6dd5c658c8b9f757\",\"backup_hash\":\"3f683abf7fda4c6b6dd5c658c8b9f757\"},{\"table_name\":\"marquee_statuses\",\"current_hash\":\"e5df58e54a09ad1b8d32729424f27f7e\",\"backup_hash\":\"e5df58e54a09ad1b8d32729424f27f7e\"},{\"table_name\":\"marquee_ratings\",\"current_hash\":\"1c98a66d5e763ce25d8d048991076fd9\",\"backup_hash\":\"1c98a66d5e763ce25d8d048991076fd9\"},{\"table_name\":\"marquee_watchlist\",\"current_hash\":\"6a65857525b4d82228e72283336540c6\",\"backup_hash\":\"6a65857525b4d82228e72283336540c6\"},{\"table_name\":\"marquee_source_mappings\",\"current_hash\":\"9f20c33fb6e0cb07d1144b2f07b854c3\",\"backup_hash\":\"9f20c33fb6e0cb07d1144b2f07b854c3\"},{\"table_name\":\"marquee_sync_state\",\"current_hash\":\"863fecb362f57a5fef43508691037728\",\"backup_hash\":\"863fecb362f57a5fef43508691037728\"}],\"rowCount\":7,\"command\":\"SELECT\"}"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"results\":[{\"rows\":[{\"source\":\"anilist\",\"mode\":\"disabled\",\"verified_at\":null,\"credential_blocked\":false,\"run_id\":null,\"lease_until\":null},{\"source\":\"crunchyroll\",\"mode\":\"disabled\",\"verified_at\":null,\"credential_blocked\":false,\"run_id\":null,\"lease_until\":null},{\"source\":\"trakt\",\"mode\":\"disabled\",\"verified_at\":null,\"credential_blocked\":false,\"run_id\":null,\"lease_until\":null}],\"rowCount\":3,\"command\":\"SELECT\"},{\"rows\":[{\"id\":\"20ea15ff-63cf-4c9e-863a-c0b28c6d5dc9\",\"source\":\"trakt\",\"status\":\"succeeded\",\"counts\":{\"feeds\":{\"ratings_shows\":33,\"history_movies\":56,\"ratings_movies\":6,\"watchlist_shows\":7,\"history_episodes\":3048,\"watchlist_movies\":6},\"floot\":{\"first\":{\"runId\":38,\"fetched\":2,\"skipped\":2,\"startAt\":\"2026-09-23T21:24:00.000Z\",\"updated\":0,\"inserted\":0,\"unmapped\":0,\"ratingsCount\":39,\"lastHistoryAt\":\"2026-09-25T21:24:00.000Z\",\"watchlistCount\":13},\"replay\":{\"runId\":39,\"fetched\":2,\"skipped\":2,\"startAt\":\"2026-09-23T21:24:00.000Z\",\"updated\":0,\"inserted\":0,\"unmapped\":0,\"ratingsCount\":39,\"lastHistoryAt\":\"2026-09-25T21:24:00.000Z\",\"watchlistCount\":13},\"discoveryDeferred\":true},\"remote\":{\"run_id\":\"d799e5f9-6051-4d69-90e1-280cc33bb7cb\",\"fetched\":3156,\"skipped\":2501,\"updated\":44,\"inserted\":0,\"unmapped\":611},\"replay\":{\"run_id\":\"5f673223-144f-44c7-bfcb-7d73362d3942\",\"fetched\":3156,\"skipped\":2501,\"updated\":44,\"inserted\":0,\"unmapped\":611},\"shadow\":true,\"flootCommitted\":false,\"supabaseCommitted\":false,\"rawFingerprintBefore\":\"4198fb5a73648b49eb6112b0a5a9af8b\"},\"error_code\":null},{\"id\":\"7dccea4f-11ad-43a3-b81e-a0ca7e214952\",\"source\":\"crunchyroll\",\"status\":\"succeeded\",\"counts\":{\"checks\":{\"historicalUndated\":true,\"fixturesRolledBack\":true,\"partialNotCompleted\":true,\"duplicateEvidenceOnce\":true,\"crossSourceCompletionOnce\":true,\"excludedOnePieceFairyTail\":true,\"manualPausedDroppedPreserved\":true,\"manualRatingWatchlistMappingsPreserved\":true},\"fixtures\":{\"held\":162,\"mode\":\"sync\",\"mapped\":217,\"fetched\":385,\"partial\":4,\"excluded\":2,\"newEvents\":4,\"profileReady\":true,\"newCompletions\":1,\"newDatedEvents\":0},\"canonicalCommitted\":false,\"fixtureVerification\":true},\"error_code\":null},{\"id\":\"559219a2-f7c1-4f7b-b4a7-3d8055c66102\",\"source\":\"crunchyroll\",\"status\":\"failed\",\"counts\":{},\"error_code\":\"TASK_TERMINAL_FAILURE\"},{\"id\":\"c474e24c-93c3-49fa-8b77-a2908a979767\",\"source\":\"crunchyroll\",\"status\":\"succeeded\",\"counts\":{\"held\":162,\"mode\":\"sync\",\"pages\":19,\"mapped\":215,\"shadow\":true,\"fetched\":380,\"partial\":3,\"excluded\":0,\"newEvents\":0,\"datePolicy\":\"48h-source-reported\",\"profileReady\":true,\"newCompletions\":0,\"newDatedEvents\":0,\"checkpointOverlap\":40,\"canonicalCommitted\":false},\"error_code\":null}],\"rowCount\":4,\"command\":\"SELECT\"}]}"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"results\":[{\"rows\":[{\"id\":\"380d4bc5-da22-4be8-b22c-4fb09d6b50a6\",\"source\":\"trakt\",\"status\":\"succeeded\",\"reference_run_id\":\"20ea15ff-63cf-4c9e-863a-c0b28c6d5dc9\",\"counts\":{\"feeds\":{\"ratings_shows\":33,\"history_movies\":56,\"ratings_movies\":6,\"watchlist_shows\":7,\"history_episodes\":3048,\"watchlist_movies\":6},\"floot\":{\"first\":{\"runId\":40,\"fetched\":2,\"skipped\":2,\"startAt\":\"2026-09-23T21:24:00.000Z\",\"updated\":0,\"inserted\":0,\"unmapped\":0,\"ratingsCount\":39,\"lastHistoryAt\":\"2026-09-25T21:24:00.000Z\",\"watchlistCount\":13},\"replay\":{\"runId\":41,\"fetched\":2,\"skipped\":2,\"startAt\":\"2026-09-23T21:24:00.000Z\",\"updated\":0,\"inserted\":0,\"unmapped\":0,\"ratingsCount\":39,\"lastHistoryAt\":\"2026-09-25T21:24:00.000Z\",\"watchlistCount\":13},\"discoveryDeferred\":true},\"remote\":{\"run_id\":\"b41e4938-e481-453a-bb10-ac4f4aac271e\",\"fetched\":3156,\"skipped\":2501,\"updated\":44,\"inserted\":0,\"unmapped\":611},\"replay\":{\"run_id\":\"d90462b7-7a2a-42e6-b98f-35b19f376ccd\",\"fetched\":3156,\"skipped\":2501,\"updated\":44,\"inserted\":0,\"unmapped\":611},\"shadow\":true,\"flootCommitted\":false,\"supabaseCommitted\":false,\"rawFingerprintBefore\":\"4198fb5a73648b49eb6112b0a5a9af8b\"}}],\"rowCount\":1,\"command\":\"SELECT\"},{\"rows\":[{\"conname\":\"marquee_crunchyroll_sync_runs_status_check\",\"definition\":\"CHECK ((status = ANY (ARRAY['running'::text, 'succeeded'::text, 'failed'::text])))\"},{\"conname\":\"marquee_crunchyroll_sync_runs_mode_check\",\"definition\":\"CHECK ((mode = ANY (ARRAY['preview'::text, 'sync'::text, 'shadow'::text])))\"}],\"rowCount\":2,\"command\":\"SELECT\"}]}"
+          }
+        ],
+        "isError": false
+      }
+    }
+  ]
+}

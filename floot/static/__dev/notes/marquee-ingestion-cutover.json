@@ -1,0 +1,131 @@
+{
+  "currentDatabaseConsolidation": {
+    "asOf": "2026-10-02T13:36Z",
+    "status": "NATIVE_DATABASE_CONSOLIDATION_ACCEPTED",
+    "releaseCheckpoint": "06dfb0dc-d35f-4d65-8ad3-d25268ad4c4b",
+    "nativeTraktStore": "native",
+    "nativeProvidersOpen": true,
+    "legacySourceWritersPaused": true,
+    "publishedOwnerAccessWriteUndoPassed": true,
+    "firstNativeTraktRun": 57,
+    "october1And2UnattendedCyclesVerified": true,
+    "timing": {
+      "decisionSeconds": 628.999,
+      "decision10Met": false,
+      "maximum15Met": true
+    },
+    "originalServicesCredentialsReleasesRetained": true,
+    "privateRunnerAndArchivesPreserved": true,
+    "fullAuthDisasterRecoveryProven": false,
+    "installedDeviceAcceptanceProven": false,
+    "permanentMonitoringAssigned": false,
+    "retirement": false,
+    "credentialRevocation": false,
+    "nativeEasBuild": false,
+    "evidence": "database-consolidation/production-execution-evidence-20261001.json",
+    "currentHandoff": "database-consolidation/production-rollover-handoff-20261001.md",
+    "livingPlan": "https://chatgpt.com/space/page_dc47939d2d44819188dae206b4ee668d"
+  },
+  "historicalIngestionPhaseFieldsPreserved": true,
+  "cutoverDate": "2026-09-30",
+  "approved": true,
+  "productionUrl": "https://marquee-ddibara.floot.app",
+  "scheduledProductionCyclesVerified": false,
+  "validationRuntime": "Authenticated editor queued helpers, live production database writes",
+  "sourceScopes": [
+    "trakt",
+    "crunchyroll"
+  ],
+  "sourceCadence": {
+    "trakt": "11:17 UTC daily",
+    "crunchyroll": "09:00 UTC daily"
+  },
+  "firstTwoCycleChecks": "2026-10-01 and 2026-10-02 08:00 America/New_York",
+  "backups": {
+    "crFloot": "117b1838-c160-4a20-9877-caedbb3e545c",
+    "traktFloot": "7564b008-936d-4f71-b760-49a600be87fc",
+    "traktSupabase": "a637fbee-108c-4d5e-ae9c-d15e84c2be53"
+  },
+  "runAndGateEvidence": {
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"results\":[{\"rows\":[{\"source\":\"anilist\",\"mode\":\"disabled\",\"verified_at\":null,\"credential_blocked\":false,\"retry_after\":null,\"run_id\":null,\"lease_until\":null,\"last_success_at\":null},{\"source\":\"crunchyroll\",\"mode\":\"live\",\"verified_at\":\"2026-09-30T18:13:49.477Z\",\"credential_blocked\":false,\"retry_after\":null,\"run_id\":null,\"lease_until\":null,\"last_success_at\":\"2026-09-30T18:15:37.580Z\"},{\"source\":\"trakt\",\"mode\":\"live\",\"verified_at\":\"2026-09-30T18:18:32.455Z\",\"credential_blocked\":false,\"retry_after\":null,\"run_id\":null,\"lease_until\":null,\"last_success_at\":\"2026-09-30T18:20:39.965Z\"}],\"rowCount\":3,\"command\":\"SELECT\"},{\"rows\":[{\"id\":\"6481c191-f60c-40a1-adfd-86d3633ee9ee\",\"source\":\"crunchyroll\",\"mode\":\"shadow\",\"status\":\"succeeded\",\"started_at\":\"2026-09-30T18:12:33.472Z\",\"finished_at\":\"2026-09-30T18:12:54.209Z\",\"counts\":{\"held\":162,\"mode\":\"sync\",\"pages\":19,\"mapped\":215,\"shadow\":true,\"fetched\":380,\"partial\":3,\"excluded\":0,\"newEvents\":0,\"datePolicy\":\"48h-source-reported\",\"profileReady\":true,\"newCompletions\":0,\"newDatedEvents\":0,\"checkpointOverlap\":40,\"canonicalCommitted\":false},\"error_code\":null},{\"id\":\"38e8dc0e-3562-45bf-b921-4bc8a496db12\",\"source\":\"crunchyroll\",\"mode\":\"live\",\"status\":\"succeeded\",\"started_at\":\"2026-09-30T18:13:53.039Z\",\"finished_at\":\"2026-09-30T18:14:14.827Z\",\"counts\":{\"held\":162,\"mode\":\"sync\",\"pages\":19,\"mapped\":215,\"shadow\":false,\"fetched\":380,\"partial\":3,\"excluded\":0,\"newEvents\":0,\"datePolicy\":\"48h-source-reported\",\"profileReady\":true,\"newCompletions\":0,\"newDatedEvents\":0,\"checkpointOverlap\":40,\"canonicalCommitted\":true},\"error_code\":null},{\"id\":\"b1d9825e-5241-4687-ab76-70e065284aea\",\"source\":\"crunchyroll\",\"mode\":\"live\",\"status\":\"succeeded\",\"started_at\":\"2026-09-30T18:15:12.110Z\",\"finished_at\":\"2026-09-30T18:15:37.580Z\",\"counts\":{\"held\":162,\"mode\":\"sync\",\"pages\":19,\"mapped\":215,\"shadow\":false,\"fetched\":380,\"partial\":3,\"excluded\":0,\"newEvents\":0,\"datePolicy\":\"48h-source-reported\",\"profileReady\":true,\"newCompletions\":0,\"newDatedEvents\":0,\"checkpointOverlap\":40,\"canonicalCommitted\":true},\"error_code\":null},{\"id\":\"912576c1-6271-42c4-9580-a900e2df8574\",\"source\":\"trakt\",\"mode\":\"shadow\",\"status\":\"succeeded\",\"started_at\":\"2026-09-30T18:17:13.934Z\",\"finished_at\":\"2026-09-30T18:17:37.050Z\",\"counts\":{\"feeds\":{\"ratings_shows\":33,\"history_movies\":56,\"ratings_movies\":6,\"watchlist_shows\":7,\"history_episodes\":3048,\"watchlist_movies\":6},\"floot\":{\"first\":{\"runId\":42,\"fetched\":2,\"skipped\":2,\"startAt\":\"2026-09-23T21:24:00.000Z\",\"updated\":0,\"inserted\":0,\"unmapped\":0,\"ratingsCount\":39,\"lastHistoryAt\":\"2026-09-25T21:24:00.000Z\",\"watchlistCount\":13},\"replay\":{\"runId\":43,\"fetched\":2,\"skipped\":2,\"startAt\":\"2026-09-23T21:24:00.000Z\",\"updated\":0,\"inserted\":0,\"unmapped\":0,\"ratingsCount\":39,\"lastHistoryAt\":\"2026-09-25T21:24:00.000Z\",\"watchlistCount\":13},\"discoveryDeferred\":true},\"remote\":{\"run_id\":\"d7350c0b-3e51-4e3c-94df-cf9ea053fa63\",\"fetched\":3156,\"skipped\":2501,\"updated\":44,\"inserted\":0,\"unmapped\":611},\"replay\":{\"run_id\":\"538d4e90-bb70-449e-b351-0f85800e79d3\",\"fetched\":3156,\"skipped\":2501,\"updated\":44,\"inserted\":0,\"unmapped\":611},\"shadow\":true,\"flootCommitted\":false,\"supabaseCommitted\":false,\"rawFingerprintBefore\":\"4198fb5a73648b49eb6112b0a5a9af8b\"},\"error_code\":null},{\"id\":\"d6098190-f312-49d3-9baa-f3bc7d663e39\",\"source\":\"trakt\",\"mode\":\"live\",\"status\":\"succeeded\",\"started_at\":\"2026-09-30T18:18:36.215Z\",\"finished_at\":\"2026-09-30T18:18:59.224Z\",\"counts\":{\"feeds\":{\"ratings_shows\":33,\"history_movies\":56,\"ratings_movies\":6,\"watchlist_shows\":7,\"history_episodes\":3048,\"watchlist_movies\":6},\"floot\":{\"runId\":46,\"fetched\":2,\"skipped\":2,\"startAt\":\"2026-09-23T21:24:00.000Z\",\"updated\":0,\"inserted\":0,\"unmapped\":0,\"ratingsCount\":39,\"lastHistoryAt\":\"2026-09-25T21:24:00.000Z\",\"watchlistCount\":13},\"remote\":{\"run_id\":\"d7b9a803-4ca5-4419-b82b-c4f160b504ad\",\"fetched\":3156,\"skipped\":2501,\"updated\":44,\"inserted\":0,\"unmapped\":611},\"replay\":null,\"shadow\":false,\"flootCommitted\":true,\"supabaseCommitted\":true,\"rawFingerprintBefore\":\"4198fb5a73648b49eb6112b0a5a9af8b\"},\"error_code\":null},{\"id\":\"954bdb06-d200-4733-9496-f4d6eef14d4e\",\"source\":\"trakt\",\"mode\":\"live\",\"status\":\"succeeded\",\"started_at\":\"2026-09-30T18:20:17.129Z\",\"finished_at\":\"2026-09-30T18:20:39.965Z\",\"counts\":{\"feeds\":{\"ratings_shows\":33,\"history_movies\":56,\"ratings_movies\":6,\"watchlist_shows\":7,\"history_episodes\":3048,\"watchlist_movies\":6},\"floot\":{\"runId\":49,\"fetched\":2,\"skipped\":2,\"startAt\":\"2026-09-23T21:24:00.000Z\",\"updated\":0,\"inserted\":0,\"unmapped\":0,\"ratingsCount\":39,\"lastHistoryAt\":\"2026-09-25T21:24:00.000Z\",\"watchlistCount\":13},\"remote\":{\"run_id\":\"781ad7e3-6f20-43b7-970c-531bb4601417\",\"fetched\":3156,\"skipped\":2501,\"updated\":44,\"inserted\":0,\"unmapped\":611},\"replay\":null,\"shadow\":false,\"flootCommitted\":true,\"supabaseCommitted\":true,\"rawFingerprintBefore\":\"bbc73852263a0c9f21879abd94797db5\"},\"error_code\":null}],\"rowCount\":6,\"command\":\"SELECT\"}]}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  "remoteCommitBackupEvidence": {
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"results\":[{\"rows\":[{\"id\":\"de9d1c5f-bea2-43cf-b480-63c9cae8fe50\",\"created_at\":\"2026-09-30T18:18:51.279Z\",\"run_id\":\"d6098190-f312-49d3-9baa-f3bc7d663e39\"},{\"id\":\"ad7a2091-b449-4e75-8590-244354b92e4d\",\"created_at\":\"2026-09-30T18:20:31.832Z\",\"run_id\":\"954bdb06-d200-4733-9496-f4d6eef14d4e\"}],\"rowCount\":2,\"command\":\"SELECT\"},{\"rows\":[{\"source\":\"anilist\",\"last_success_at\":\"2026-09-23T19:28:33.726Z\",\"last_error\":null},{\"source\":\"crunchyroll\",\"last_success_at\":\"2026-09-25T18:07:44.648Z\",\"last_error\":null},{\"source\":\"trakt\",\"last_success_at\":\"2026-09-30T18:20:31.832Z\",\"last_error\":null}],\"rowCount\":3,\"command\":\"SELECT\"}]}"
+        }
+      ],
+      "isError": false
+    }
+  },
+  "integrity": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"rows\":[{\"table_name\":\"marquee_watch_events\",\"live_hash\":\"77d5054d26cf496b12cf2475d38ebeab\",\"backup_hash\":\"77d5054d26cf496b12cf2475d38ebeab\"},{\"table_name\":\"marquee_title_watch_events\",\"live_hash\":\"3b5307928d691d5d3fd674d0bf29df62\",\"backup_hash\":\"3b5307928d691d5d3fd674d0bf29df62\"},{\"table_name\":\"marquee_source_mappings\",\"live_hash\":\"d67f7fde3390d48360ee643d9fe5bf0d\",\"backup_hash\":\"d67f7fde3390d48360ee643d9fe5bf0d\"},{\"table_name\":\"marquee_legacy_statuses\",\"live_hash\":\"e3906e0255d7211c9bef46ec64047b18\",\"backup_hash\":\"e3906e0255d7211c9bef46ec64047b18\"},{\"table_name\":\"marquee_legacy_ratings\",\"live_hash\":\"812a1bf04c232bd8c221a016a8b80508\",\"backup_hash\":\"812a1bf04c232bd8c221a016a8b80508\"},{\"table_name\":\"marquee_legacy_watchlist\",\"live_hash\":\"efb962910f7785912a3f8a2ebba9cc4a\",\"backup_hash\":\"efb962910f7785912a3f8a2ebba9cc4a\"},{\"table_name\":\"marquee_manual_episode_completions\",\"live_hash\":\"6ce5d0a2fe87b77f853ebefac4dddb08\",\"backup_hash\":\"6ce5d0a2fe87b77f853ebefac4dddb08\"},{\"table_name\":\"marquee_manual_title_statuses\",\"live_hash\":\"d751713988987e9331980363e24189ce\",\"backup_hash\":\"d751713988987e9331980363e24189ce\"},{\"table_name\":\"marquee_episode_unwatched\",\"live_hash\":\"6e0a0e0aa6a65aa6ed73a7cbc81a913b\",\"backup_hash\":\"6e0a0e0aa6a65aa6ed73a7cbc81a913b\"},{\"table_name\":\"marquee_legacy_completions\",\"live_hash\":\"d49765d83efc581816191456d65cf78d\",\"backup_hash\":\"d49765d83efc581816191456d65cf78d\"},{\"table_name\":\"marquee_manual_trakt_outbox\",\"live_hash\":\"073b1764bc84f53412fb267bb7cd9856\",\"backup_hash\":\"073b1764bc84f53412fb267bb7cd9856\"},{\"table_name\":\"marquee_legacy_links\",\"live_hash\":\"9f0e019251e5304356f21af19dd48458\",\"backup_hash\":\"9f0e019251e5304356f21af19dd48458\"},{\"table_name\":\"marquee_trakt_ratings\",\"live_hash\":\"01320e97467be911c1860c6a5eef6224\",\"backup_hash\":\"01320e97467be911c1860c6a5eef6224\"},{\"table_name\":\"marquee_trakt_watchlist\",\"live_hash\":\"6ef1e87429b64c3b2c87a86b78a868e8\",\"backup_hash\":\"6ef1e87429b64c3b2c87a86b78a868e8\"}],\"rowCount\":14,\"command\":\"SELECT\"}"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"rows\":[{\"table_name\":\"marquee_watch_history\",\"live_hash\":\"c9f5fb26efa04ad53ba68d70a406b1ea\",\"backup_hash\":\"c9f5fb26efa04ad53ba68d70a406b1ea\"},{\"table_name\":\"marquee_watch_history_sources\",\"live_hash\":\"3f683abf7fda4c6b6dd5c658c8b9f757\",\"backup_hash\":\"3f683abf7fda4c6b6dd5c658c8b9f757\"},{\"table_name\":\"marquee_statuses\",\"live_hash\":\"e5df58e54a09ad1b8d32729424f27f7e\",\"backup_hash\":\"e5df58e54a09ad1b8d32729424f27f7e\"},{\"table_name\":\"marquee_ratings\",\"live_hash\":\"3f73e4d26a9506adf9049cf42150767f\",\"backup_hash\":\"3f73e4d26a9506adf9049cf42150767f\"},{\"table_name\":\"marquee_watchlist\",\"live_hash\":\"b29948a2d4ee4e4d7b6317338664459a\",\"backup_hash\":\"b29948a2d4ee4e4d7b6317338664459a\"},{\"table_name\":\"marquee_source_mappings\",\"live_hash\":\"9f20c33fb6e0cb07d1144b2f07b854c3\",\"backup_hash\":\"9f20c33fb6e0cb07d1144b2f07b854c3\"}],\"rowCount\":6,\"command\":\"SELECT\"}"
+        }
+      ],
+      "isError": false
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"results\":[{\"rows\":[{\"events\":\"2456\",\"distinct_dated_episodes\":\"2374\",\"latest\":\"2026-09-30T03:32:46.000Z\"}],\"rowCount\":1,\"command\":\"SELECT\"},{\"rows\":[{\"canonical_completed_episodes\":\"4103\"}],\"rowCount\":1,\"command\":\"SELECT\"},{\"rows\":[{\"undated_completions\":\"1683\"}],\"rowCount\":1,\"command\":\"SELECT\"},{\"rows\":[{\"title_events\":\"56\"}],\"rowCount\":1,\"command\":\"SELECT\"}]}"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"rows\":[{\"source\":\"crunchyroll\",\"rows\":\"3\",\"latest\":\"2026-09-24T03:16:26.000Z\"},{\"source\":\"trakt\",\"rows\":\"2501\",\"latest\":\"2026-09-25T02:23:00.000Z\"}],\"rowCount\":2,\"command\":\"SELECT\"}"
+          }
+        ],
+        "isError": false
+      }
+    }
+  ],
+  "integrityNormalization": "Only updated_at excluded for four source rating/watchlist tables; other16 exact. Operational sync state advanced.",
+  "databasePreparationRecord": {
+    "path": "static/__dev/notes/database-consolidation.md",
+    "evidence": "static/__dev/notes/database-consolidation.json",
+    "preparedOn": "2026-09-30",
+    "databaseCutoverApproved": false,
+    "productionDatabaseSwitched": false,
+    "productionAuthChanged": false,
+    "scheduledChecksStillRequired": true,
+    "monitoringGap": "Current follow-up expires after October 1\u20132 checks"
+  }
+}

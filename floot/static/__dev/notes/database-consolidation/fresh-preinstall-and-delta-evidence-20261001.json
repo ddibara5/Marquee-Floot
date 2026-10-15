@@ -1,0 +1,185 @@
+{
+  "asOf": "2026-10-01T23:05:00Z",
+  "status": "PREPARATION_VERIFIED_PRODUCTION_SCOPE_CLARIFICATION_PENDING",
+  "productionActivated": false,
+  "publicationPerformed": false,
+  "liveMigrationBindingsInstalled": false,
+  "productionPauseStarted": false,
+  "completedRunnersPreserved": true,
+  "frozenFinalDeltaRequired": true,
+  "fullProductionRollbackProven": false,
+  "maxPauseMinutes": 15,
+  "abortDecisionMinutes": 10,
+  "authorization": {
+    "originalProductionHoldRetained": true,
+    "questionPending": "Whether Proceed authorizes a gated production window or preparation only",
+    "retirementAuthorized": false,
+    "credentialRevocationAuthorized": false
+  },
+  "sourceDrain": {
+    "productionFreezeProven": false,
+    "expiredLeaseIsNotDrainProof": true
+  },
+  "restorationLimit": "Exact typed rows and protected operational/catalog/Auth configuration evidence. No functional service/Auth disaster restoration or provider drain inferred.",
+  "app": "Marquee",
+  "projectId": "9ba56374-eb1b-4942-af2f-e15e4df14755",
+  "codeCheckpoint": "f0d67321-887c-4050-9e8d-ac07810a4f32",
+  "backupBindingFixCheckpoint": "bc8b2d72-e23e-4fa9-881a-7a43a4a61552",
+  "backups": {
+    "source": {
+      "id": "4d5576ff-c006-40f5-9028-bc8c96821785",
+      "app": "marquee",
+      "source": "legacy",
+      "cipherHash": "abac97db9d0e4394ff7924bdd7a184b0759fca9435926720a2e14120b5f26be4",
+      "plainHash": "299ac19a5846e8f4fbd51bd1a0b20bd91da779324fd55be2ab712721cbc4d3e5",
+      "tables": 21,
+      "rows": 34551,
+      "authTables": 15,
+      "bytes": 8276484,
+      "decryptVerified": true,
+      "restore": {
+        "backupId": "4d5576ff-c006-40f5-9028-bc8c96821785",
+        "schema": "restore_marquee_20260930_4d5576ffc006",
+        "restoredTables": 21,
+        "restoredRows": 34551,
+        "authEvidenceTables": 15,
+        "exactRowHashVerified": true,
+        "scope": "typed app data plus protected schema/Auth/config evidence; no production connection or auth switch"
+      },
+      "frozen": false
+    },
+    "native": {
+      "id": "758cfa42-79a8-4f12-a108-2538e834ab3f",
+      "app": "marquee",
+      "source": "native",
+      "cipherHash": "384c9edcf5c31580f6f7cadd330de44c872d1eda01bf1271e4ef7364d617d879",
+      "plainHash": "1c2e0e170342e48a90b65b68deb8edbab0b55418ffd3735b4069e7e43af8e853",
+      "tables": 42,
+      "rows": 36848,
+      "authTables": 0,
+      "bytes": 35045480,
+      "decryptVerified": true,
+      "runtimeShapes": 42,
+      "mode": "pre-install",
+      "scope": "fixed native runtime42, native Auth/manual state and protected operational/DDL evidence",
+      "fullProductionRestoreProven": false,
+      "restore": {
+        "backupId": "758cfa42-79a8-4f12-a108-2538e834ab3f",
+        "schema": "restore_marquee_20260930_758cfa4279a8",
+        "restoredTables": 42,
+        "restoredRows": 36848,
+        "authEvidenceTables": 0,
+        "exactRowHashVerified": true,
+        "scope": "typed app data plus protected schema/Auth/config evidence; no production connection or auth switch"
+      },
+      "frozen": false,
+      "actualFixedPublicBindingsInstalled": false
+    }
+  },
+  "backupLabelCorrection": {
+    "originalReceipt": "758cfa42-79a8-4f12-a108-2538e834ab3f",
+    "originalField": "all42BindingsInstalled",
+    "originalValue": true,
+    "correctedValue": false,
+    "reason": "Count-only check observed 42 candidate relations; physical public runtime42 map was not installed.",
+    "originalReceiptPreserved": true,
+    "codeNowChecksExactPhysicalPaths": true,
+    "actualRegistry": {
+      "candidate": 42,
+      "public": 0,
+      "journal": 0,
+      "unreleasedLeases": 0
+    }
+  },
+  "historicalArchive": {
+    "sourceRows": 6,
+    "originalFiveFullRowHashesUnchanged": true,
+    "original131FragmentsAndFiveAssembledRowsPreserved": true,
+    "newRowId": "19bd2233-6053-496c-a58a-1f1630496cdd",
+    "additionalBackupId": "1deda4d4-f8d2-4556-a6d3-e7d90bdbaf07",
+    "rows": 1,
+    "tables": 1,
+    "bytes": 2610560,
+    "cipherHash": "f1c95c0bfa792112a6f4f4d276f816e4fa365780b8402105c3c275b4b6483aba",
+    "plainHash": "dc55b0955d26b86fe5873d999873c6c2e2e2c7e5c87b00e013883cbe7c7a6cf8",
+    "restoreSchema": "restore_marquee_20260930_1deda4d4f8d2",
+    "exactTypedRestore": true,
+    "frozen": false
+  },
+  "comparison": {
+    "againstSourceBackup": "4d5576ff-c006-40f5-9028-bc8c96821785",
+    "liveSnapshotAtomic": false,
+    "actualProductionBridgeAdditionsApplied": false,
+    "bridgeAdditions": [
+      {
+        "table": "marquee_legacy_links",
+        "keyFields": [
+          "entity_type",
+          "source_id"
+        ]
+      },
+      {
+        "table": "marquee_source_mappings",
+        "keyFields": [
+          "source",
+          "source_entity_type",
+          "source_id"
+        ]
+      },
+      {
+        "table": "marquee_legacy_ratings",
+        "keyFields": [
+          "source_id"
+        ]
+      }
+    ],
+    "prospectiveOverlayOnly": {
+      "historyConflicts": 0,
+      "mappingConflicts": 0,
+      "seedStateConflicts": 0,
+      "missingHistoryEvents": 6,
+      "missingSourceMappings": 9,
+      "allRemainingMissingEntities": "Existing ONE PIECE exclusion; source records remain protected"
+    },
+    "nativeOnlyHistoryEvents": 18,
+    "nativeOnlyCompletions": 18,
+    "duplicateSourceEventKeys": 0,
+    "canonicalCoveredAfterUnwatch": 4105,
+    "manualStateAndCurrentRatingUnchanged": true
+  },
+  "privateDeltaRehearsal": {
+    "receiptId": "eed96ff5-35f1-489c-b196-1e5fddeeb296",
+    "at": "2026-10-01T22:59:53.178Z",
+    "fixture": "exercise_marquee_bridge_20261001",
+    "barrier": "barrier_marquee_bridge_20261001",
+    "sameApplyCore": true,
+    "additions": 3,
+    "replayChanges": 0,
+    "lateConflictAtomic": true,
+    "reverseExact": true,
+    "publicBridgeTablesUnchanged": true,
+    "providerEffects": false,
+    "barrierOpen": true,
+    "completedOriginalRunner13Untouched": true
+  },
+  "sourceAndProviderObservation": {
+    "oldN8nCrunchyrollInactive": true,
+    "oldN8nTraktInactive": true,
+    "oldWorkflowExecutionPagesExhausted": true,
+    "waitingExecutions": 0,
+    "pendingRatings": 0,
+    "pendingWatchlist": 0,
+    "outboxRows": 5,
+    "outboxAllRemoved": true,
+    "unfinishedImports": 0,
+    "publishedLogObservation": {
+      "at": "2026-10-01T22:49:48.681Z",
+      "windowMinutes": 30,
+      "pagesExhausted": true,
+      "events": 0,
+      "provesProviderDrain": false
+    }
+  },
+  "inertDeltaFile": "prepared-final-bridge-delta-20261001.sql",
+  "typecheck": "clean"
+}

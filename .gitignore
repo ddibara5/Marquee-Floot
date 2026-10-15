@@ -1,0 +1,13 @@
+node_modules/
+floot/node_modules/
+floot/dist/
+floot/env.json
+.DS_Store
+# Capacitor/Xcode generated
+ios/App/App/public/
+ios/App/App/capacitor.config.json
+ios/App/App/config.xml
+ios/DerivedData/
+ios/App/build/
+xcuserdata/
+floot/pnpm-lock.yaml

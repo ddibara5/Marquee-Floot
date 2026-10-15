@@ -1,0 +1,73 @@
+{
+  "asOf": "2026-10-01T18:08:44.794Z",
+  "preparationOnly": true,
+  "productionChanged": false,
+  "approvedRollbackScope": "retained-service",
+  "userDecision": "Keep existing shared Supabase Auth available during rollback window; GameDeck may require original-service re-login after rollback. Floot native sign-in is the normal post-cutover path.",
+  "paidBranchRequired": false,
+  "branchCreated": false,
+  "upgradePurchased": false,
+  "nativeAuthServiceRestoration": false,
+  "legacyAuthServiceRestorationProven": false,
+  "fullProductionRollbackProven": false,
+  "gameDeck": {
+    "normalAuth": "Selected native Floot password enrollment; still disabled",
+    "rollbackAuth": "Original Supabase project and owner; original credentials, configuration and pre-cutover release retained",
+    "newCoordinator": "Explicit retained-service mode; restore-service remains default for historical callers",
+    "readOnlyVerifier": "GET original /auth/v1/user with existing owner session, anonymous GET rejection; application UUID guard rejects non-owner",
+    "receiptRequirements": "Trusted backend baseline/current config and stable credential fingerprints; original release availability; durable receipt; exact batch/digest/project/owner; evidence at most two minutes old; no tokens in receipt",
+    "liveOwnerServiceProof": false,
+    "preparationBaseline": {
+      "id": "147700e5-e278-4f3c-a45a-1aa047a26f94",
+      "actualProtectedSettingsRead": true,
+      "actualStableOwnerCredentialRead": true,
+      "actualRetainedProductionReleaseMatched": true,
+      "oneUseCapabilityReplayHttp": 403,
+      "finalWindowBackup": false,
+      "liveOwnerAuthentication": false
+    },
+    "trustedBackendFactory": "helpers/migrationRetainedAuthStore.tsx:createGameDeckRetainedServiceRollback; baseline/current source readers and protected receipt persistence wired"
+  },
+  "marquee": {
+    "normalAuth": "Existing native Floot Auth",
+    "rollbackAuth": "Existing native Floot Auth, with legacy UUID only for domain reconciliation",
+    "legacyAuthRestoreActivationGate": false,
+    "legacyVercelAuthRetained": "Auxiliary old app only; unchanged"
+  },
+  "disasterRecovery": {
+    "status": "Separate unresolved requirement",
+    "contract": "legacy-auth-recovery-contract-20261001.json",
+    "requiredBefore": "Claiming full Auth restoration or approving removal of the retained Auth fallback",
+    "notWaived": true
+  },
+  "safeguards": [
+    "No production publication, switch, trigger installation, service retirement, credential revocation or callback patch",
+    "Native credentials are never copied into legacy GoTrue",
+    "Writer draining, reverse-delta parity, fresh final-window backup/restore and caller disposition remain required",
+    "No automatic writer resumption or n8n reactivation",
+    "If retained Auth fails, stay paused; do not label the disaster path verified"
+  ],
+  "pending": [
+    "Secure live owner-access receipt and protected pre-window Auth binding/credential baseline for GameDeck",
+    "Bind prepared retained-service factory to the final approved production rollback window; no automatic execution",
+    "Retained release/environment validity and owner read/write/undo after reversal",
+    "Actual native/external draining and caller dispositions",
+    "Fresh final-window backups/delta and per-app activation approval",
+    "Marquee October 2 scheduled verification and ongoing monitoring decision"
+  ],
+  "verification": {
+    "gameDeckSpecFilesPassed": [
+      "retainedLegacyAuthRollback.spec.tsx",
+      "gameDeckComposedRollback.spec.tsx",
+      "migrationWriter.spec.tsx"
+    ],
+    "marqueeSpecFilesPassed": [
+      "completeTraktSnapshot.spec.tsx",
+      "migrationWriter.spec.tsx"
+    ],
+    "bothTypechecksClean": true,
+    "retainedAuthTransportInSpecs": "mocked",
+    "actualOwnerServiceProof": false
+  },
+  "app": "Marquee"
+}

@@ -1,0 +1,87 @@
+{
+  "asOf": "2026-10-02T00:50:00Z",
+  "app": "Marquee",
+  "projectId": "9ba56374-eb1b-4942-af2f-e15e4df14755",
+  "status": "MAINTENANCE_RELEASE_PUBLISHED_PRE_PAUSE_VERIFIED",
+  "checkpoint": "3cedd99d-f1c6-4e0d-a203-fea978a6a9bd",
+  "publishJob": "af02246d-6a25-4bc2-80bf-4856fb8b19bd",
+  "url": "https://marquee-ddibara.floot.app",
+  "clientAsset": "/_assets/index-kE2Tx3Re.js",
+  "build": {
+    "traktStore": "dual",
+    "physicalBarrier": false,
+    "admission": true
+  },
+  "publishedAcceptance": {
+    "owner": 1,
+    "session": 200,
+    "history": 200,
+    "historyEvents": 60,
+    "anonymousRead": 401,
+    "anonymousWrite": 401,
+    "controlledManualSet": 200,
+    "controlledManualUndo": 200,
+    "titleId": 1,
+    "baselineManualRows": 0,
+    "afterUndoManualRows": 0,
+    "providerEffect": false
+  },
+  "admission": {
+    "nativeMode": "open",
+    "epoch": 0,
+    "providerAdmissionOpen": true,
+    "unresolvedLeases": 0,
+    "allObservedEndpointKindsReleased": true
+  },
+  "archives": {
+    "sourceRows": 6,
+    "nativeOriginalRows": 5,
+    "originalParts": 131,
+    "sixthExactTypedRestore": "restore_marquee_20260930_1deda4d4f8d2",
+    "fullRowHashesMatch": true,
+    "frozen": false
+  },
+  "callers": {
+    "oldCrunchyrollInactive": true,
+    "oldTraktInactive": true,
+    "n8nExecutionPagesExhausted": true,
+    "waiting": 0,
+    "githubNonterminalStatuses": [
+      "in_progress",
+      "queued",
+      "waiting",
+      "requested",
+      "pending"
+    ],
+    "githubAllZero": true
+  },
+  "publishedLogs": {
+    "from": "2026-10-02T00:10:12.251Z",
+    "to": "2026-10-02T00:48:33.791Z",
+    "pages": 2,
+    "events": 166,
+    "exhausted": true,
+    "unmatchedStartedRequests": 0,
+    "providerRequests": 0,
+    "errors": 0
+  },
+  "sourceQuery": {
+    "directConnectorHashTimedOut": true,
+    "vmHashQueryPassed": true,
+    "elapsedMs": 27037
+  },
+  "retainedRelease": {
+    "deployment": "dpl_8zUAb5prgTaNtgJSRhmEqEKk5AKG",
+    "state": "READY",
+    "commit": "142d22cc1d6edb1f107c9690623e2143be865809"
+  },
+  "productionPauseStarted": false,
+  "publicLiveBindingsInstalled": false,
+  "deltaApplied": false,
+  "cutoverPerformed": false,
+  "nativeBuild": false,
+  "retirement": false,
+  "credentialsRevoked": false,
+  "approvalStillValid": true,
+  "remaining": "Fresh enforced native/provider/source drain; exact bindings; frozen backups/restores/full delta; native release and controlled acceptance; provider resume. GameDeck after independently completed Marquee."
+}

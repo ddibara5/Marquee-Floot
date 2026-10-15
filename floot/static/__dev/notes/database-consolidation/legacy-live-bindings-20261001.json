@@ -1,0 +1,181 @@
+{
+  "app": "marquee",
+  "asOf": "2026-10-01T17:29:34.972Z",
+  "installed": false,
+  "sourceProject": "eiskobjlvxzwvucgpenk",
+  "barrier": "barrier_marquee_legacy_live_20261001",
+  "shapeHashFormat": "typeOid/typeMod, column ordinal/name, nullability, identity and generated metadata; search_path-independent and scoped to this source resource",
+  "targets": [
+    {
+      "name": "marquee_episodes",
+      "pk": [
+        "id"
+      ],
+      "shape_hash": "06504ff805fe7aef58ffdd0235862b8b",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_franchise_overrides",
+      "pk": [
+        "id"
+      ],
+      "shape_hash": "6df2aca0e447f0e822b93322a9991c09",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_ingest_raw",
+      "pk": [
+        "id"
+      ],
+      "shape_hash": "a31ed3bba79d127726690bb2c803b68e",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_mapping_review",
+      "pk": [
+        "id"
+      ],
+      "shape_hash": "36031e8c6a4790273eec257ba78d08dd",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_movies",
+      "pk": [
+        "title_id"
+      ],
+      "shape_hash": "499884b0305b46fdf64ca9f2695c1293",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_ratings",
+      "pk": [
+        "id"
+      ],
+      "shape_hash": "bd4cac5bf7fa2761fc0bb5d289057e4e",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_season_release_schedules",
+      "pk": [
+        "season_id"
+      ],
+      "shape_hash": "1c62d6066bfffa074c1ae6ef8059cbec",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_seasons",
+      "pk": [
+        "id"
+      ],
+      "shape_hash": "716a119ced53c5980d053359a3bd477f",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_shows",
+      "pk": [
+        "title_id"
+      ],
+      "shape_hash": "f9e0873f4aafb5ba346d2074dd3aa01f",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_source_mappings",
+      "pk": [
+        "id"
+      ],
+      "shape_hash": "959232c62d38c57eda9c726ae6b57e34",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_statuses",
+      "pk": [
+        "id"
+      ],
+      "shape_hash": "99d2a41d344a4a4a0718f57b5095c1bc",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_sync_runs",
+      "pk": [
+        "id"
+      ],
+      "shape_hash": "66ea9711bdb8515a1cd9eb5d4a5d0227",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_sync_state",
+      "pk": [
+        "source",
+        "scope_key"
+      ],
+      "shape_hash": "7757a6e9a92f44a0e2695978af63d5b4",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_titles",
+      "pk": [
+        "id"
+      ],
+      "shape_hash": "8d9d77d58481540518d61bc04d431e12",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_undated_completion_evidence",
+      "pk": [
+        "id"
+      ],
+      "shape_hash": "d20badd39afbbf3d3b7278668717f341",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_undated_completions",
+      "pk": [
+        "id"
+      ],
+      "shape_hash": "4f027d8ac462efbf2b2652ddf1a7c37d",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_verified_season_totals",
+      "pk": [
+        "anilist_media_id"
+      ],
+      "shape_hash": "c2ce3554ea71ba90a8fbabc0442e1069",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_watch_date_decisions",
+      "pk": [
+        "raw_id"
+      ],
+      "shape_hash": "1223d15205f950bf13693ce56e093bfb",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_watch_history",
+      "pk": [
+        "id"
+      ],
+      "shape_hash": "51a7e56743dbd19f377f3bd447626aa0",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_watch_history_sources",
+      "pk": [
+        "id"
+      ],
+      "shape_hash": "4bf8de3a60a71b12f88ad62554df6032",
+      "owner": "postgres"
+    },
+    {
+      "name": "marquee_watchlist",
+      "pk": [
+        "user_id",
+        "title_id"
+      ],
+      "shape_hash": "ab0ea6ed3e38f5478d478a71598cc083",
+      "owner": "postgres"
+    }
+  ],
+  "sharedLegacyAuth": "unchanged/excluded from domain barrier"
+}

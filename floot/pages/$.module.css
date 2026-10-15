@@ -1,0 +1,4 @@
+.notFound { padding:32px 0; text-align:center; }
+.notFound h2 { margin:0 0 8px; font:600 var(--text-heading)/1.3 var(--font-family-display); }
+.notFound p { margin:0 auto; max-width:32rem; color:var(--muted-foreground); font-size:14px; line-height:1.5; }
+.actions { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-top:24px; }

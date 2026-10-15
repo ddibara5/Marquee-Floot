@@ -1,0 +1,3 @@
+import {useQuery,useQueryClient} from "@tanstack/react-query";
+import {preferences} from "../endpoints/enhancement-preferences_POST.schema";
+export function useEnhancementPreferences(){const client=useQueryClient();const query=useQuery({queryKey:["mq","enhancement-preferences"],queryFn:()=>preferences({action:"get"}),retry:false,staleTime:60000});const save=async(input:Parameters<typeof preferences>[0])=>{const values=await preferences(input);client.setQueryData(["mq","enhancement-preferences"],values);await client.invalidateQueries({queryKey:["marquee"]});return values;};return {...query,save};}
