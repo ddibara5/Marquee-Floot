@@ -41,9 +41,9 @@ workflows:
         script: npm ci
       - name: Build Marquee web app
         script: npm run build:web
-      - name: App icon from Marquee's Floot icon (flattened, 1024x1024)
+      - name: App icon from native/app-icon.png (flattened, 1024x1024)
         script: |
-          ICON=floot/dist/_cdn/static/71ebcbb9-5db2-493a-9825-c003ab9a9924-marquee-icon-a4.png
+          ICON=native/app-icon.png
           sips -z 1024 1024 -s format jpeg "$ICON" --out /tmp/icon.jpg
           sips -s format png /tmp/icon.jpg --out ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
       - name: Copy web app into iOS project

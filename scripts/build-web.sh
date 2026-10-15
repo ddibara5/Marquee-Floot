@@ -20,7 +20,4 @@ sed -i.bak 's#width=device-width, initial-scale=1.0#width=device-width, initial-
 rm dist/index.html.bak
 grep -q native-shim.js dist/index.html && grep -q viewport-fit=cover dist/index.html
 
-# The app icon is served from Floot's CDN path; bundle it so it loads offline.
-ICON=_cdn/static/71ebcbb9-5db2-493a-9825-c003ab9a9924-marquee-icon-a4.png
-mkdir -p "dist/$(dirname "$ICON")"
-curl -fsSL "https://marquee-ddibara.floot.app/$ICON" -o "dist/$ICON"
+# The app icon ships in the repo (native/app-icon.png, same file as Floot's iconUrl), so no download is needed.
