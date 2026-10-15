@@ -99,9 +99,10 @@ export default function AppShell({ children }: PropsWithChildren) {
       await NativeNavigation.finishTransition({ direction: "back", duration: BACK_SLIDE_MS }).catch(() => {});
     })();
   };
-  const nativeLeft: NativeHeaderItem[] = subpage ? [{ id: "back", title: "Back", symbol: "chevron.backward" }] :
-    [{ id: "refresh", title: "Refresh " + accessibleTitle, symbol: "arrow.clockwise", enabled: !refreshing }];
-  const nativeRight: NativeHeaderItem[] = subpage ? [] : [{ id: "settings", title: "Settings", symbol: "gearshape" }];
+  // Main tabs keep the left free for the Home brand: Settings sits rightmost, Refresh beside it.
+  const nativeLeft: NativeHeaderItem[] = subpage ? [{ id: "back", title: "Back", symbol: "chevron.backward" }] : [];
+  const nativeRight: NativeHeaderItem[] = subpage ? [] : [{ id: "settings", title: "Settings", symbol: "gearshape" },
+    { id: "refresh", title: "Refresh " + accessibleTitle, symbol: "arrow.clockwise", enabled: !refreshing }];
   const nativeAction = (id: string) => id === "back" ? back() : id === "refresh" ? void refreshTab() : id === "settings" ? navigate("/settings") : undefined;
 
   return (
