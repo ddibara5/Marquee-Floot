@@ -1,6 +1,8 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Capacitor, SystemBars, SystemBarsStyle } from "@capacitor/core";
+import { WindowAppearance } from "@ddibara5/capacitor-window-appearance";
 import { ThemeModeProvider, useThemeMode } from "../helpers/themeMode";
 import { TooltipProvider } from "./Tooltip";
 import { SonnerToaster } from "./SonnerToaster";
@@ -28,6 +30,15 @@ function AppHead() {
     return () => media.removeEventListener("change", update);
   }, []);
   const dark = mode === "dark" || (mode === "auto" && systemDark);
+  // iPhone app: UIKit bars, sheets and the keyboard draw in the window's appearance, so the window follows the
+  // chosen mode (Light, Dark, Device). Clock and battery icons follow the palette; Capacitor names the BAR,
+  // so "DARK" means light icons. Both are no-ops on the web (GameDeck pattern, October 14).
+  useEffect(() => {
+    if (Capacitor.getPlatform() === "ios" && Capacitor.isPluginAvailable("WindowAppearance")) void WindowAppearance.setStyle({ style: mode === "auto" ? "system" : mode }).catch(() => {});
+  }, [mode]);
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) void SystemBars.setStyle({ style: dark ? SystemBarsStyle.Dark : SystemBarsStyle.Light }).catch(() => {});
+  }, [dark]);
   return <Helmet>
     <link rel="manifest" href="/manifest.json" />
     <meta name="apple-mobile-web-app-capable" content="yes" />

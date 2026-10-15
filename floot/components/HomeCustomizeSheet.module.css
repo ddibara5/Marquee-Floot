@@ -1,5 +1,5 @@
 .trigger { display:inline-flex; align-items:center; gap:8px; min-height:44px; }
-.content { height:auto!important; max-height:90vh!important; padding:20px 20px calc(20px + env(safe-area-inset-bottom)); gap:0; }
+.content { height:auto!important; max-height:90vh!important; padding:20px 20px calc(20px + var(--safe-area-inset-bottom)); gap:0; }
 .title { margin:0; padding-right:44px; font:700 22px/1.2 var(--font-family-display); }
 .description { margin:6px 0 8px; padding-right:44px; font-size:13px; line-height:1.45; color:var(--muted-foreground); }
 .list { list-style:none; margin:0; padding:0; }

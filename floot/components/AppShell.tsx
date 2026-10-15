@@ -2,7 +2,11 @@ import {shouldHandlePageBack} from "../helpers/shouldHandlePageBack";
 import {useRouteRestoration} from "../helpers/useRouteRestoration";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { NativeNavigation } from "@capgo/capacitor-native-navigation";
+import { nativeNavigationSupported, SEARCH_TAB, useNativeTabBar } from "../helpers/useNativeTabBar";
+import { useDialogOpen } from "../helpers/useAppDark";
+import NativeHeader, { type NativeHeaderItem } from "./NativeHeader";
 import { Bookmark, ChartNoAxesCombined, ChevronLeft, ChevronRight, Home, History, RefreshCw, Search, Settings } from "lucide-react";
 import { MarqueeMark } from "./MarqueeMark";
 import { useTraktAutoSync } from "../helpers/useTraktAutoSync";
@@ -14,6 +18,8 @@ import AppBackButton from "./AppBackButton";
 import styles from "./AppShell.module.css";
 
 const SIDEBAR_KEY = "marquee-sidebar-collapsed";
+// Tapped Back in the iPhone app: snapshot slide, a touch quicker than the plugin's 350 ms default (GameDeck, Cookbook).
+const BACK_SLIDE_MS = 280;
 
 export default function AppShell({ children }: PropsWithChildren) {
   const location = useLocation();
@@ -77,8 +83,31 @@ export default function AppShell({ children }: PropsWithChildren) {
   });
   const settingsActive = path.startsWith("/settings") || path.startsWith("/sync");
 
+  // iPhone app (October 15): native Liquid Glass tab bar and header replace the web bars below 900px.
+  // Search titles is iOS 26's detached round search button beside the tabs.
+  const navigate = useNavigate();
+  const titleSearch = path === "/library" && new URLSearchParams(location.search).get("view") === "titles";
+  const selectedTab = titleSearch ? SEARCH_TAB : path.startsWith("/titles/") ? "/library" : path;
+  const dialogOpen = useDialogOpen(nativeNavigationSupported());
+  const nativeTabs = useNativeTabBar([...nav.map(({ to, label }) => ({ to, label })), { to: SEARCH_TAB, label: "Search", role: "search" as const }], selectedTab, dialogOpen, subpage);
+  const back = () => {
+    if (!nativeTabs) { goBack(); return; }
+    void (async () => {
+      try { await NativeNavigation.beginTransition({ direction: "back", duration: BACK_SLIDE_MS }); } catch { goBack(); return; }
+      goBack();
+      await new Promise(done => requestAnimationFrame(() => requestAnimationFrame(done)));
+      await NativeNavigation.finishTransition({ direction: "back", duration: BACK_SLIDE_MS }).catch(() => {});
+    })();
+  };
+  const nativeLeft: NativeHeaderItem[] = subpage ? [{ id: "back", title: "Back", symbol: "chevron.backward" }] :
+    [{ id: "refresh", title: "Refresh " + accessibleTitle, symbol: "arrow.clockwise", enabled: !refreshing }];
+  const nativeRight: NativeHeaderItem[] = subpage ? [] : [{ id: "settings", title: "Settings", symbol: "gearshape" }];
+  const nativeAction = (id: string) => id === "back" ? back() : id === "refresh" ? void refreshTab() : id === "settings" ? navigate("/settings") : undefined;
+
   return (
-    <div className={`${styles.shell} ${collapsed ? styles.collapsed : ""}`}>
+    <div className={`${styles.shell} ${collapsed ? styles.collapsed : ""} ${nativeTabs ? styles.nativeTabs : ""}`}>
+      {/* Main tabs are named by the tab bar, subpages by the native title; title details show the poster instead. */}
+      {nativeTabs && <NativeHeader title={subpage && !path.startsWith("/titles/") ? title : ""} left={nativeLeft} right={nativeRight} hidden={dialogOpen} onAction={nativeAction} />}
       <aside className={styles.sidebar} aria-label="Sidebar navigation">
         <div className={styles.sidebarTop}>
           <Link className={styles.sidebarBrand} to="/" title="Marquee"><span className={styles.sidebarMark}><MarqueeMark size={34} /></span><span className={styles.sidebarName}>Marquee</span></Link>
@@ -94,7 +123,7 @@ export default function AppShell({ children }: PropsWithChildren) {
         </div>
       </aside>
       <div ref={panelRef} className={`${styles.content} ${subpage ? styles.subpage : ""}`}>
-        <header className={styles.header}>
+        <header className={styles.header} data-root={!subpage}>
           <div className={styles.headerSide}>
             {subpage ? <AppBackButton fallback={fallback} fallbackLabel={fallback === "/" ? "Home" : fallback === "/settings" ? "Settings" : "Activity"} iconSize={20} /> :
               <button type="button" className={styles.refreshButton} onClick={() => void refreshTab()}
@@ -105,7 +134,7 @@ export default function AppShell({ children }: PropsWithChildren) {
           </div>
           {subpage ? <strong className={styles.headerTitle}>{title}</strong> :
             <>
-              <Link to="/" className={styles.brand}><span className={styles.brandMark}><MarqueeMark size={26} /></span><span>Marquee</span></Link>
+              <Link to="/" className={styles.brand + (path === "/" ? " " + styles.homeBrand : "")}><span className={styles.brandMark}><MarqueeMark size={26} /></span><span>Marquee</span></Link>
               <span className={styles.rootTitle} aria-hidden="true">{accessibleTitle}</span>
             </>}
           <div className={styles.headerActions}>
@@ -119,7 +148,7 @@ export default function AppShell({ children }: PropsWithChildren) {
           {children}
         </main>
       </div>
-      {!subpage && <nav className={styles.mobileNav} aria-label="Primary mobile">{navItems()}</nav>}
+      {!subpage && !nativeTabs && <nav className={styles.mobileNav} aria-label="Primary mobile">{navItems()}</nav>}
     </div>
   );
 }
