@@ -38,6 +38,16 @@ export interface LoginAttempts {
   success: Generated<boolean | null>;
 }
 
+export interface MarqueeCrunchyrollDubs {
+  checkedAt: Generated<Timestamp>;
+  dubArrivedAt: Timestamp | null;
+  episodeId: string | null;
+  hasEnDub: boolean | null;
+  seriesId: string;
+  titleId: number;
+  userId: number;
+}
+
 export interface MarqueeCrunchyrollRaw {
   classification: string;
   episodeId: number | null;
@@ -490,6 +500,7 @@ export interface Users {
 
 export interface DB {
   loginAttempts: LoginAttempts;
+  marqueeCrunchyrollDubs: MarqueeCrunchyrollDubs;
   marqueeCrunchyrollRaw: MarqueeCrunchyrollRaw;
   marqueeCrunchyrollReview: MarqueeCrunchyrollReview;
   marqueeCrunchyrollSyncRuns: MarqueeCrunchyrollSyncRuns;

@@ -18,6 +18,8 @@ import { changeTracking } from "../endpoints/tracking_POST.schema";
 import type { PersonalRow } from "../endpoints/personal-state_GET.schema";
 import { usePersonalState } from "../helpers/usePersonalState";
 import { tmdbImageUrl } from "../helpers/tmdbImageUrl";
+import { DubBadge } from "../components/DubBadge";
+import { useDubStatus } from "../helpers/useDubStatus";
 import styles from "./watchlist.module.css";
 
 type Filter = "all" | "movie" | "show" | "anime";
@@ -52,6 +54,7 @@ export default function WatchlistPage() {
   const [actionError,setActionError]=useState("");
   const [failedAction,setFailedAction]=useState<{row:PersonalRow;action:"add"|"remove"}|null>(null);
   const {data,isLoading,error,refetch} = usePersonalState();
+  const dubs = useDubStatus().data;
   const queryClient = useQueryClient();
   const all = data?.watchlist ?? [];
   const counts:Record<Filter,number> = {
@@ -164,6 +167,7 @@ export default function WatchlistPage() {
               <span>{row.year ?? "Year unknown"}</span>
               {upcoming && <span className={styles.upcoming}>Coming {dateLabel(row.releaseDate)}</span>}
               {picked && <span className={styles.upcoming}>★ Pick next</span>}
+              {row.titleId !== null && <DubBadge hasEnDub={dubs?.get(row.titleId)}/>}
             </div>
             {row.overview && <p className={styles.overview}>{row.overview}</p>}
             <div className={styles.footer}>

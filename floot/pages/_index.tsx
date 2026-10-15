@@ -18,7 +18,11 @@ import { usePersonalState } from "../helpers/usePersonalState";
 import { useTitles } from "../helpers/useTitles";
 import { useTraktStatus } from "../helpers/useTraktStatus";
 import {Progress} from "../components/Progress";
+import { DubBadge } from "../components/DubBadge";
+import { useDubStatus } from "../helpers/useDubStatus";
 import styles from "./_index.module.css";
+
+const dubLabel = (hasEnDub?: boolean) => hasEnDub === undefined ? "" : hasEnDub ? ", English dub" : ", sub only";
 
 const ZONE = "America/New_York";
 const DAY = 86400000;
@@ -84,6 +88,7 @@ export default function HomePage() {
   const context = useQuery({ queryKey: ["marquee", "home-context"], queryFn: getHomeContext, staleTime: 60_000, retry: false });
   const personal = usePersonalState();
   const preferences=useEnhancementPreferences();
+  const dubs = useDubStatus().data;
   const { layout, save, reset } = useHomeLayout();
   const today = easternDay(new Date());
   const byId = new Map(titles.map(title => [Number(title.id), title]));
@@ -124,9 +129,10 @@ export default function HomePage() {
   const refresh = () => void client.invalidateQueries({ queryKey: ["marquee"] });
   const contextReady = !isPending && !context.isPending;
 
-  const sections: Record<HomeSectionId, { place: "main" | "side" | "full"; node: ReactNode }> = {
-    week: { place: "side", node: week && <section className={styles.week} aria-labelledby="home-week">
-      <div className={styles.weekHead}><h2 id="home-week">Last 7 days</h2><Link to="/insights">Insights</Link></div>
+  // Rendered twice: in the section order (phones, tablets, iPhone app) and beside Up next on wide web screens
+  // (GameDeck's top row, October 15). CSS shows exactly one copy, so the heading ids differ.
+  const weekSection = (headingId: string) => week && <section className={styles.week} aria-labelledby={headingId}>
+      <div className={styles.weekHead}><h2 id={headingId}>Last 7 days</h2><Link to="/insights">Insights</Link></div>
       <div className={styles.weekBody}>
         <div className={styles.weekTotal}><strong>{weekEpisodes + weekMovies}</strong>
           <small>{weekMovies ? plural(weekEpisodes, "episode") + " · " + plural(weekMovies, "movie") : weekEpisodes === 1 ? "episode" : "episodes"} · {plural(week.titles, "title")}</small></div>
@@ -137,15 +143,17 @@ export default function HomePage() {
             <span key={day.date} data-today={day.date === today || undefined}>{day.date === today ? "Today" : dayFormat(day.date, { weekday: "narrow" })}</span>)}</div>
         </div>
       </div>
-    </section> },
+    </section>;
+  const sections: Record<HomeSectionId, { place: "main" | "side" | "full"; node: ReactNode }> = {
+    week: { place: "side", node: weekSection("home-week") },
     keep: { place: "main", node: contextReady && (keepRows.length > 0 || !featured) && <section className={styles.section} aria-labelledby="home-keep">
       <div className={styles.heading}><div><h2 id="home-keep">Keep watching</h2>{keepRows.length > 0 && <span className={styles.count}>{keepRows.length} series</span>}</div><Link to="/library?view=titles">Library <ArrowRight size={14}/></Link></div>
       {/* Grid (October 15): a poster strip with a badge, GameDeck's cover-strip pattern. */}
       {keepRows.length ? <div className={styles.strip}>{keepRows.map(({ row, title }) => { const progress = getTitleProgressSummary(title); const ready = row.readyCount ?? 0;
         const next = episodeLabel(row.seasonNumber, row.episodeNumber);
         return <Link className={styles.stripItem} to={"/titles/" + title.id} key={title.id}
-          aria-label={title.title + ", " + next + " next" + (ready > 1 ? ", " + ready + " episodes ready" : "") + (progress.released > 0 ? ", " + progress.watched + " of " + progress.released + " watched" : "")}>
-          <span className={styles.stripCover}><Poster title={title}/><span className={styles.stripBadge}>{ready > 1 ? ready + " ready" : next}</span></span>
+          aria-label={title.title + ", " + next + " next" + dubLabel(dubs?.get(row.titleId)) + (ready > 1 ? ", " + ready + " episodes ready" : "") + (progress.released > 0 ? ", " + progress.watched + " of " + progress.released + " watched" : "")}>
+          <span className={styles.stripCover}><Poster title={title}/><DubBadge hasEnDub={dubs?.get(row.titleId)} overlay/><span className={styles.stripBadge}>{ready > 1 ? ready + " ready" : next}</span></span>
           <strong>{title.title}</strong></Link>; })}</div>
         : <p className={styles.empty}>No recently active series has an unwatched released episode. <Link to="/library">Browse history <ArrowRight size={13}/></Link></p>}
     </section> },
@@ -178,7 +186,8 @@ export default function HomePage() {
       {saved.length ? <div className={styles.activityList}>{saved.map(row =>
         <Link className={styles.activityRow} key={row.id} to={row.titleId ? "/titles/" + row.titleId : "/watchlist"}>
           <Poster title={{ title: row.title, posterPath: row.posterPath ?? undefined }}/>
-          <span><strong>{pickKey===row.mediaType+":"+row.traktId?"★ Pick next · ":""}{row.title}</strong><small>{row.releaseDate && dayDiff(today, storedDay(row.releaseDate)) > 0 ? dayFormat(storedDay(row.releaseDate), { month: "short", day: "numeric" }) : row.year ?? "—"} · {row.isAnime ? "Anime" : row.mediaType === "movie" ? "Movie" : "Series"}</small></span>
+          <span><strong>{pickKey===row.mediaType+":"+row.traktId?"★ Pick next · ":""}{row.title}</strong><small>{row.releaseDate && dayDiff(today, storedDay(row.releaseDate)) > 0 ? dayFormat(storedDay(row.releaseDate), { month: "short", day: "numeric" }) : row.year ?? "—"} · {row.isAnime ? "Anime" : row.mediaType === "movie" ? "Movie" : "Series"}</small>
+            {row.titleId !== null && <DubBadge hasEnDub={dubs?.get(row.titleId)}/>}</span>
           <ChevronRight className={styles.rowAction} size={17} aria-hidden="true"/>
         </Link>)}</div> : personal.isPending ? <div className={styles.activityList} aria-busy="true" aria-label="Loading Watch List"><Skeleton className={styles.shelfSkeleton} /><Skeleton className={styles.shelfSkeleton} /><Skeleton className={styles.shelfSkeleton} /></div>
         : personal.error ? <p className={styles.error} role="alert">Watch List could not load. <Button variant="ghost" onClick={() => void personal.refetch()}>Retry</Button></p>
@@ -191,6 +200,7 @@ export default function HomePage() {
     {(isPending || context.isPending) && <div className={styles.loadingGrid}><Skeleton style={{ height: 190 }} /><Skeleton style={{ height: 100 }} /></div>}
     {error && <p className={styles.error} role="alert">Unable to load your library. <Button variant="ghost" onClick={refresh}>Retry</Button></p>}
     {context.error && <p className={styles.error} role="alert">Next episodes could not load. <Button variant="ghost" onClick={refresh}>Retry</Button></p>}
+    <div className={styles.top}>
     {!isPending && !context.isPending && featured && <section className={styles.featured} data-backdrop={backdrop ? "" : undefined} aria-labelledby="home-up-next">
       {backdrop && <span className={styles.backdrop} aria-hidden="true">
         <MediaImage className={styles.backdropFill} src={backdrop} fallback="" alt="" decoding="async"/>
@@ -198,7 +208,8 @@ export default function HomePage() {
       <Poster title={featured.title} priority />
       <div className={styles.featuredCopy}>
         <div className={styles.kindRow}><span className={styles.kind}>Up next · {featured.title.anime ? "Anime" : "Series"}</span>
-          {watchedLabel(featured.row.lastWatchedAt, today) && <span className={styles.pill}>{watchedLabel(featured.row.lastWatchedAt, today)}</span>}</div>
+          {watchedLabel(featured.row.lastWatchedAt, today) && <span className={styles.pill}>{watchedLabel(featured.row.lastWatchedAt, today)}</span>}
+          <DubBadge hasEnDub={dubs?.get(featured.row.titleId)}/></div>
         <h2 id="home-up-next">{featured.title.title}</h2>
         <p className={styles.episodeLine}><strong>{episodeLabel(featured.row.seasonNumber, featured.row.episodeNumber)}{namedEpisode(featured.row.episodeTitle) ? " · " + featured.row.episodeTitle : ""}</strong>
           {featured.row.runtimeMinutes ? <span> · {featured.row.runtimeMinutes} min</span> : null}
@@ -208,12 +219,14 @@ export default function HomePage() {
         <div className={styles.featuredActions}><Button asChild><Link to={"/titles/"+featured.title.id}>Next episode <ArrowRight size={14}/></Link></Button></div>
       </div>
     </section>}
+    {!isPending && !context.isPending && featured && !layout.hidden.includes("week") && <div className={styles.topWeek}>{weekSection("home-week-top")}</div>}
+    </div>
     {/* Grid (October 15): sync status sits under Up next, like GameDeck, so the show you're watching leads Home. */}
     <SyncLine />
     {/* Wait for both the library and Home context so Up next doesn't pop in above already-drawn sections. */}
     {!isPending && !context.isPending && <div className={styles.dashboard}>
       {layout.order.filter(id => !layout.hidden.includes(id)).map(id => sections[id].node &&
-        <div key={id} className={styles[sections[id].place]}>{sections[id].node}</div>)}
+        <div key={id} className={styles[sections[id].place] + (id === "week" && featured ? " " + styles.dashWeek : "")}>{sections[id].node}</div>)}
     </div>}
     <div className={styles.customize}><HomeCustomizeSheet layout={layout} onChange={save} onReset={reset} /></div>
   </>;
