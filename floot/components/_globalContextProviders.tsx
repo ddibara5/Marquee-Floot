@@ -45,7 +45,7 @@ function AppHead() {
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Marquee" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="theme-color" content={dark ? "#1d171e" : "#f6f0ec"} />
+    <meta name="theme-color" content={dark ? "#070a12" : "#eef2f7"} />
   </Helmet>;
 }
 

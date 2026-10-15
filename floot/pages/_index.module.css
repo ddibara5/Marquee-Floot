@@ -111,3 +111,43 @@
 }
 @media(max-width:699px) { .featured { padding:16px; gap:16px; } .featured[data-backdrop] .backdrop { margin:-16px -16px 0; border-radius:0; } .featuredCopy h2 { font-size:24px; } }
 @media(max-width:359px) { .featured { padding:12px; grid-template-columns:108px minmax(0,1fr); gap:12px; } .featured>.poster { width:108px; } .featured[data-backdrop] .backdrop { margin:-12px -12px 0; } .featuredActions a { padding:0 12px; } .featuredActions svg { display:none; } }
+
+/* Grid (October 15): GameDeck's layout language in Marquee's night palette. Sections sit on the backdrop under
+   hairlines; Up next and Last 7 days are the only tiles. */
+.featured.featured { position:relative; isolation:isolate; background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius-tile); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 6%,transparent); }
+.pill { background:color-mix(in srgb,var(--brand) 16%,transparent); border:1px solid color-mix(in srgb,var(--brand) 45%,transparent); }
+.pill::before { background:var(--brand); box-shadow:0 0 8px var(--brand); }
+.syncLine { justify-content:center; flex-wrap:wrap; gap:4px 12px; margin:8px 0 0; }
+.syncDot { background:var(--success); }
+.section { border-top:1px solid var(--glass-hairline); padding-top:4px; }
+.heading h2 { font-size:22px; }
+.count { color:var(--muted-foreground); font-size:12px; }
+.row,.activityRow { border-bottom-color:var(--glass-hairline); }
+.week { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius-tile); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); }
+.dashboard>.side:has(.week) { border:0; }
+/* Poster strips with a badge (GameDeck cover strips). */
+.strip { display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; margin-inline:-20px; padding-inline:20px; scroll-padding-inline:20px; }
+.strip::-webkit-scrollbar { display:none; }
+.stripItem { flex:none; width:104px; color:var(--foreground); text-decoration:none; }
+.stripItem>strong { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; margin-top:6px; font-size:12px; font-weight:600; line-height:1.25; }
+.stripCover { position:relative; display:block; }
+.stripCover .poster { width:104px; border-radius:10px; box-shadow:0 10px 22px -14px #000; }
+.stripCover .poster img { object-fit:cover; }
+.stripBadge { position:absolute; left:6px; bottom:6px; max-width:calc(100% - 12px); padding:3px 8px; border-radius:999px; background:color-mix(in srgb,var(--background) 86%,transparent); color:var(--foreground); font-size:11px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.stripItem:hover>strong { color:var(--primary); }
+.shelf .poster { border-radius:10px; }
+/* Phone: Up next is a compact horizontal card; the backdrop becomes a blurred color wash behind it. */
+@media(max-width:759px) {
+  .featured.featured, .featured.featured[data-backdrop] { grid-template-columns:116px minmax(0,1fr); grid-template-areas:"poster copy"; gap:14px; align-items:center; padding:14px; }
+  .featured.featured>.poster { width:116px; border-radius:10px; }
+  .featured[data-backdrop] .backdrop.backdrop { position:absolute; inset:0; z-index:calc(0 - 1); grid-area:auto; margin:0; max-height:none; aspect-ratio:auto; border-radius:0; background:none; }
+  .backdropArt.backdropArt { display:none; }
+  .backdropFill.backdropFill { opacity:.4; filter:blur(36px) saturate(1.3); }
+  .featuredCopy h2 { font-size:26px; line-height:1.05; }
+  .kind { display:none; }
+  .episodeLine { font-size:12px; }
+  .synopsis { display:none; }
+  .homeProgress { margin-top:10px; }
+  .featuredActions { margin-top:10px; }
+  .featuredActions a { min-height:40px; padding:0 14px; }
+}

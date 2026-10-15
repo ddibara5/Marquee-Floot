@@ -639,3 +639,18 @@
 .credits { margin:0; border:0; padding:0; }
 @media(min-width:900px) { .insightsGrid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:32px; } .metricGrid,.credits { grid-column:1/-1; } .metricGrid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:24px; } .heroMetric { grid-column:auto; display:flex; flex-wrap:wrap; } }
 @media(max-width:380px) { .panel { padding:16px; } .metric span { font-size:12px; } }
+
+/* Grid (October 15): GameDeck's rule. Panels with a chart stay glass tiles; the rest sit on the backdrop under a hairline. */
+.panel.panel { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius-tile); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 6%,transparent); }
+.panel.panel:not(:has(.months, .stackedBar)) { padding:4px 0 0; background:none; border:0; border-top:1px solid var(--glass-hairline); border-radius:0; -webkit-backdrop-filter:none; backdrop-filter:none; box-shadow:none; }
+.panelHeading.panelHeading h2 { font-size:22px; letter-spacing:-.02em; }
+.heroMetric.heroMetric, .metric.metric { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius-tile); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); }
+.heroMetric.heroMetric strong { color:var(--foreground); font:800 28px/1 var(--font-family-display); text-shadow:none; white-space:nowrap; }
+.metric.metric strong { font:800 20px/1.1 var(--font-family-display); white-space:nowrap; }
+.metricIcon.metricIcon { border-radius:999px; box-shadow:0 0 14px color-mix(in srgb,var(--primary) 25%,transparent); }
+.periods.periods { display:inline-flex; gap:2px; padding:4px; border:1px solid var(--glass-border); border-radius:999px; background:var(--glass-control); }
+.periods.periods button { min-height:36px; border-radius:999px; }
+.rankRow.rankRow { padding:10px 0; background:none; border:0; border-top:1px solid var(--glass-hairline); border-radius:0; }
+.rankNumber.rankNumber { border:1px solid var(--glass-border); border-radius:7px; background:none; }
+.recentMetrics.recentMetrics span { background:var(--glass-control); border-radius:14px; }
+.monthTrack.monthTrack b { background:var(--brand); }

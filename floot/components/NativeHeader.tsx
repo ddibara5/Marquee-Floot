@@ -5,7 +5,7 @@ import {useAppDark} from "../helpers/useAppDark";
 export type NativeHeaderItem={id:string;title:string;symbol:string;enabled?:boolean};
 const toNative=({id,title,symbol,enabled=true}:NativeHeaderItem)=>({id,title,enabled,icon:{ios:{sfSymbol:symbol}}});
 // base.css --foreground in light and dark, instead of iOS default blue.
-const INK={light:"#2a2029",dark:"#fff4ee"};
+const INK={light:"#0b1320",dark:"#eaf6ff"};
 
 /** Native iOS navigation bar (Liquid Glass buttons on iOS 26). Rendered by AppShell only while the native tab bar is active.
  * `hideOnScroll`: the bar slides away scrolling down and returns scrolling up (title detail, where nothing sits under it). */

@@ -78,6 +78,25 @@ a.title:hover { color:var(--primary); }
 .metadata,.footer { gap:4px 12px; font-size:12px; line-height:1.5; }
 .metadata>span,.footer>span { display:inline-block; }
 .metadata span:first-child { display:inline-flex; color:var(--muted-foreground); }
+
+/* Grid (October 15): next-release card, glass controls, hairline rows. */
+.nextRelease { position:relative; isolation:isolate; display:grid; grid-template-columns:84px minmax(0,1fr); gap:14px; align-items:center; margin:0 0 20px; padding:14px; border:1px solid var(--glass-border); border-radius:var(--radius-tile); background:var(--glass-bg); color:var(--foreground); text-decoration:none; -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); overflow:hidden; }
+.nextRelease::before { content:""; position:absolute; inset:-30px; z-index:calc(0 - 1); background:radial-gradient(70% 90% at 15% 50%, color-mix(in srgb,var(--brand) 26%,transparent), transparent); }
+.nextRelease .poster { width:84px; aspect-ratio:2/3; border-radius:9px; overflow:hidden; }
+.nextRelease .poster img { object-fit:cover; }
+.nextCopy { display:flex; flex-direction:column; gap:4px; min-width:0; }
+.nextCopy small { color:var(--muted-foreground); font-size:12px; }
+.nextCopy strong { font:800 40px/.95 var(--font-family-display); letter-spacing:-.03em; }
+.nextCopy span { font-size:13px; color:var(--muted-foreground); }
+.viewSwitch.viewSwitch { padding:4px; gap:2px; border:1px solid var(--glass-border); border-radius:999px; background:var(--glass-control); }
+.viewSwitch.viewSwitch button { width:40px; height:36px; border:0; border-radius:999px; }
+.viewSwitch.viewSwitch .activeView { background:var(--glass-control-on); color:var(--foreground); }
+.toolbarActions.toolbarActions button { border:1px solid var(--glass-border); border-radius:999px; background:var(--glass-control); }
+.row.row { border-bottom:0; border-top:1px solid var(--glass-hairline); }
+.posterLink.posterLink { border-radius:6px; }
+.poster.poster img { object-fit:cover; }
+.grid .posterLink.posterLink { border-radius:10px; }
+.notice.notice, .emptyState.emptyState { border-color:var(--glass-border); border-radius:var(--radius-tile); background:var(--glass-bg); }
 .footer button { padding:0; color:var(--primary); font-size:12px; justify-content:start; }
 .chevron { display:none; }
 .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px 16px; }

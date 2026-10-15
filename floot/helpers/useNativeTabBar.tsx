@@ -7,8 +7,8 @@ import {useAppDark} from "./useAppDark";
 
 // AppShell.module.css switches to the sidebar at 900px; the native bar only replaces the phone bar.
 const SIDEBAR_SHELL="(min-width:900px)";
-// base.css --primary in light and dark (Premiere rust on cream, peach on aubergine).
-export const NATIVE_TINT={light:"#875036",dark:"#f0b88f"};
+// base.css --primary in light and dark (Grid: deep teal on silver, cyan on night).
+export const NATIVE_TINT={light:"#0a7a96",dark:"#48e5ff"};
 export const SEARCH_TAB="/library?view=titles";
 // Apple HIG: filled symbols in tab bars. Unknown names render blank, so only long-standing SF Symbols.
 const SYMBOLS:Record<string,string>={"/":"house.fill","/library":"clock.arrow.circlepath","/watchlist":"bookmark.fill","/insights":"chart.bar.fill",[SEARCH_TAB]:"magnifyingglass"};

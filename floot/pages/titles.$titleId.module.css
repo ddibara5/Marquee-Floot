@@ -106,3 +106,19 @@
  .episodeRow { grid-template-columns:16px 26px minmax(0,1fr) auto; gap:6px; min-height:56px; padding:6px 0; }
  .catalogFacts { gap:16px; }
 }
+
+/* Grid (October 15): GameDeck's detail language. Progress is the one glass tile; other sections sit under hairlines. */
+.panel.panel { padding:14px 16px; border:1px solid var(--glass-border); border-radius:var(--radius-tile); background:var(--glass-bg); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); }
+.poster.poster { border-radius:12px; box-shadow:0 22px 40px -14px rgba(0,0,0,.75), 0 0 0 1px var(--glass-border); }
+.poster.poster>img { object-fit:cover; }
+/* Phone: faded backdrop across the top, poster and title centered, the next episode in a glass tile below. */
+@media(max-width:699px) {
+ .hero.hero { position:relative; isolation:isolate; grid-template-columns:minmax(0,1fr); justify-items:center; gap:10px; text-align:center; padding-top:24px; }
+ .heroWithArtwork .backdrop.backdrop { display:block; position:absolute; left:-20px; right:-20px; top:-24px; width:calc(100% + 40px); height:300px; z-index:calc(0 - 1); object-fit:cover; opacity:.6; -webkit-mask-image:linear-gradient(#000 45%, transparent); mask-image:linear-gradient(#000 45%, transparent); }
+ .hero .poster.poster { grid-column:1; grid-row:1; width:150px; }
+ .copy>.kicker.kicker { grid-column:1; grid-row:2; }
+ .copy>h1 { grid-column:1; grid-row:3; font-size:30px; line-height:1.05; letter-spacing:-.03em; font-weight:800; }
+ .copy>.meta.meta { grid-column:1; grid-row:4; justify-content:center; margin-bottom:0; }
+ .copy>[aria-label="Your title controls"] { grid-column:1; grid-row:5; justify-self:center; }
+ .nextEpisode.nextEpisode, .movieFacts.movieFacts { grid-column:1; grid-row:6; justify-self:stretch; margin-top:6px; padding:12px 14px; text-align:left; border:1px solid color-mix(in srgb,var(--primary) 30%,transparent); border-radius:18px; background:color-mix(in srgb,var(--primary) 9%,transparent); }
+}

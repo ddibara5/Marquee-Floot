@@ -89,6 +89,13 @@ export default function WatchlistPage() {
     finally { setBusy(null); }
   };
 
+  // Grid (October 15): the soonest dated release leads the page, like GameDeck's Wishlist countdown.
+  const todayKey = new Date().toLocaleDateString("en-CA");
+  const releaseDays = (row:PersonalRow) => Math.round((Date.parse(new Date(row.releaseDate!).toISOString().slice(0,10)) - Date.parse(todayKey)) / 86400000);
+  const nextRelease = all.filter(row => row.releaseDate && releaseDays(row) > 0).sort((a,b) => releaseDays(a) - releaseDays(b))[0];
+  const nextDays = nextRelease ? releaseDays(nextRelease) : 0;
+  const nextWhen = nextRelease ? new Date(nextRelease.releaseDate!).toLocaleDateString(undefined,{month:"short",day:"numeric",timeZone:"UTC"}) : "";
+
   const setDisplay = (next:View) => {
     setView(next);
     try { localStorage.setItem("marquee-watchlist-view",next); } catch {}
@@ -128,6 +135,13 @@ export default function WatchlistPage() {
       {removed && <button type="button" aria-label="Dismiss notice" onClick={() => {setRemoved(null);setMessage("");}}>×</button>}
     </div>}
     {error && data && <p className={styles.empty} role="alert">Couldn’t refresh Watch List. Showing saved data. <Button variant="ghost" onClick={()=>void refetch()}>Retry</Button></p>}
+    {!isLoading && !normalized && nextRelease && (() => {
+      const body = <><Poster row={nextRelease}/><span className={styles.nextCopy}><small>Next release</small>
+        <strong>{nextDays === 1 ? "Tomorrow" : nextDays + " days"}</strong><span>{nextRelease.title} · {nextWhen}</span></span></>;
+      return nextRelease.titleId
+        ? <Link className={styles.nextRelease} to={"/titles/" + nextRelease.titleId} aria-label={"Next release: " + nextRelease.title + ", " + nextWhen}>{body}</Link>
+        : <div className={styles.nextRelease}>{body}</div>;
+    })()}
     {isLoading ? <div className={styles.list}><Skeleton style={{height:108}}/><Skeleton style={{height:108}}/></div>
       : error && !data ? <p className={styles.empty} role="alert">Unable to load your Watch List. <Button variant="ghost" onClick={()=>void refetch()}>Retry</Button></p>
       : !all.length ? <div className={styles.emptyState}><Bookmark size={28}/><h3>Your Watch List is empty</h3><p>Save a title here or in Rippple to start a queue.</p><Link to="/library?view=titles">Browse titles <ChevronRight size={16}/></Link></div>

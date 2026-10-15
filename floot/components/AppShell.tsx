@@ -108,6 +108,7 @@ export default function AppShell({ children }: PropsWithChildren) {
   return (
     <div className={`${styles.shell} ${collapsed ? styles.collapsed : ""} ${nativeTabs ? styles.nativeTabs : ""}`}>
       {/* Main tabs are named by the tab bar, subpages by the native title; title details show the poster instead. */}
+      <div className={styles.backdrop} aria-hidden="true"><span className={styles.glow} /><span className={styles.floor} /></div>
       {nativeTabs && <NativeHeader title={subpage && !path.startsWith("/titles/") ? title : ""} left={nativeLeft} right={nativeRight} hidden={dialogOpen} onAction={nativeAction} />}
       <aside className={styles.sidebar} aria-label="Sidebar navigation">
         <div className={styles.sidebarTop}>
@@ -135,7 +136,7 @@ export default function AppShell({ children }: PropsWithChildren) {
           </div>
           {subpage ? <strong className={styles.headerTitle}>{title}</strong> :
             <>
-              <Link to="/" className={styles.brand + (path === "/" ? " " + styles.homeBrand : "")}><span className={styles.brandMark}><MarqueeMark size={26} /></span><span>Marquee</span></Link>
+              <Link to="/" className={styles.brand + (path === "/" ? " " + styles.homeBrand : "")}><span className={styles.brandMark}><MarqueeMark size={25} /></span><span>Marquee</span></Link>
               <span className={styles.rootTitle} aria-hidden="true">{accessibleTitle}</span>
             </>}
           <div className={styles.headerActions}>

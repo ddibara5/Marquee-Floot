@@ -139,13 +139,14 @@ export default function HomePage() {
       </div>
     </section> },
     keep: { place: "main", node: contextReady && (keepRows.length > 0 || !featured) && <section className={styles.section} aria-labelledby="home-keep">
-      <div className={styles.heading}><div><h2 id="home-keep">Keep watching</h2></div><Link to="/library?view=titles">Library <ArrowRight size={14}/></Link></div>
-      {keepRows.length ? <div className={styles.rows}>{keepRows.map(({ row, title }) => { const progress = getTitleProgressSummary(title); const ready = row.readyCount ?? 0;
-        return <Link className={styles.row} to={"/titles/" + title.id} key={title.id}>
-          <Poster title={title}/><span className={styles.rowCopy}><strong>{title.title}</strong>
-            <small>{episodeLabel(row.seasonNumber, row.episodeNumber)} next{ready > 1 ? " · " + ready + " episodes ready" : namedEpisode(row.episodeTitle) ? " · " + row.episodeTitle : ""}{!row.airedAt ? " · Air date unknown" : ""}</small>
-            {progress.released > 0 && <Progress value={progress.percent} className={styles.rowProgress} aria-label={title.title + " progress"} aria-valuetext={progress.watched + " of " + progress.released + " released episodes watched"}/>}</span>
-          <ChevronRight className={styles.rowAction} size={17} aria-hidden="true"/></Link>; })}</div>
+      <div className={styles.heading}><div><h2 id="home-keep">Keep watching</h2>{keepRows.length > 0 && <span className={styles.count}>{keepRows.length} series</span>}</div><Link to="/library?view=titles">Library <ArrowRight size={14}/></Link></div>
+      {/* Grid (October 15): a poster strip with a badge, GameDeck's cover-strip pattern. */}
+      {keepRows.length ? <div className={styles.strip}>{keepRows.map(({ row, title }) => { const progress = getTitleProgressSummary(title); const ready = row.readyCount ?? 0;
+        const next = episodeLabel(row.seasonNumber, row.episodeNumber);
+        return <Link className={styles.stripItem} to={"/titles/" + title.id} key={title.id}
+          aria-label={title.title + ", " + next + " next" + (ready > 1 ? ", " + ready + " episodes ready" : "") + (progress.released > 0 ? ", " + progress.watched + " of " + progress.released + " watched" : "")}>
+          <span className={styles.stripCover}><Poster title={title}/><span className={styles.stripBadge}>{ready > 1 ? ready + " ready" : next}</span></span>
+          <strong>{title.title}</strong></Link>; })}</div>
         : <p className={styles.empty}>No recently active series has an unwatched released episode. <Link to="/library">Browse history <ArrowRight size={13}/></Link></p>}
     </section> },
     upcoming: { place: "side", node: contextReady && <section className={styles.section} aria-labelledby="home-upcoming">
@@ -160,17 +161,17 @@ export default function HomePage() {
     </section> },
     recent: { place: "main", node: <section className={styles.section} aria-labelledby="home-recent">
       <div className={styles.heading}><div><h2 id="home-recent">Recent activity</h2></div><Link to="/library">Activity <ArrowRight size={14}/></Link></div>
-      {recent.length ? <div className={styles.activityList}>{recent.map(title => {
+      {recent.length ? <div className={styles.strip}>{recent.map(title => {
         const last = lastEpisodes.get(Number(title.id));
         const sameDay = last && title.lastWatched && easternDay(last.watchedAt) === easternDay(title.lastWatched);
         const progress = getTitleProgressSummary(title);
         // Synced totals can trail the catalog; never call a show caught up while it has a released unwatched episode.
         const done = title.type === "show" && !hasNext.has(Number(title.id)) && (progress.status === "caught-up" || progress.status === "complete");
-        return <Link to={"/titles/" + title.id} className={styles.activityRow} key={title.id}>
-          <Poster title={title}/><span><strong>{title.title}{done && <span className={styles.badge}>{progress.statusLabel}</span>}</strong>
-            <small>{title.type === "movie" ? "Movie" : sameDay ? episodeLabel(last.seasonNumber, last.episodeNumber) + (namedEpisode(last.episodeTitle) ? " " + last.episodeTitle : "") : "Last watched"} · {shortDate(title.lastWatched!)}</small></span>
-          <ChevronRight className={styles.rowAction} size={17} aria-hidden="true"/>
-        </Link>; })}</div> : !isPending && <p className={styles.empty}>No dated watch activity yet.</p>}
+        const what = title.type === "movie" ? "Movie" : sameDay ? episodeLabel(last.seasonNumber, last.episodeNumber) + (namedEpisode(last.episodeTitle) ? " " + last.episodeTitle : "") : "Last watched";
+        const when = new Date(title.lastWatched!).toLocaleDateString(undefined, { month: "short", day: "numeric", timeZone: ZONE });
+        return <Link to={"/titles/" + title.id} className={styles.stripItem} key={title.id} aria-label={title.title + ", " + what + ", " + shortDate(title.lastWatched!) + (done ? ", " + progress.statusLabel : "")}>
+          <span className={styles.stripCover}><Poster title={title}/><span className={styles.stripBadge}>{when}</span></span>
+          <strong>{title.title}</strong></Link>; })}</div> : !isPending && <p className={styles.empty}>No dated watch activity yet.</p>}
     </section> },
     watchlist: { place: "full", node: <section className={styles.section + " " + styles.shelf} aria-labelledby="home-watchlist">
       <div className={styles.heading}><div><h2 id="home-watchlist">On your Watch List</h2></div><Link to="/watchlist">{watchlist.length > saved.length ? "See all " + watchlist.length : "See all"} <ArrowRight size={14}/></Link></div>
@@ -187,7 +188,6 @@ export default function HomePage() {
 
   return <>
     <Helmet><title>Home · Marquee</title></Helmet>
-    <SyncLine />
     {(isPending || context.isPending) && <div className={styles.loadingGrid}><Skeleton style={{ height: 190 }} /><Skeleton style={{ height: 100 }} /></div>}
     {error && <p className={styles.error} role="alert">Unable to load your library. <Button variant="ghost" onClick={refresh}>Retry</Button></p>}
     {context.error && <p className={styles.error} role="alert">Next episodes could not load. <Button variant="ghost" onClick={refresh}>Retry</Button></p>}
@@ -208,6 +208,8 @@ export default function HomePage() {
         <div className={styles.featuredActions}><Button asChild><Link to={"/titles/"+featured.title.id}>Next episode <ArrowRight size={14}/></Link></Button></div>
       </div>
     </section>}
+    {/* Grid (October 15): sync status sits under Up next, like GameDeck, so the show you're watching leads Home. */}
+    <SyncLine />
     {/* Wait for both the library and Home context so Up next doesn't pop in above already-drawn sections. */}
     {!isPending && !context.isPending && <div className={styles.dashboard}>
       {layout.order.filter(id => !layout.hidden.includes(id)).map(id => sections[id].node &&

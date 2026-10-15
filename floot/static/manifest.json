@@ -5,11 +5,11 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#1d171e",
-  "theme_color": "#1d171e",
+  "background_color": "#070a12",
+  "theme_color": "#070a12",
   "icons": [
     {
-      "src": "/_cdn/static/71ebcbb9-5db2-493a-9825-c003ab9a9924-marquee-icon-a4.png",
+      "src": "/_cdn/static/bccb2dab-6d91-4978-b02a-ab1a35e417cd-marquee-icon-grid.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
