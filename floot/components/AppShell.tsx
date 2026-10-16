@@ -1,8 +1,8 @@
 import {shouldHandlePageBack} from "../helpers/shouldHandlePageBack";
 import {useRouteRestoration} from "../helpers/useRouteRestoration";
-import { PropsWithChildren, useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { NativeNavigation } from "@capgo/capacitor-native-navigation";
+import { PropsWithChildren, type ReactNode, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Link, UNSAFE_LocationContext, useLocation, useNavigate, useNavigationType, useOutlet } from "react-router-dom";
+import { Capacitor } from "@capacitor/core";
 import { nativeNavigationSupported, SEARCH_TAB, useNativeTabBar } from "../helpers/useNativeTabBar";
 import { useDialogOpen } from "../helpers/useAppDark";
 import NativeHeader, { type NativeHeaderItem } from "./NativeHeader";
@@ -10,18 +10,32 @@ import { Bookmark, ChartNoAxesCombined, ChevronLeft, ChevronRight, Home, History
 import { MarqueeMark } from "./MarqueeMark";
 import { useTraktAutoSync } from "../helpers/useTraktAutoSync";
 import { useAppBack } from "../helpers/useAppBack";
-import { useEdgeSwipeBack } from "../helpers/useEdgeSwipeBack";
+import { usePageGestures } from "../helpers/usePageGestures";
+import { nextPageStack, type PageEntry } from "../helpers/pageStack";
+import { useMediaQuery } from "../helpers/useMediaQuery";
 import AppBackButton from "./AppBackButton";
 import styles from "./AppShell.module.css";
 
 const SIDEBAR_KEY = "marquee-sidebar-collapsed";
-// Tapped Back in the iPhone app: snapshot slide, a touch quicker than the plugin's 350 ms default (GameDeck, Cookbook).
-const BACK_SLIDE_MS = 280;
+const ROOTS = ["/", "/library", "/watchlist", "/insights"];
+
+/** A covered page keeps reading its own location, so nothing in it reacts to the page on top. */
+function PageLocation({ location, children }: { location: unknown; children: ReactNode }) {
+  const context = useContext(UNSAFE_LocationContext);
+  const value = useMemo(() => ({ ...context, location: location as typeof context.location }), [context, location]);
+  return <UNSAFE_LocationContext.Provider value={value}>{children}</UNSAFE_LocationContext.Provider>;
+}
+// Safari in a browser tab owns its own back swipe (Cookbook rule); the app, Home Screen web app and other browsers use ours.
+const customSwipe = typeof window !== "undefined" && (() => {
+  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+  const standalone = window.matchMedia?.("(display-mode: standalone)").matches || (navigator as Navigator & { standalone?: boolean }).standalone === true || Capacitor.isNativePlatform();
+  return !ios || standalone;
+})();
 
 export default function AppShell({ children }: PropsWithChildren) {
   const location = useLocation();
   const path = location.pathname;
-  const subpage = !["/", "/library", "/watchlist", "/insights"].includes(path);
+  const subpage = !ROOTS.includes(path);
   // Paths no page claims render the catch-all not-found page, which goes back to Home.
   const known = path.startsWith("/titles/") || path === "/migration-verification";
   const fallback = path === "/sync/review"?"/sync":path === "/settings" ? "/" : path.startsWith("/settings/") || path === "/sync" ? "/settings" : known ? "/library" : "/";
@@ -36,13 +50,50 @@ export default function AppShell({ children }: PropsWithChildren) {
   const toggleSidebar = () => setCollapsed(previous => { const next = !previous; try { localStorage.setItem(SIDEBAR_KEY, String(next)); } catch { /* keep in memory */ } return next; });
   const goBack = useAppBack(fallback);
   useRouteRestoration(panelRef);
-  useEdgeSwipeBack(subpage, goBack, panelRef, path);
+  // Phone page stack (October 16, from GameDeck): the page under the current one stays mounted, frozen where it was, so a
+  // subpage slides in over it and Back or the edge swipe reveals the real page. Off with the sidebar layout.
+  const wide = useMediaQuery("(min-width:900px)");
+  const stackOn = !wide;
+  const navType = useNavigationType(), outlet = useOutlet();
+  const mainRef = useRef<HTMLElement>(null);
+  const layers = useRef(new Map<string, HTMLElement>());
+  const stack = useRef<PageEntry<ReactNode>[]>([]);
+  const seenKey = useRef<string | null>(null);
+  if (!stackOn) { stack.current = []; seenKey.current = null; }
+  else if (seenKey.current !== location.key) {
+    const previous = stack.current[stack.current.length - 1];
+    if (previous && navType === "PUSH") {
+      const box = layers.current.get(previous.key)?.getBoundingClientRect();
+      if (box) previous.frame = { top: box.top, left: box.left, width: box.width };
+      previous.scrollY = window.scrollY;
+    }
+    stack.current = nextPageStack(stack.current, { key: location.key, pathname: path, element: outlet, location }, navType);
+    seenKey.current = location.key;
+  } else if (stack.current.length) {
+    const top = stack.current[stack.current.length - 1];
+    stack.current[stack.current.length - 1] = { ...top, element: outlet, location };
+  }
+  const entries = stack.current;
+  // Pages are see-through over the fixed sky backdrop, so the motion clips the page underneath instead of painting a background.
+  const gestures = usePageGestures({ stack: stackOn, swipe: subpage && customSwipe, routeKey: location.key, panel: mainRef, onBack: goBack, seeThrough: true });
+  useLayoutEffect(() => {
+    if (!stackOn) return;
+    const top = stack.current[stack.current.length - 1];
+    if (navType === "POP" && top?.scrollY != null) window.scrollTo({ top: top.scrollY, left: 0, behavior: "instant" as ScrollBehavior });
+    // Opening a subpage slides it in over the page it covers (iOS push); main tabs switch instantly.
+    if (navType === "PUSH" && stack.current.length > 1 && !ROOTS.includes(path)) {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+      gestures.slideIn();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.key, stackOn]);
+  const back = () => { if (stackOn && entries.length > 1) { gestures.slideBack(); return; } goBack(); };
   useEffect(() => {
     if (!subpage) return;
-    const onKey = (event: KeyboardEvent) => { if (shouldHandlePageBack(event)) goBack(); };
+    const onKey = (event: KeyboardEvent) => { if (shouldHandlePageBack(event)) back(); };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [subpage, goBack]);
+  });
   // No header Refresh (October 16, GameDeck pattern): Trakt syncs on open when stale, and Settings > Data & sync has Sync now.
   useTraktAutoSync();
   const nav = [
@@ -69,15 +120,6 @@ export default function AppShell({ children }: PropsWithChildren) {
   const selectedTab = titleSearch ? SEARCH_TAB : path.startsWith("/titles/") ? "/library" : path;
   const dialogOpen = useDialogOpen(nativeNavigationSupported());
   const nativeTabs = useNativeTabBar([...nav.map(({ to, label }) => ({ to, label })), { to: SEARCH_TAB, label: "Search", role: "search" as const }], selectedTab, dialogOpen, subpage);
-  const back = () => {
-    if (!nativeTabs) { goBack(); return; }
-    void (async () => {
-      try { await NativeNavigation.beginTransition({ direction: "back", duration: BACK_SLIDE_MS }); } catch { goBack(); return; }
-      goBack();
-      await new Promise(done => requestAnimationFrame(() => requestAnimationFrame(done)));
-      await NativeNavigation.finishTransition({ direction: "back", duration: BACK_SLIDE_MS }).catch(() => {});
-    })();
-  };
   // Main tabs keep the left free for the Home brand: Settings sits on the right.
   const nativeLeft: NativeHeaderItem[] = subpage ? [{ id: "back", title: "Back", symbol: "chevron.backward" }] : [];
   const nativeRight: NativeHeaderItem[] = subpage ? [] : [{ id: "settings", title: "Settings", symbol: "gearshape" }];
@@ -105,7 +147,7 @@ export default function AppShell({ children }: PropsWithChildren) {
       <div ref={panelRef} className={`${styles.content} ${subpage ? styles.subpage : ""}`}>
         <header className={styles.header} data-root={!subpage}>
           <div className={styles.headerSide}>
-            {subpage && <AppBackButton fallback={fallback} fallbackLabel={fallback === "/" ? "Home" : fallback === "/settings" ? "Settings" : "Activity"} iconSize={20} />}
+            {subpage && <AppBackButton fallback={fallback} fallbackLabel={fallback === "/" ? "Home" : fallback === "/settings" ? "Settings" : "Activity"} iconSize={20} onBack={back} />}
           </div>
           {subpage ? <strong className={styles.headerTitle}>{title}</strong> :
             <>
@@ -117,9 +159,25 @@ export default function AppShell({ children }: PropsWithChildren) {
             <Link className={styles.headerAction} to="/settings" aria-label="Settings" title="Settings"><Settings size={20} aria-hidden="true" /></Link>
           </div>
         </header>
-        <main className={styles.main}>
-          {!path.startsWith("/titles/") && <h1 className={styles.visuallyHidden}>{accessibleTitle}</h1>}
-          {children}
+        <main ref={mainRef} className={styles.main + (stackOn && entries.length ? " " + styles.stackMain : "")}>
+          {stackOn && entries.length ? <>
+            <div className={styles.pageDim} data-page-dim aria-hidden="true" />
+            {entries.map((entry, index) => {
+              const top = index === entries.length - 1;
+              return <section key={entry.key} ref={el => { if (el) layers.current.set(entry.key, el); else layers.current.delete(entry.key); }}
+                className={top ? styles.layer : styles.underLayer} data-page-layer={top ? "top" : "under"} data-root={ROOTS.includes(entry.pathname) || undefined}
+                inert={!top} aria-hidden={top ? undefined : true}
+                style={top || !entry.frame ? undefined : { top: entry.frame.top, left: entry.frame.left, width: entry.frame.width }}>
+                <PageLocation location={entry.location}>
+                  {top && !path.startsWith("/titles/") && <h1 className={styles.visuallyHidden}>{accessibleTitle}</h1>}
+                  {top ? outlet : entry.element}
+                </PageLocation>
+              </section>;
+            })}
+          </> : <>
+            {!path.startsWith("/titles/") && <h1 className={styles.visuallyHidden}>{accessibleTitle}</h1>}
+            {children}
+          </>}
         </main>
       </div>
       {!subpage && !nativeTabs && <nav className={styles.mobileNav} aria-label="Primary mobile">{navItems()}</nav>}

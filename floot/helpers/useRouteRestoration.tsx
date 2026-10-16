@@ -14,6 +14,8 @@ if(typeof document!=="undefined"){
 export function useRouteRestoration(panel:RefObject<HTMLElement|null>){
  const {key}=useLocation(),action=useNavigationType();
  useLayoutEffect(()=>{
+  // Phone page stack (October 16): only the top page counts; the covered page under it is inert.
+  const scope=()=>panel.current?.querySelector<HTMLElement>('[data-page-layer="top"]')??panel.current;
   const saved=action==="POP"?positions.get(key):undefined;
   let restoring=Boolean(saved),frame=0;
   let resize:ResizeObserver|undefined,mutations:MutationObserver|undefined;
@@ -30,15 +32,15 @@ export function useRouteRestoration(panel:RefObject<HTMLElement|null>){
   const stopObserving=()=>{resize?.disconnect();mutations?.disconnect();};
   const restore=()=>{
    // Keep waiting for delayed list pages rather than overwriting the saved position with a clamped scroll.
-   const ready=!saved||document.documentElement.scrollHeight-window.innerHeight>=saved.y||Boolean(panel.current?.querySelector('[role="alert"]'));
+   const ready=!saved||document.documentElement.scrollHeight-window.innerHeight>=saved.y||Boolean(scope()?.querySelector('[role="alert"]'));
    window.scrollTo({top:saved?.y??0,behavior:"instant"});
    if(!ready)return;
    if(saved?.focus){
-    const links=Array.from(panel.current?.querySelectorAll<HTMLAnchorElement>("a[href]")??[]);
+    const links=Array.from(scope()?.querySelectorAll<HTMLAnchorElement>("a[href]")??[]);
     const link=saved.focusKey?links.find(el=>el.getAttribute("data-restore-focus")===saved.focusKey):links.find(el=>el.getAttribute("href")===saved.focus);
     link?.focus({preventScroll:true});
    }else if(action!=="POP"){
-    const heading=panel.current?.querySelector<HTMLElement>("h1,h2");
+    const heading=scope()?.querySelector<HTMLElement>("h1,h2");
     if(heading){heading.setAttribute("tabindex","-1");heading.focus({preventScroll:true});}
    }
    restoring=false;stopObserving();remember();

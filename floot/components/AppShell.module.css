@@ -68,3 +68,13 @@
 .nativeTabs .header>.homeBrand { display:flex; position:absolute; left:max(20px,var(--safe-area-inset-left)); bottom:-6px; gap:8px; min-height:0; font:700 40px/1 var(--font-family-display); letter-spacing:-.04em; color:var(--foreground); pointer-events:none; }
 .nativeTabs .homeBrand svg { width:36px; height:36px; }
 .nativeTabs .main,.nativeTabs.shell .subpage .main { padding-bottom:calc(max(var(--cap-native-navigation-bottom,0px),var(--safe-area-inset-bottom)) + 24px); }
+/* Phone page stack (October 16, from GameDeck): page padding moves onto each page layer and the covered page stays fixed where
+   it was. Pages stay see-through over the fixed sky backdrop; while one moves, the page under it is clipped (usePageGestures). */
+.stackMain.stackMain { padding:0; overflow-x:clip; }
+.layer,.underLayer { box-sizing:border-box; isolation:isolate; padding:24px max(20px,var(--safe-area-inset-right)) calc(120px + var(--safe-area-inset-bottom)) max(20px,var(--safe-area-inset-left)); }
+.layer:not([data-root]),.underLayer:not([data-root]) { padding-bottom:calc(32px + var(--safe-area-inset-bottom)); }
+.layer { position:relative; z-index:2; }
+.underLayer { position:fixed; z-index:0; visibility:hidden; pointer-events:none; }
+.pageDim { position:fixed; inset:0; z-index:1; background:#000; opacity:0; pointer-events:none; }
+.nativeTabs .layer,.nativeTabs .underLayer { padding-bottom:calc(max(var(--cap-native-navigation-bottom,0px),var(--safe-area-inset-bottom)) + 24px); }
+@media(max-width:359px) { .layer,.underLayer { padding-inline:16px; } }
