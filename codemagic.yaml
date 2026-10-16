@@ -21,6 +21,7 @@ workflows:
           - ios/
           - native/
           - scripts/
+          - patches/
           - package.json
           - package-lock.json
           - capacitor.config.json
@@ -38,7 +39,8 @@ workflows:
       xcode: latest
     scripts:
       - name: Install shell dependencies
-        script: npm ci
+        # patches/: native plugin fixes not yet upstream (first tab switch laid the page out narrow).
+        script: npm ci && bash scripts/apply-patches.sh
       - name: Build Marquee web app
         script: npm run build:web
       - name: App icon from native/app-icon.png (flattened, 1024x1024)

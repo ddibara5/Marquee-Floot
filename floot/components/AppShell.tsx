@@ -1,17 +1,14 @@
 import {shouldHandlePageBack} from "../helpers/shouldHandlePageBack";
 import {useRouteRestoration} from "../helpers/useRouteRestoration";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { NativeNavigation } from "@capgo/capacitor-native-navigation";
 import { nativeNavigationSupported, SEARCH_TAB, useNativeTabBar } from "../helpers/useNativeTabBar";
 import { useDialogOpen } from "../helpers/useAppDark";
 import NativeHeader, { type NativeHeaderItem } from "./NativeHeader";
-import { Bookmark, ChartNoAxesCombined, ChevronLeft, ChevronRight, Home, History, RefreshCw, Search, Settings } from "lucide-react";
+import { Bookmark, ChartNoAxesCombined, ChevronLeft, ChevronRight, Home, History, Search, Settings } from "lucide-react";
 import { MarqueeMark } from "./MarqueeMark";
 import { useTraktAutoSync } from "../helpers/useTraktAutoSync";
-import { useTraktStatus } from "../helpers/useTraktStatus";
-import { syncTrakt } from "../endpoints/trakt-sync_POST.schema";
 import { useAppBack } from "../helpers/useAppBack";
 import { useEdgeSwipeBack } from "../helpers/useEdgeSwipeBack";
 import AppBackButton from "./AppBackButton";
@@ -34,10 +31,6 @@ export default function AppShell({ children }: PropsWithChildren) {
     new URLSearchParams(location.search).get("view") === "titles" ? "Titles" : "Activity" :
     path === "/watchlist" ? "Watch List" : path === "/insights" ? "Insights" : title;
   const panelRef = useRef<HTMLDivElement>(null);
-  const client = useQueryClient();
-  const trakt = useTraktStatus();
-  const [refreshing, setRefreshing] = useState(false);
-  const [refreshError, setRefreshError] = useState("");
   // Desktop sidebar width is a per-device preference, like the theme.
   const [collapsed, setCollapsed] = useState(() => { try { return localStorage.getItem(SIDEBAR_KEY) === "true"; } catch { return false; } });
   const toggleSidebar = () => setCollapsed(previous => { const next = !previous; try { localStorage.setItem(SIDEBAR_KEY, String(next)); } catch { /* keep in memory */ } return next; });
@@ -50,22 +43,8 @@ export default function AppShell({ children }: PropsWithChildren) {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [subpage, goBack]);
+  // No header Refresh (October 16, GameDeck pattern): Trakt syncs on open when stale, and Settings > Data & sync has Sync now.
   useTraktAutoSync();
-  useEffect(() => setRefreshError(""), [path]);
-  const refreshTab = async () => {
-    if (refreshing) return;
-    setRefreshing(true);
-    setRefreshError("");
-    try {
-      const status = trakt.data ?? (await trakt.refetch()).data;
-      if (status?.connected) await syncTrakt();
-      await client.invalidateQueries({ queryKey: ["marquee"], refetchType: "active" }, { throwOnError: true });
-    } catch (error) {
-      setRefreshError(error instanceof Error ? error.message : "Refresh failed. Try again.");
-    } finally {
-      setRefreshing(false);
-    }
-  };
   const nav = [
     { to: "/", label: "Home", icon: Home },
     { to: "/library", label: "Activity", icon: History },
@@ -99,11 +78,10 @@ export default function AppShell({ children }: PropsWithChildren) {
       await NativeNavigation.finishTransition({ direction: "back", duration: BACK_SLIDE_MS }).catch(() => {});
     })();
   };
-  // Main tabs keep the left free for the Home brand: Settings sits rightmost, Refresh beside it.
+  // Main tabs keep the left free for the Home brand: Settings sits on the right.
   const nativeLeft: NativeHeaderItem[] = subpage ? [{ id: "back", title: "Back", symbol: "chevron.backward" }] : [];
-  const nativeRight: NativeHeaderItem[] = subpage ? [] : [{ id: "settings", title: "Settings", symbol: "gearshape" },
-    { id: "refresh", title: "Refresh " + accessibleTitle, symbol: "arrow.clockwise", enabled: !refreshing }];
-  const nativeAction = (id: string) => id === "back" ? back() : id === "refresh" ? void refreshTab() : id === "settings" ? navigate("/settings") : undefined;
+  const nativeRight: NativeHeaderItem[] = subpage ? [] : [{ id: "settings", title: "Settings", symbol: "gearshape" }];
+  const nativeAction = (id: string) => id === "back" ? back() : id === "settings" ? navigate("/settings") : undefined;
 
   return (
     <div className={`${styles.shell} ${collapsed ? styles.collapsed : ""} ${nativeTabs ? styles.nativeTabs : ""}`}>
@@ -127,12 +105,7 @@ export default function AppShell({ children }: PropsWithChildren) {
       <div ref={panelRef} className={`${styles.content} ${subpage ? styles.subpage : ""}`}>
         <header className={styles.header} data-root={!subpage}>
           <div className={styles.headerSide}>
-            {subpage ? <AppBackButton fallback={fallback} fallbackLabel={fallback === "/" ? "Home" : fallback === "/settings" ? "Settings" : "Activity"} iconSize={20} /> :
-              <button type="button" className={styles.refreshButton} onClick={() => void refreshTab()}
-                disabled={refreshing} aria-busy={refreshing} aria-label={"Refresh " + accessibleTitle} title={"Refresh " + accessibleTitle}>
-                <span className={refreshing ? styles.refreshSpin : undefined}><RefreshCw size={20} aria-hidden="true" /></span>
-              </button>}
-            {!subpage && <span className={styles.visuallyHidden} role="status">{refreshing ? "Refreshing " + accessibleTitle : ""}</span>}
+            {subpage && <AppBackButton fallback={fallback} fallbackLabel={fallback === "/" ? "Home" : fallback === "/settings" ? "Settings" : "Activity"} iconSize={20} />}
           </div>
           {subpage ? <strong className={styles.headerTitle}>{title}</strong> :
             <>
@@ -146,7 +119,6 @@ export default function AppShell({ children }: PropsWithChildren) {
         </header>
         <main className={styles.main}>
           {!path.startsWith("/titles/") && <h1 className={styles.visuallyHidden}>{accessibleTitle}</h1>}
-          {!subpage && refreshError && <p role="alert" className={styles.refreshError}>Couldn’t refresh data: {refreshError}</p>}
           {children}
         </main>
       </div>

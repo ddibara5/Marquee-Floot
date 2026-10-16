@@ -20,21 +20,29 @@ describe("Route scroll and focus restoration",()=>{
  it("returns to the prior list scroll and originating link focus",()=>{
   render(<MemoryRouter initialEntries={[{pathname:"/list",key:crypto.randomUUID()}]}><Frame/></MemoryRouter>);flush();
   Object.defineProperty(window,"scrollY",{configurable:true,writable:true,value:600});fireEvent.scroll(window);
-  screen.getByText("Open detail").focus();fireEvent.click(screen.getByText("Open detail"));flush();expect(window.scrollY).toBe(0);
+  screen.getByText("Open detail").focus();fireEvent.keyDown(screen.getByText("Open detail"),{key:"Enter"});fireEvent.click(screen.getByText("Open detail"));flush();expect(window.scrollY).toBe(0);
   fireEvent.click(screen.getByText("Back"));flush();
   expect(window.scrollY).toBe(600);expect(document.activeElement).toBe(screen.getByText("Open detail"));
  });
  it("returns focus to the exact episode when multiple links share a details URL",()=>{
   render(<MemoryRouter initialEntries={[{pathname:"/list",key:crypto.randomUUID()}]}><Frame/></MemoryRouter>);flush();
   Object.defineProperty(window,"scrollY",{configurable:true,writable:true,value:700});fireEvent.scroll(window);
-  fireEvent.click(screen.getByText("Episode two"));flush();fireEvent.click(screen.getByText("Back"));flush();
+  fireEvent.keyDown(screen.getByText("Episode two"),{key:"Enter"});fireEvent.click(screen.getByText("Episode two"));flush();fireEvent.click(screen.getByText("Back"));flush();
   expect(window.scrollY).toBe(700);expect(document.activeElement).toBe(screen.getByText("Episode two"));
  });
  it("waits for delayed list content before restoring the saved position",async()=>{
   render(<MemoryRouter initialEntries={[{pathname:"/list",key:crypto.randomUUID()}]}><Frame/></MemoryRouter>);flush();
-  Object.defineProperty(window,"scrollY",{configurable:true,writable:true,value:900});fireEvent.scroll(window);fireEvent.click(screen.getByText("Open detail"));flush();
+  Object.defineProperty(window,"scrollY",{configurable:true,writable:true,value:900});fireEvent.scroll(window);fireEvent.keyDown(screen.getByText("Open detail"),{key:"Enter"});fireEvent.click(screen.getByText("Open detail"));flush();
   height=window.innerHeight;fireEvent.click(screen.getByText("Back"));flush();expect(window.scrollY).toBe(0);
   height=3000;await act(async()=>{document.querySelector("h1")!.appendChild(document.createElement("span"));await Promise.resolve();});flush();
   expect(window.scrollY).toBe(900);expect(document.activeElement).toBe(screen.getByText("Open detail"));
+ });
+ // A tap restores the scroll position but not focus, so iOS draws no ring around the row after Back.
+ it("does not focus the originating link after a tap",()=>{
+  render(<MemoryRouter initialEntries={[{pathname:"/list",key:crypto.randomUUID()}]}><Frame/></MemoryRouter>);flush();
+  Object.defineProperty(window,"scrollY",{configurable:true,writable:true,value:450});fireEvent.scroll(window);
+  fireEvent.pointerDown(screen.getByText("Episode two"));screen.getByText("Episode two").focus();fireEvent.click(screen.getByText("Episode two"));flush();
+  fireEvent.pointerDown(screen.getByText("Back"));fireEvent.click(screen.getByText("Back"));flush();
+  expect(window.scrollY).toBe(450);expect(document.activeElement).not.toBe(screen.getByText("Episode two"));
  });
 });

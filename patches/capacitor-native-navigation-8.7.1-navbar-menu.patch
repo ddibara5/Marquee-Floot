@@ -1,0 +1,31 @@
+--- a/node_modules/@capgo/capacitor-native-navigation/ios/Sources/NativeNavigationPlugin/NativeNavigationPlugin.swift	2026-10-16 00:58:38.003215679 +0000
++++ b/node_modules/@capgo/capacitor-native-navigation/ios/Sources/NativeNavigationPlugin/NativeNavigationPlugin.swift	2026-10-16 02:05:58.297448979 +0000
+@@ -1212,6 +1212,28 @@
+                 item.title = title
+             }
+             item.isEnabled = rawItem["enabled"] as? Bool ?? true
++            // Cookbook patch: an item with `menu` opens a native pull-down menu (Apple HIG More menu).
++            // Choosing an action sends navbarItemTap with that action's id, like a plain button.
++            if let rawMenu = rawItem["menu"] as? [[String: Any]], !rawMenu.isEmpty {
++                let actions: [UIMenuElement] = rawMenu.map { rawAction -> UIMenuElement in
++                    let actionId = rawAction["id"] as? String ?? UUID().uuidString
++                    let actionTitle = rawAction["title"] as? String ?? ""
++                    let action = UIAction(title: actionTitle, image: self.image(from: rawAction["icon"] as? [String: Any])) { [weak self] _ in
++                        self?.notifyListeners("navbarItemTap", data: [
++                            "id": actionId,
++                            "title": actionTitle,
++                            "placement": placement
++                        ])
++                    }
++                    if rawAction["enabled"] as? Bool == false {
++                        action.attributes.insert(.disabled)
++                    }
++                    return action
++                }
++                item.menu = UIMenu(children: actions)
++                item.target = nil
++                item.action = nil
++            }
+             item.accessibilityIdentifier = id
+             item.accessibilityLabel = title
+             configureGlassBarButtonItem(item, id: id)

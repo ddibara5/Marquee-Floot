@@ -1,0 +1,17 @@
+--- a/node_modules/@capgo/capacitor-native-navigation/ios/Sources/NativeNavigationPlugin/NativeNavigationPlugin.swift	2026-10-16 00:58:37.981311831 +0000
++++ b/node_modules/@capgo/capacitor-native-navigation/ios/Sources/NativeNavigationPlugin/NativeNavigationPlugin.swift	2026-10-16 00:58:38.003215679 +0000
+@@ -2975,6 +2975,14 @@
+         snapshotPlaceholder?.removeFromSuperview()
+         snapshotPlaceholder = nil
+         hostedWebView = webView
++        // Cookbook patch: on a tab's first selection this runs before UIKit has sized the tab's view,
++        // so the web view took its unsized bounds and the page laid out narrow for a few frames.
++        // Every tab view fills the same area, so give an off-screen tab view the web view's size first.
++        if view.window == nil,
++           !webView.bounds.isEmpty,
++           view.bounds.size != webView.bounds.size {
++            view.frame = CGRect(origin: view.frame.origin, size: webView.bounds.size)
++        }
+         if webView.superview !== view {
+             // addSubview reparents in one step. removeFromSuperview() first
+             // leaves a frame of this VC's backing colour (system white).

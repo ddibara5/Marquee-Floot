@@ -2,6 +2,15 @@ import {useLayoutEffect,type RefObject} from "react";
 import {useLocation,useNavigationType} from "react-router-dom";
 type Position={y:number;focus:string|null;focusKey?:string|null};
 const positions=new Map<string,Position>();
+// Back puts focus on the opened link only for keyboard users (Cookbook lesson, October 15): after a tap, iOS could
+// draw the focus ring around the title row when returning to the list.
+let keyboardInput=false;
+if(typeof document!=="undefined"){
+ document.addEventListener("keydown",event=>{if(!event.metaKey&&!event.ctrlKey&&!event.altKey)keyboardInput=true},true);
+ const pointer=()=>{keyboardInput=false};
+ document.addEventListener("pointerdown",pointer,true);document.addEventListener("mousedown",pointer,true);
+ document.addEventListener("touchstart",pointer,{capture:true,passive:true});
+}
 export function useRouteRestoration(panel:RefObject<HTMLElement|null>){
  const {key}=useLocation(),action=useNavigationType();
  useLayoutEffect(()=>{
@@ -13,7 +22,7 @@ export function useRouteRestoration(panel:RefObject<HTMLElement|null>){
   const remember=()=>{
    if(restoring)return;
    const active=document.activeElement;
-   const focus=active instanceof HTMLAnchorElement?active.getAttribute("href"):null;
+   const focus=keyboardInput&&active instanceof HTMLAnchorElement?active.getAttribute("href"):null;
    const prior=positions.get(key);
    positions.set(key,{y:window.scrollY,focus:focus??prior?.focus??null,focusKey:focus?active?.getAttribute("data-restore-focus")??null:prior?.focusKey??null});
    if(positions.size>120)positions.delete(positions.keys().next().value!);
@@ -45,7 +54,7 @@ export function useRouteRestoration(panel:RefObject<HTMLElement|null>){
   const rememberLink=(event:MouseEvent)=>{
    if(restoring)cancelRestore();remember();
    const link=event.target instanceof Element?event.target.closest<HTMLAnchorElement>("a[href]"):null;
-   if(link&&panel.current?.contains(link))positions.set(key,{y:window.scrollY,focus:link.getAttribute("href"),focusKey:link.getAttribute("data-restore-focus")});
+   if(link&&panel.current?.contains(link))positions.set(key,{y:window.scrollY,focus:keyboardInput?link.getAttribute("href"):null,focusKey:keyboardInput?link.getAttribute("data-restore-focus"):null});
   };
   window.addEventListener("scroll",remember,{passive:true});
   document.addEventListener("focusin",remember);
