@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "../components/Button";
 import { Skeleton } from "../components/Skeleton";
+import { TmdbLogo } from "../components/TmdbLogo";
 import { getInsightsContext } from "../endpoints/insights-context_GET.schema";
 import { buildLibraryInsights } from "../helpers/buildLibraryInsights";
 import { useTitles } from "../helpers/useTitles";
@@ -247,10 +248,7 @@ export default function InsightsPage() {
           rel="noreferrer"
           aria-label="The Movie Database"
         >
-          <img
-            src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_1-5bdc75aaebeb75dc7ae79426ddd9be3b2be1e342510f8202baf6bffa71d7f5c4.svg"
-            alt="TMDB"
-          />
+          <TmdbLogo />
         </a>
         <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
       </section>
