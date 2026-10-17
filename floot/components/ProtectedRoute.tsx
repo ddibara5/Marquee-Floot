@@ -15,9 +15,10 @@ const MakeProtectedRoute: (roles: User["role"][]) => React.FC<{
   ({ children }) => {
     const { authState } = useAuth();
 
-    // Show loading state while checking authentication
+    // While the session is checked, signed-in pages open straight away with their saved data and placeholders, like
+    // GameDeck (October 17); a server "not signed in" then sends them to login. Admin-only pages keep the full gate.
     if (authState.type === "loading") {
-      return <AuthLoadingState title="Authenticating" />;
+      return roles.includes("user") ? <>{children}</> : <AuthLoadingState title="Authenticating" />;
     }
 
     // Redirect to login if not authenticated

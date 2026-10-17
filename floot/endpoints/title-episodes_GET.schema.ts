@@ -1,5 +1,6 @@
 import { z } from "zod";
 import superjson from "superjson";
+import { batchedFetch } from "../helpers/batchedFetch";
 import type { Selectable } from "kysely";
 import type {
   MarqueeEpisodes,
@@ -36,7 +37,7 @@ export const getTitleEpisodes = async (
 ): Promise<OutputType> => {
   const input = schema.parse(body);
   const params = new URLSearchParams({ titleId: String(input.titleId) });
-  const result = await fetch("/_api/title-episodes?" + params.toString(), {
+  const result = await batchedFetch("/_api/title-episodes?" + params.toString(), {
     method: "GET",
     ...init,
     headers: {

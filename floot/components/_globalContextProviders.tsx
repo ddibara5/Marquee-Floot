@@ -9,6 +9,7 @@ import { SonnerToaster } from "./SonnerToaster";
 import { ScrollToHashElement } from "./ScrollToHashElement";
 import { AuthProvider } from "../helpers/useAuth";
 import { persistQueryCache, restoreQueryCache } from "../helpers/queryCachePersist";
+import { PageErrorBoundary } from "./PageErrorBoundary";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -67,7 +68,8 @@ export const GlobalContextProviders = ({
           <AppHead />
           <ScrollToHashElement />
           <TooltipProvider>
-            {children}
+            {/* Last line of defence: a crash outside a page (the shell itself) still shows Reload, not a blank screen. */}
+            <PageErrorBoundary>{children}</PageErrorBoundary>
             <SonnerToaster />
           </TooltipProvider>
         </ThemeModeProvider>

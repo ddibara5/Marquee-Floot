@@ -1,5 +1,6 @@
 import { z } from "zod";
 import superjson from "superjson";
+import { batchedFetch } from "../helpers/batchedFetch";
 import type { Selectable } from "kysely";
 import type { MarqueeTitles } from "../helpers/schema";
 
@@ -13,7 +14,7 @@ export const getTitles = async (
   body: z.infer<typeof schema> = {},
   init?: RequestInit
 ): Promise<OutputType> => {
-  const result = await fetch("/_api/titles", {
+  const result = await batchedFetch("/_api/titles", {
     method: "GET",
     ...init,
     headers: {

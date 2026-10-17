@@ -1,5 +1,6 @@
 import { z } from "zod";
 import superjson from "superjson";
+import { batchedFetch } from "../helpers/batchedFetch";
 
 export const schema = z.object({});
 export type OutputType = {
@@ -12,7 +13,7 @@ export type OutputType = {
   datedEvents: number;
 };
 export async function getInsightsContext(): Promise<OutputType> {
-  const response = await fetch("/_api/insights-context", { method: "GET" });
+  const response = await batchedFetch("/_api/insights-context", { method: "GET" });
   if (!response.ok) {
     const body = superjson.parse<{ error?: string }>(await response.text());
     throw new Error(body.error ?? "Unable to load viewing trends");

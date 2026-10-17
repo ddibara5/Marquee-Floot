@@ -1,5 +1,6 @@
 import { z } from "zod";
 import superjson from "superjson";
+import { batchedFetch } from "../helpers/batchedFetch";
 
 export const schema = z.object({});
 
@@ -39,7 +40,7 @@ export const getTraktStatus = async (
   body: z.infer<typeof schema> = {},
   init?: RequestInit
 ): Promise<OutputType> => {
-  const response = await fetch("/_api/trakt-status", {
+  const response = await batchedFetch("/_api/trakt-status", {
     method: "GET",
     ...init,
     headers: {

@@ -14,6 +14,7 @@ import { usePageGestures } from "../helpers/usePageGestures";
 import { nextPageStack, type PageEntry } from "../helpers/pageStack";
 import { useMediaQuery } from "../helpers/useMediaQuery";
 import AppBackButton from "./AppBackButton";
+import { PageErrorBoundary } from "./PageErrorBoundary";
 import { useQueryClient } from "@tanstack/react-query";
 import { titleEpisodesQuery } from "../helpers/useTitleEpisodes";
 import styles from "./AppShell.module.css";
@@ -188,13 +189,13 @@ export default function AppShell({ children }: PropsWithChildren) {
                 style={top || !entry.frame ? undefined : { top: entry.frame.top, left: entry.frame.left, width: entry.frame.width }}>
                 <PageLocation location={entry.location}>
                   {top && !path.startsWith("/titles/") && <h1 className={styles.visuallyHidden}>{accessibleTitle}</h1>}
-                  {top ? outlet : entry.element}
+                  <PageErrorBoundary resetKey={entry.key}>{top ? outlet : entry.element}</PageErrorBoundary>
                 </PageLocation>
               </section>;
             })}
           </> : <>
             {!path.startsWith("/titles/") && <h1 className={styles.visuallyHidden}>{accessibleTitle}</h1>}
-            {children}
+            <PageErrorBoundary resetKey={location.key}>{children}</PageErrorBoundary>
           </>}
         </main>
       </div>

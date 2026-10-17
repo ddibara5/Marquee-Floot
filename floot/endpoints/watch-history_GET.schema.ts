@@ -1,5 +1,6 @@
 import { z } from "zod";
 import superjson from "superjson";
+import { batchedFetch } from "../helpers/batchedFetch";
 
 export const schema = z.object({
   page: z.coerce.number().int().min(0).max(100).default(0),
@@ -42,7 +43,7 @@ export const getWatchHistory = async (input: z.input<typeof schema>, init?: Requ
     filter: parsed.filter,
     query: parsed.query,
   });
-  const result = await fetch("/_api/watch-history?" + params.toString(), {
+  const result = await batchedFetch("/_api/watch-history?" + params.toString(), {
     method: "GET",
     ...init,
     headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },

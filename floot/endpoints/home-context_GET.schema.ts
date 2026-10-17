@@ -1,5 +1,6 @@
 import { z } from "zod";
 import superjson from "superjson";
+import { batchedFetch } from "../helpers/batchedFetch";
 
 export const schema = z.object({});
 export type NextEpisode = {
@@ -41,7 +42,7 @@ export type OutputType = {
 };
 
 export async function getHomeContext(): Promise<OutputType> {
-  const response = await fetch("/_api/home-context", { method: "GET" });
+  const response = await batchedFetch("/_api/home-context", { method: "GET" });
   if (!response.ok) {
     const body = superjson.parse<{ error?: string }>(await response.text());
     throw new Error(body.error ?? "Unable to load next episodes");

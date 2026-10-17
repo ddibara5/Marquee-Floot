@@ -1,5 +1,6 @@
 import { z } from "zod";
 import superjson from "superjson";
+import { batchedFetch } from "../helpers/batchedFetch";
 
 export const schema = z.object({});
 export type PersonalRow = {
@@ -27,7 +28,7 @@ export type OutputType = {
   mappings: Array<{ titleId: number; mediaType: string; traktId: string }>;
 };
 export const getPersonalState = async (): Promise<OutputType> => {
-  const response = await fetch("/_api/personal-state");
+  const response = await batchedFetch("/_api/personal-state");
   const payload = superjson.parse<any>(await response.text());
   if (!response.ok) throw new Error(payload.error ?? "Unable to load Trakt data");
   return payload;
