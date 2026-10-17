@@ -19,7 +19,7 @@
 .headerTitle { justify-self:center; margin:0; font:600 16px/1.3 var(--font-family-display); text-align:center; }
 .sidebar,.rootTitle { display:none; }
 /* Phone web tab pages (October 17): the brand sits left like GameDeck's, and Search lives in the dock. */
-@media(max-width:899px) { .header[data-root=true] .brand { grid-column:1 / 3; grid-row:1; justify-self:start; } .header[data-root=true] .headerSearch { display:none; } }
+@media(max-width:899px) { .header[data-root=true] .headerSide { display:none; } .header[data-root=true] .brand { grid-column:1 / 3; grid-row:1; justify-self:start; } .header[data-root=true] .headerActions { grid-column:3; grid-row:1; } .header[data-root=true] .headerSearch { display:none; } }
 .main { width:min(100%,1120px); margin:0 auto; padding:24px max(20px,var(--safe-area-inset-right)) calc(120px + var(--safe-area-inset-bottom)) max(20px,var(--safe-area-inset-left)); }
 .subpage .main { padding-bottom:calc(32px + var(--safe-area-inset-bottom)); }
 .visuallyHidden { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
