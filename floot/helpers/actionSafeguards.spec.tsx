@@ -11,7 +11,7 @@ const personal={watchlist:[row],ratings:[],mappings:[]};
 function mount(element:React.ReactNode,path="/watchlist"){
  const client=new QueryClient({defaultOptions:{queries:{retry:false,staleTime:Infinity},mutations:{retry:false}}});
  client.setQueryData(["marquee","personal-state"],personal);
- client.setQueryData(["mq","enhancement-preferences"],{});
+ client.setQueryData(["marquee","enhancement-preferences"],{});
  client.setQueryData(["marquee","titles"],[{id:"1",title:"Audit series",type:"show",watchedEpisodes:1,releasedEpisodes:2}]);
  client.setQueryData(["marquee","catalog-detail",1],{});
  const episodes=[1,2,3,4].map(id=>({id,seasonId:10,episodeNumber:id,displayTitle:"Episode "+id,overview:"Known episode",tmdbStillPath:"/still.jpg",airedAt:id===3?null:new Date(id===4?"2099-01-01":"2020-01-01")}));

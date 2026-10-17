@@ -1,6 +1,6 @@
 import { QueryClient, dehydrate } from "@tanstack/react-query";
 import superjson from "superjson";
-import { QUERY_CACHE_KEY, restoreQueryCache, shouldPersist, forgetQueryCache } from "./queryCachePersist";
+import { QUERY_CACHE_KEY, restoreQueryCache, shouldPersist, forgetQueryCache, readRememberedUser, rememberUser } from "./queryCachePersist";
 
 describe("saved query cache", () => {
   afterEach(() => localStorage.clear());
@@ -28,5 +28,21 @@ describe("saved query cache", () => {
     localStorage.setItem(QUERY_CACHE_KEY, "{}");
     forgetQueryCache();
     expect(localStorage.getItem(QUERY_CACHE_KEY)).toBeNull();
+  });
+
+  it("remembers the signed-in user so the app opens at once, and forgets them on sign-out", () => {
+    const user = { id: 7, email: "dave@example.com", displayName: "Dave", avatarUrl: null, role: "user" as const };
+    expect(readRememberedUser()).toBeUndefined();
+    rememberUser(user);
+    expect(readRememberedUser()).toEqual(user);
+    rememberUser(null);
+    expect(readRememberedUser()).toBeUndefined();
+  });
+
+  it("ignores a remembered user that is corrupt or the wrong shape", () => {
+    localStorage.setItem("marquee-last-user", "{not json");
+    expect(readRememberedUser()).toBeUndefined();
+    localStorage.setItem("marquee-last-user", JSON.stringify({ id: "7", email: "x" }));
+    expect(readRememberedUser()).toBeUndefined();
   });
 });

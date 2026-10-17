@@ -13,7 +13,8 @@ import { persistQueryCache, restoreQueryCache } from "../helpers/queryCachePersi
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60 * 1000, // 1 minute "fresh" window
+      // Data changes through syncs and the app's own writes (which invalidate), so screens reuse it for 5 minutes (GameDeck, October 17).
+      staleTime: 5 * 60 * 1000,
       gcTime: 24 * 60 * 60 * 1000, // keep visited screens in the saved cache between launches
     },
   },
@@ -49,6 +50,8 @@ function AppHead() {
     <meta name="apple-mobile-web-app-title" content="Marquee" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="theme-color" content={dark ? "#070a12" : "#eef2f7"} />
+    {/* Posters come from TMDB: open that connection while the app starts (GameDeck preconnects its cover host). */}
+    <link rel="preconnect" href="https://image.tmdb.org" crossOrigin="" />
   </Helmet>;
 }
 

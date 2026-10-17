@@ -1,5 +1,6 @@
 import { dehydrate, hydrate, type QueryClient, type Query } from "@tanstack/react-query";
 import superjson from "superjson";
+import type { User } from "./User";
 
 // Last-known data on this device, so screens open at once and refresh quietly (ported from GameDeck, October 17).
 // superjson keeps Dates intact; only Marquee data is saved (never the auth session). Cleared on sign-out.
@@ -36,4 +37,24 @@ export function persistQueryCache(client: QueryClient) {
 
 export function forgetQueryCache() {
   try { localStorage.removeItem(QUERY_CACHE_KEY); } catch {}
+}
+
+// The last signed-in user on this device. The app opens signed in with it and checks the session in the background,
+// like GameDeck (October 17); only the server saying "not signed in" signs out. Forgotten on sign-out.
+const REMEMBERED_USER_KEY = "marquee-last-user";
+
+export function readRememberedUser(): User | undefined {
+  try {
+    const user = JSON.parse(localStorage.getItem(REMEMBERED_USER_KEY) ?? "null");
+    return user && typeof user.id === "number" && typeof user.email === "string" && typeof user.role === "string" ? user : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function rememberUser(user: User | null) {
+  try {
+    if (user) localStorage.setItem(REMEMBERED_USER_KEY, JSON.stringify(user));
+    else localStorage.removeItem(REMEMBERED_USER_KEY);
+  } catch {}
 }

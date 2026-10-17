@@ -1,6 +1,6 @@
 import {MediaImage} from "../components/MediaImage";
 import {useEnhancementPreferences} from "../helpers/useEnhancementPreferences";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Helmet } from "react-helmet";
 import { ArrowRight, ChevronRight } from "lucide-react";
@@ -20,6 +20,7 @@ import { useTraktStatus } from "../helpers/useTraktStatus";
 import {Progress} from "../components/Progress";
 import { DubBadge } from "../components/DubBadge";
 import { useDubStatus } from "../helpers/useDubStatus";
+import { warmAppData } from "../helpers/warmAppData";
 import styles from "./_index.module.css";
 
 const dubLabel = (hasEnDub?: boolean) => hasEnDub === undefined ? "" : hasEnDub ? ", English dub" : ", sub only";
@@ -85,7 +86,7 @@ function SyncLine() {
 export default function HomePage() {
   const client = useQueryClient();
   const { data: titles = [], isPending, error } = useTitles();
-  const context = useQuery({ queryKey: ["marquee", "home-context"], queryFn: getHomeContext, staleTime: 60_000, retry: false });
+  const context = useQuery({ queryKey: ["marquee", "home-context"], queryFn: getHomeContext, retry: false });
   const personal = usePersonalState();
   const preferences=useEnhancementPreferences();
   const dubs = useDubStatus().data;
@@ -124,6 +125,10 @@ export default function HomePage() {
   const backdrop = featured ? tmdbImageUrl(featured.title.backdropPath, "w780") : undefined;
   const refresh = () => void client.invalidateQueries({ queryKey: ["marquee"] });
   const contextReady = !isPending && !context.isPending;
+  const warmIds = [featured, ...keepRows].filter(Boolean).map(entry => entry!.row.titleId).join(",");
+  useEffect(() => {
+    if (contextReady) return warmAppData(client, warmIds ? warmIds.split(",").map(Number) : []);
+  }, [contextReady, warmIds, client]);
 
   const sections: Record<HomeSectionId, { place: "main" | "side" | "full"; node: ReactNode }> = {
     keep: { place: "main", node: contextReady && (keepRows.length > 0 || !featured) && <section className={styles.section} aria-labelledby="home-keep">

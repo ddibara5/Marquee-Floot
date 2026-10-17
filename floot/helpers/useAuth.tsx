@@ -4,11 +4,12 @@ import React, {
   useCallback,
   useRef,
   useEffect,
+  useState,
 } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSession } from "../endpoints/auth/session_GET.schema";
 import { postLogout } from "../endpoints/auth/logout_POST.schema";
-import { forgetQueryCache } from "./queryCachePersist";
+import { forgetQueryCache, readRememberedUser, rememberUser } from "./queryCachePersist";
 import { User } from "./User";
 
 // React Query key for auth session. Make sure to optimistically update user infos using this.
@@ -50,23 +51,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const queryClient = useQueryClient();
+  // Open signed in as the last user on this device and check the session in the background (GameDeck, October 17),
+  // so the saved data shows at once instead of waiting on a session round trip every launch.
+  const [remembered] = useState(readRememberedUser);
 
-  const { data, error, status, refetch } = useQuery({
+  const { data, error, status } = useQuery({
     queryKey: AUTH_QUERY_KEY,
     queryFn: async () => {
+      // A server answer of "not signed in" is final. A network failure or server error throws, which keeps a
+      // remembered user signed in (offline launch) and retries later.
       const result = await getSession();
-      if ("error" in result) {
-        throw new Error(result.error);
-      }
-      return result.user;
+      return "error" in result ? null : result.user;
     },
     retry: 1,
     enabled: true,
     staleTime: Infinity,
+    initialData: readRememberedUser, // read again on reset, so a sign-out (which forgets it first) stays signed out
+    initialDataUpdatedAt: 0,
   });
+  useEffect(() => {
+    if (remembered) void queryClient.refetchQueries({ queryKey: AUTH_QUERY_KEY });
+  }, [remembered, queryClient]);
 
-  const authState: AuthState =
-    status === "pending"
+  const authState: AuthState = data
+    ? { type: "authenticated", user: data }
+    : status === "pending"
       ? { type: "loading" }
       : status === "error"
         ? {
@@ -74,21 +83,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             errorMessage:
               error instanceof Error ? error.message : "Session check failed",
           }
-        : data
-          ? { type: "authenticated", user: data }
-          : { type: "unauthenticated" };
+        : { type: "unauthenticated" };
 
   // Signed out for any reason (sign-out here, an expired session, or a sign-out elsewhere): drop the saved
-  // Marquee data from this device and from memory, so the next account never sees it.
-  const signedOut = status === "error" || (status === "success" && !data);
+  // Marquee data and the remembered user from this device and from memory, so the next account never sees it.
+  const signedOut = !data && status !== "pending";
   useEffect(() => {
+    if (data) rememberUser(data);
     if (!signedOut) return;
+    rememberUser(null);
     forgetQueryCache();
     queryClient.removeQueries({ queryKey: ["marquee"] });
-  }, [signedOut, queryClient]);
+  }, [data, signedOut, queryClient]);
 
   const logout = useCallback(async () => {
     // Optimistically update UI
+    rememberUser(null);
     queryClient.setQueryData(AUTH_QUERY_KEY, null);
     forgetQueryCache();
     try {

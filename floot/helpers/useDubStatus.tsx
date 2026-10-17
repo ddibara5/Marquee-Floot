@@ -6,6 +6,5 @@ export const useDubStatus = () => useQuery({
   queryKey: ["marquee", "dub-status"],
   queryFn: getDubStatus,
   select: data => new Map(data.dubs.map(row => [row.titleId, row.hasEnDub])),
-  staleTime: 60_000,
   retry: false,
 });

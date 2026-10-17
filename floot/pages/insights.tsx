@@ -15,7 +15,7 @@ import {
 import { Button } from "../components/Button";
 import { Skeleton } from "../components/Skeleton";
 import { TmdbLogo } from "../components/TmdbLogo";
-import { getInsightsContext } from "../endpoints/insights-context_GET.schema";
+import { insightsContextQuery } from "../helpers/warmAppData";
 import { buildLibraryInsights } from "../helpers/buildLibraryInsights";
 import { useTitles } from "../helpers/useTitles";
 import styles from "./insights.module.css";
@@ -23,7 +23,7 @@ import styles from "./insights.module.css";
 export default function InsightsPage() {
   const [period, setPeriod] = useSavedControl<"3"|"12"|"all">("marquee-insights-period","12",["3","12","all"]);
   const { data: titles = [], isFetching, error } = useTitles();
-  const context = useQuery({ queryKey: ["marquee", "insights-context"], queryFn: getInsightsContext, staleTime: 60_000, retry: false });
+  const context = useQuery(insightsContextQuery);
   const ratings = new Map(context.data?.ratings.map(row => [String(row.titleId), row.score]));
   const manualStatuses = new Map(context.data?.statuses.map(row => [String(row.titleId), row.status]));
   const insights = buildLibraryInsights(titles.map(title => ({
