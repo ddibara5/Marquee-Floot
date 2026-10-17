@@ -165,10 +165,11 @@ export default function AppShell({ children }: PropsWithChildren) {
           </div>
           {/* Title pages show the brand, as GameDeck's detail does; the page's own heading names the title. */}
           {subpage ? path.startsWith("/titles/")
-            ? <span className={styles.brand} aria-hidden="true"><span className={styles.brandMark}><MarqueeMark size={25} /></span><span>Marquee</span></span>
+            ? <span className={styles.brand} aria-hidden="true"><span>Marquee</span></span>
             : <strong className={styles.headerTitle}>{title}</strong> :
             <>
-              <Link to="/" className={styles.brand + (path === "/" ? " " + styles.homeBrand : "")}><span className={styles.brandMark}><MarqueeMark size={25} /></span><span>Marquee</span></Link>
+              {/* Text-only brand, like GameDeck (October 17); the ticket mark stays in the desktop sidebar and the app icon. */}
+              <Link to="/" className={styles.brand + (path === "/" ? " " + styles.homeBrand : "")}><span>Marquee</span></Link>
               <span className={styles.rootTitle} aria-hidden="true">{accessibleTitle}</span>
             </>}
           <div className={styles.headerActions}>

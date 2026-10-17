@@ -5,9 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import {
-  Activity,
-  CheckCircle2,
-  CircleDot,
+  ChevronRight,
   Film,
   LibraryBig,
   PlayCircle,
@@ -34,14 +32,18 @@ export default function InsightsPage() {
   const byMonth = new Map((context.data?.monthly ?? []).map(row=>[row.month,row]));
   const months = calendarMonths([...byMonth.keys()],period).map(month=>byMonth.get(month)??{month,episodes:0,movies:0});
   const maxWatches = Math.max(1, ...months.map(month => month.episodes + month.movies));
+  const periodWatches = months.reduce((sum, month) => sum + month.episodes + month.movies, 0);
+  const [picked, setPicked] = useState<string | null>(null);
+  const selected = months.find(month => month.month === picked) ?? months[months.length - 1];
+  const monthName = (month: string, options: Intl.DateTimeFormatOptions) => new Date(month + "-01T12:00:00").toLocaleDateString(undefined, options);
 
   // Wait for your ratings and dated watches too, so no number changes after the page draws.
   if ((isFetching && titles.length === 0) || context.isPending) {
     return (
       <div className={styles.loading} aria-busy="true">
-        <Skeleton style={{ height: 84 }} />
-        <div className={styles.loadingTiles}><Skeleton /><Skeleton /><Skeleton /></div>
-        <Skeleton style={{ height: 480 }} />
+        <Skeleton className={styles.periodSkeleton} />
+        <Skeleton style={{ height: 78 }} />
+        <Skeleton style={{ height: 264 }} />
       </div>
     );
   }
@@ -72,57 +74,45 @@ export default function InsightsPage() {
       {context.error && <p role="alert" className={styles.error}>Viewing trends could not load. Collection insights remain available. <Button variant="ghost" onClick={() => void context.refetch()}>Retry</Button></p>}
 
       <div className={styles.insightsGrid}>
-      <section className={styles.metricGrid}>
-        <article className={styles.heroMetric}>
-          <div className={styles.metricIcon}><CheckCircle2 size={17} /></div>
-          <div>
-            <p>Completion</p>
-            <strong>{insights.completionRate}%</strong>
-          </div>
-          <span>{insights.completed} complete</span>
-        </article>
+      {/* Batch C (October 17): one period switch for the page, three headline numbers, then tappable month bars, like GameDeck's Insights. */}
+      <div className={styles.periodBar}>
+        <div className={styles.periods} role="group" aria-label="Viewing period">
+          {(["3", "12", "all"] as const).map(value => <button type="button" key={value} aria-pressed={period === value}
+            onClick={() => { setPeriod(value); setPicked(null); }}>{value === "all" ? "All" : value + " mo"}</button>)}
+        </div>
+        {months.length > 0 && <small>{monthName(months[0].month, { month: "short", year: "numeric" })} to {monthName(months[months.length - 1].month, { month: "short", year: "numeric" })}</small>}
+      </div>
 
-        <article className={styles.metric}>
-          <CircleDot size={15} />
-          <div>
-            <span>In progress</span>
-            <strong>{insights.inProgress}</strong>
-          </div>
-        </article>
-
-        <article className={styles.metric}>
-          <Activity size={15} />
-          <div>
-            <span>Titles, 30 days</span>
-            <strong>{insights.recentCount}</strong>
-          </div>
-        </article>
-
-        <article className={styles.metric}>
-          <Star size={15} />
-          <div>
-            <span>Avg rating</span>
-            <strong>{insights.averageRating ?? "—"}</strong>
-          </div>
-        </article>
+      <section className={styles.summary} aria-label="Summary">
+        <div><strong>{periodWatches}</strong><span>dated watches</span></div>
+        <div><strong>{insights.completionRate}%</strong><span>{insights.completed} complete</span></div>
+        <div><strong>{insights.averageRating ?? "None"}</strong><span>avg rating</span></div>
       </section>
 
       <section className={styles.panel}>
-        <div className={styles.panelHeading}><div><p>DATED WATCHES</p><h2>Viewing over time</h2></div></div>
-        <div className={styles.periods} aria-label="Viewing period">
-          {(["3", "12", "all"] as const).map(value => <Button key={value} size="sm"
-            variant={period === value ? "primary" : "ghost"} aria-pressed={period === value}
-            onClick={() => setPeriod(value)}>{value === "all" ? "All" : value + " mo"}</Button>)}
-        </div>
-        {months.length
-          ? <div className={styles.months}>{months.map(month => <div className={styles.month} key={month.month}>
-              <span>{new Date(month.month + "-01T12:00:00").toLocaleDateString("en-US", { month: "short", year: "2-digit" })}</span>
-              <div className={styles.monthTrack} aria-label={month.episodes + " episode watches and " + month.movies + " movie watches"}>
-                <i style={{ width: (month.episodes / maxWatches * 100) + "%" }}/><b style={{ width: (month.movies / maxWatches * 100) + "%" }}/>
-              </div><strong>{month.episodes + month.movies}</strong>
-            </div>)}</div>
+        <div className={styles.panelHeading}><div><h2>Viewing over time</h2></div><span className={styles.ratedCount}>Watches per month</span></div>
+        {selected
+          ? <>
+            <div className={styles.months} role="group" aria-label="Watches per month">{months.map(month => {
+              const total = month.episodes + month.movies;
+              const label = months.length <= 12 ? monthName(month.month, { month: "narrow" })
+                : month.month.endsWith("-01") ? monthName(month.month, { year: "2-digit" }) : "";
+              return <button type="button" key={month.month} className={styles.bar} aria-pressed={month.month === selected.month}
+                aria-label={`${monthName(month.month, { month: "long", year: "numeric" })}: ${total} ${total === 1 ? "watch" : "watches"}`}
+                onClick={() => setPicked(month.month)}>
+                <span className={styles.barTrack} aria-hidden="true">
+                  <b style={{ height: (month.movies / maxWatches * 100) + "%" }}/><i style={{ height: (month.episodes / maxWatches * 100) + "%" }}/>
+                </span>
+                <span aria-hidden="true">{label}</span>
+              </button>;
+            })}</div>
+            <div className={styles.barDetail} aria-live="polite">
+              <span><strong>{monthName(selected.month, { month: "short", year: "numeric" })}</strong> · {selected.episodes} {selected.episodes === 1 ? "episode" : "episodes"}, {selected.movies} {selected.movies === 1 ? "movie" : "movies"}</span>
+              <Link to="/library?view=history">View in Activity <ChevronRight size={14} aria-hidden="true"/></Link>
+            </div>
+          </>
           : <p className={styles.empty}>No dated watches in this period.</p>}
-        <p className={styles.trendNote}>Episodes <i/> · Movies <b/>. {months.reduce((sum,month)=>sum+month.episodes+month.movies,0)} dated watches in the selected period. Older imported dates may be less reliable; completions without a date are excluded.</p>
+        <p className={styles.trendNote}>Episodes <i/> · Movies <b/>. Older imported dates may be less reliable; completions without a date are excluded.</p>
       </section>
 
       {context.data && <section className={styles.panel}>

@@ -2,8 +2,6 @@
   display: grid;
   gap: 12px;
 }
-.loadingTiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.loadingTiles > * { height: 74px; }
 
 .error {
   padding: var(--spacing-4);
@@ -24,98 +22,15 @@
   text-transform: uppercase;
 }
 
-.metricGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.5rem;
-  margin-top: 0;
-}
 
-.heroMetric {
-  grid-column: 1 / -1;
-  min-height: 5.2rem;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.8rem;
-  background:
-    linear-gradient(110deg, color-mix(in srgb, var(--primary) 12%, transparent), transparent 46%),
-    color-mix(in srgb, var(--card) 94%, transparent);
-  border: 1px solid color-mix(in srgb, var(--primary) 26%, var(--border));
-  border-radius: 0.6rem;
-  box-shadow: var(--shadow);
-}
 
-.metricIcon {
-  width: 2.25rem;
-  height: 2.25rem;
-  display: grid;
-  place-items: center;
-  color: var(--primary);
-  background: color-mix(in srgb, var(--primary) 10%, var(--surface));
-  border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
-  border-radius: 0.45rem;
-  box-shadow: 0 0 16px color-mix(in srgb, var(--primary) 12%, transparent);
-}
 
-.heroMetric p {
-  margin: 0;
-  color: var(--muted-foreground);
-  font-family: var(--font-family-monospace);
-  font-size: 0.7rem;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-}
 
-.heroMetric strong {
-  display: block;
-  margin-top: 0.06rem;
-  color: var(--primary);
-  font-family: var(--font-family-monospace);
-  font-size: 1.65rem;
-  line-height: 1;
-  text-shadow: 0 0 18px color-mix(in srgb, var(--primary) 25%, transparent);
-}
 
-.heroMetric > span {
-  color: var(--muted-foreground);
-  font-family: var(--font-family-monospace);
-  font-size: 0.7rem;
-}
 
-.metric {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.42rem;
-  align-items: center;
-  padding: 0.62rem;
-  background: color-mix(in srgb, var(--card) 90%, transparent);
-  border: 1px solid color-mix(in srgb, var(--primary) 12%, var(--border));
-  border-radius: 0.5rem;
-}
 
-.metric > svg {
-  color: var(--primary);
-}
 
-.metric span {
-  display: block;
-  color: var(--muted-foreground);
-  font-family: var(--font-family-monospace);
-  font-size: 0.67rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
 
-.metric strong {
-  display: block;
-  margin-top: 0.08rem;
-  color: var(--foreground);
-  font-family: var(--font-family-monospace);
-  font-size: 0.9rem;
-}
 
 .panel {
   margin-top: 0.65rem;
@@ -325,11 +240,6 @@
 .periods { display: flex; gap: 5px; margin: 12px 0; }
 .periods button { min-height: 44px; }
 .months { display: grid; gap: 9px; max-height: 360px; overflow-y: auto; }
-.month { display: grid; grid-template-columns: 65px minmax(0, 1fr) 34px; gap: 9px; align-items: center; font: 600 11px var(--font-family-monospace); }
-.month > strong { text-align: right; }
-.monthTrack { display: flex; height: 9px; overflow: hidden; background: var(--muted); border-radius: 9px; }
-.monthTrack i { display: block; height: 100%; background: var(--primary); }
-.monthTrack b { display: block; height: 100%; background: var(--accent); }
 .trendNote { margin: 12px 0 0; color: var(--muted-foreground); font-size: 11px; line-height: 1.5; }
 .trendNote i, .trendNote b { display: inline-block; width: 8px; height: 8px; margin: 0 3px; border-radius: 50%; background: var(--primary); }
 .trendNote b { background: var(--accent); }
@@ -597,13 +507,7 @@
 }
 
 @media (max-width: 380px) {
-  .metricGrid {
-    grid-template-columns: 1fr 1fr;
-  }
 
-  .metric:last-child {
-    grid-column: 1 / -1;
-  }
 
   .legend {
     grid-template-columns: 1fr;
@@ -617,15 +521,6 @@
 
 
 .insightsGrid { display:grid; grid-template-columns:minmax(0,1fr); gap:24px; }
-.metricGrid { gap:12px; }
-.heroMetric { padding:16px; border:0; border-radius:8px; background:var(--surface); box-shadow:none; }
-.heroMetric strong { color:var(--foreground); font-family:var(--font-family-display); font-size:32px; text-shadow:none; }
-.metricIcon { background:transparent; border:0; box-shadow:none; }
-.heroMetric p,.heroMetric>span { font-size:12px; letter-spacing:0; text-transform:none; }
-.metric { grid-template-columns:minmax(0,1fr); padding:12px 0; border:0; border-bottom:1px solid var(--border); border-radius:0; background:transparent; }
-.metric>svg { display:none; }
-.metric span { font-size:12px; letter-spacing:0; text-transform:none; }
-.metric strong { font:600 24px/1.3 var(--font-family-display); margin-top:8px; }
 .panel { min-width:0; margin:0; padding:24px; border:0; border-radius:8px; background:var(--surface); box-shadow:none; }
 .panelHeading { align-items:center; min-height:44px; margin-bottom:12px; }
 .panelHeading h2 { font:600 18px/1.3 var(--font-family-display); }
@@ -634,25 +529,46 @@
 .periods button { padding:8px 0; border:0; border-bottom:2px solid transparent; border-radius:0; background:transparent; color:var(--muted-foreground); font-size:14px; }
 .periods button[aria-pressed=true] { color:var(--foreground); border-color:var(--primary); }
 .progressTrack span { background:var(--primary); box-shadow:none; }
-.month,.trendNote,.recentMetrics span,.mostRow>span,.rankRow>div span,.mixLabel,.progressMeta,.legend>div,.legend span,.ratedCount { font-size:12px; letter-spacing:0; text-transform:none; }
+.trendNote,.recentMetrics span,.mostRow>span,.rankRow>div span,.mixLabel,.progressMeta,.legend>div,.legend span,.ratedCount { font-size:12px; letter-spacing:0; text-transform:none; }
 .mostRow>strong,.rankRow>div strong { white-space:normal; overflow:visible; font:500 14px/1.4 var(--font-family-base); }
 .recentMetrics { flex-wrap:wrap; gap:12px; }
 .recentMetrics span { min-width:100px; padding:12px; background:var(--background); border:0; border-radius:4px; }
 .credits { margin:0; border:0; padding:0; }
-@media(min-width:900px) { .insightsGrid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:32px; } .metricGrid,.credits { grid-column:1/-1; } .metricGrid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:24px; } .heroMetric { grid-column:auto; display:flex; flex-wrap:wrap; } }
-@media(max-width:380px) { .panel { padding:16px; } .metric span { font-size:12px; } }
+@media(min-width:900px) { .insightsGrid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:32px; } .periodBar,.summary,.credits { grid-column:1/-1; } }
+@media(max-width:380px) { .panel { padding:16px; } }
 
 /* Grid (October 15): GameDeck's rule. Panels with a chart stay glass tiles; the rest sit on the backdrop under a hairline. */
 .panel.panel { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius-tile); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 6%,transparent); }
 .panel.panel:not(:has(.months, .stackedBar)) { padding:4px 0 0; background:none; border:0; border-top:1px solid var(--glass-hairline); border-radius:0; -webkit-backdrop-filter:none; backdrop-filter:none; box-shadow:none; }
 .panelHeading.panelHeading h2 { font-size:22px; letter-spacing:-.02em; }
-.heroMetric.heroMetric, .metric.metric { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius-tile); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); }
-.heroMetric.heroMetric strong { color:var(--foreground); font:800 28px/1 var(--font-family-display); text-shadow:none; white-space:nowrap; }
-.metric.metric strong { font:800 20px/1.1 var(--font-family-display); white-space:nowrap; }
-.metricIcon.metricIcon { border-radius:999px; box-shadow:0 0 14px color-mix(in srgb,var(--primary) 25%,transparent); }
 .periods.periods { display:inline-flex; gap:2px; padding:4px; border:1px solid var(--glass-border); border-radius:999px; background:var(--glass-control); }
 .periods.periods button { min-height:44px; border-radius:999px; }
 .rankRow.rankRow { padding:10px 0; background:none; border:0; border-top:1px solid var(--glass-hairline); border-radius:0; }
 .rankNumber.rankNumber { border:1px solid var(--glass-border); border-radius:7px; background:none; }
 .recentMetrics.recentMetrics span { background:var(--glass-control); border-radius:14px; }
-.monthTrack.monthTrack b { background:var(--brand); }
+/* Batch C (October 17): page period switch with its date range, a three-number strip, and vertical month bars you can tap. */
+.periodBar { display:flex; flex-direction:column; align-items:center; gap:6px; }
+.periodBar small { color:var(--muted-foreground); font-size:12px; }
+.periods.periods { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); width:min(100%,260px); margin:0; }
+.periods.periods button { padding:0 12px; border:0; background:transparent; color:var(--muted-foreground); font:600 13px var(--font-family-base); cursor:pointer; }
+.periods.periods button[aria-pressed=true] { background:var(--glass-control-on); color:var(--foreground); }
+.periodSkeleton { justify-self:center; width:260px; height:52px; border-radius:999px; }
+.summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border:1px solid var(--glass-border); border-radius:var(--radius-tile); background:var(--glass-bg); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); text-align:center; }
+.summary > div { display:flex; flex-direction:column; gap:4px; padding:14px 6px; min-width:0; }
+.summary > div + div { border-left:1px solid var(--glass-hairline); }
+.summary strong { font:800 28px/1 var(--font-family-display); white-space:nowrap; }
+.summary span { color:var(--muted-foreground); font-size:12px; }
+.months { display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; border-bottom:1px solid var(--glass-hairline); }
+.bar { flex:1 0 16px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:6px; height:150px; padding:0; border:0; background:transparent; color:var(--muted-foreground); font:600 12px var(--font-family-base); cursor:pointer; }
+.barTrack { display:flex; flex-direction:column-reverse; justify-content:flex-start; width:100%; height:118px; }
+.barTrack i,.barTrack b { display:block; width:100%; }
+.barTrack i { min-height:4px; border-radius:5px 5px 2px 2px; background:color-mix(in srgb,var(--primary) 45%,transparent); }
+.barTrack b { background:color-mix(in srgb,var(--brand) 55%,transparent); }
+.bar > span:last-child { min-height:15px; }
+.bar[aria-pressed=true] { color:var(--primary); }
+.bar[aria-pressed=true] .barTrack i { background:var(--primary); }
+.bar[aria-pressed=true] .barTrack b { background:var(--brand); }
+.bar:focus-visible,.barDetail a:focus-visible { outline:2px solid var(--primary); outline-offset:2px; border-radius:6px; }
+.barDetail { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:44px; margin-top:4px; font-size:13px; }
+.barDetail a { flex:none; display:inline-flex; align-items:center; gap:2px; min-height:44px; color:var(--primary); font-weight:600; text-decoration:none; }
+.trendNote.trendNote i { background:var(--primary); } .trendNote.trendNote b { background:var(--brand); }

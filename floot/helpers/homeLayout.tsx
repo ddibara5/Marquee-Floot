@@ -2,7 +2,6 @@ import { useState } from "react";
 
 /** Home sections after Up next, which always stays first. Saved per device, like the theme. */
 export const HOME_SECTIONS = [
-  { id: "week", label: "Last 7 days", hint: "Episodes per day" },
   { id: "keep", label: "Keep watching", hint: "Shows you have started" },
   { id: "upcoming", label: "Coming up", hint: "New episodes and release dates" },
   { id: "recent", label: "Recent activity", hint: "Lately, without Up next" },

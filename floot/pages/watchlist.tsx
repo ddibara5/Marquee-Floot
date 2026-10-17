@@ -2,16 +2,15 @@ import {useRouteViewState} from "../helpers/useRouteViewState";
 import {SearchField} from "../components/SearchField";
 import { useSavedControl } from "../helpers/useSavedControl";
 import { useEnhancementPreferences } from "../helpers/useEnhancementPreferences";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { SlidersHorizontal, X, Bookmark, ChevronRight, Ellipsis, Film, Grid2X2, List, Search, Tv2 } from "lucide-react";
-import {Popover,PopoverContent,PopoverTrigger} from "../components/Popover";
+import { Bookmark, ChevronDown, ChevronRight, Ellipsis, Film, Tv2 } from "lucide-react";
 import { Button } from "../components/Button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../components/DropdownMenu";
-import { Input } from "../components/Input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/Select";
+import { OptionChoice, OptionsSheet } from "../components/OptionsSheet";
+import { SwipeAction } from "../components/SwipeAction";
 import { Skeleton } from "../components/Skeleton";
 import { MediaImage } from "../components/MediaImage";
 import { changePersonalState } from "../endpoints/personal-state_POST.schema";
@@ -26,6 +25,10 @@ import styles from "./watchlist.module.css";
 type Filter = "all" | "movie" | "show" | "anime";
 type Sort = "added" | "title" | "release";
 type View = "list" | "grid";
+const MEDIA = [["all","All"],["show","Series"],["movie","Movies"],["anime","Anime"]] as const;
+const SORTS = [["added","Recently added"],["title","A to Z"],["release","Release date"]] as const;
+const DISPLAYS = [["list","List"],["grid","Grid"]] as const;
+const OUT_NOW_PAGE = 8;
 const dateLabel = (value?: Date | null) =>
   value ? new Date(value).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}) : null;
 
@@ -44,9 +47,9 @@ export default function WatchlistPage() {
     catch { return "list"; }
   });
   const preferences=useEnhancementPreferences();
-  const [scope,setScope]=useSavedControl<"all"|"available"|"upcoming"|"unknown">("marquee-watchlist-scope","all",["all","available","upcoming","unknown"]);
   const availability=(row:PersonalRow)=>!row.releaseDate?"unknown":new Date(row.releaseDate).getTime()>Date.now()?"upcoming":"available";
-  const [searchOpen,setSearchOpen]=useRouteViewState("pages/watchlist.tsx:searchOpen",false);
+  const [collapsed,setCollapsed]=useRouteViewState<string[]>("pages/watchlist.tsx:collapsed",["unknown"]);
+  const [outNowAll,setOutNowAll]=useRouteViewState("pages/watchlist.tsx:outNowAll",false);
   const [search,setSearch] = useRouteViewState("pages/watchlist.tsx:search","");
   const [busy,setBusy] = useState<string|null>(null);
   const [removed,setRemoved] = useState<PersonalRow|null>(null);
@@ -66,7 +69,7 @@ export default function WatchlistPage() {
   const rows = all.filter(row => {
     const type = filter === "all" || (filter === "anime" ? row.isAnime :
       row.mediaType === filter && !row.isAnime);
-    return type && (scope==="all"||availability(row)===scope) && (!normalized || row.title.toLocaleLowerCase().includes(normalized));
+    return type && (!normalized || row.title.toLocaleLowerCase().includes(normalized));
   }).sort((a,b) => sort === "title" ? a.title.localeCompare(b.title) :
     sort === "release" ? (new Date(b.releaseDate ?? 0).getTime() - new Date(a.releaseDate ?? 0).getTime()) ||
       (b.year ?? 0) - (a.year ?? 0) || a.title.localeCompare(b.title) :
@@ -104,33 +107,94 @@ export default function WatchlistPage() {
     try { localStorage.setItem("marquee-watchlist-view",next); } catch {}
   };
 
+  const activeCount = Number(filter !== "all");
+  const resetOptions = () => { setFilter("all"); setSort("added"); };
+  const renderRow = (row:PersonalRow) => {
+    const key = row.mediaType + ":" + row.traktId;
+    const date = dateLabel(row.activityAt);
+    const upcoming = row.releaseDate &&
+      new Date(row.releaseDate).getTime() > Date.now();
+    const picked = preferences.data?.["pick-next"]?.key === key;
+    const togglePick = async () => { setBusy(key); try { await preferences.save({action:"pick",key:picked?null:key}); setMessage(picked?"Pick next cleared.":"Pick next saved."); } catch(e) { setMessage(e instanceof Error?e.message:"Unable to save"); } finally { setBusy(null); } };
+    const article = <article className={styles.row}>
+      {row.titleId ? <Link to={"/titles/" + row.titleId} className={styles.posterLink} aria-label={"View " + row.title}><Poster row={row}/></Link>
+        : <span className={styles.posterLink}><Poster row={row}/></span>}
+      <div className={styles.copy}>
+        {row.titleId ? <Link className={styles.title} to={"/titles/" + row.titleId}>{row.title}</Link>
+          : <strong className={styles.title}>{row.title}</strong>}
+        <div className={styles.metadata}>
+          <span>{row.mediaType === "show" ? <Tv2 size={13}/> : <Film size={13}/>} {row.isAnime ? "Anime" : row.mediaType === "show" ? "Series" : "Movie"}</span>
+          <span>{row.year ?? "Year unknown"}</span>
+          {upcoming && <span className={styles.upcoming}>Coming {dateLabel(row.releaseDate)}</span>}
+          {picked && <span className={styles.upcoming}>★ Pick next</span>}
+          {row.titleId !== null && <DubBadge hasEnDub={dubs?.get(row.titleId)}/>}
+        </div>
+        {row.overview && <p className={styles.overview}>{row.overview}</p>}
+        <div className={styles.footer}>
+          {!row.releaseDate&&<span>Release date unknown</span>}
+          <span>{date ? "Added " + date : "Saved to Watch List"}</span>
+          {row.pendingAction && <span className={styles.pending}>Sync pending</span>}
+          {!row.posterPath && <span>{row.tmdbId || row.titleId ? "Artwork pending" : "Artwork unavailable"}</span>}
+        </div>
+      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className={styles.more}
+          aria-label={"Actions for " + row.title} disabled={busy === key}><Ellipsis size={19}/></Button></DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {row.titleId && <DropdownMenuItem asChild><Link to={"/titles/" + row.titleId}>View details</Link></DropdownMenuItem>}
+          <DropdownMenuItem disabled={busy!==null||preferences.isPending} onSelect={() => void togglePick()}>{picked ? "Clear Pick next" : "Set as Pick next"}</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => void change(row,"remove")}>Remove from Watch List</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {row.titleId && <Link className={styles.chevron} to={"/titles/" + row.titleId} aria-label={"View " + row.title + " details"}><ChevronRight size={18}/></Link>}
+    </article>;
+    return view === "list"
+      ? <SwipeAction key={key} actionLabel="Remove" disabled={busy !== null} onAction={() => void change(row,"remove")}>{article}</SwipeAction>
+      : <div key={key}>{article}</div>;
+  };
+
+  // Batch C (October 17): Out now, Upcoming by month and Date unknown, each collapsible, like GameDeck's Wishlist.
+  const outNow = rows.filter(row => availability(row) === "available");
+  const upcomingRows = rows.filter(row => availability(row) === "upcoming")
+    .sort((a,b) => new Date(a.releaseDate!).getTime() - new Date(b.releaseDate!).getTime());
+  const unknown = rows.filter(row => availability(row) === "unknown");
+  const months = new Map<string,PersonalRow[]>();
+  for (const row of upcomingRows) {
+    const date = new Date(row.releaseDate!);
+    const label = date.toLocaleDateString(undefined, date.getUTCFullYear() === new Date().getFullYear()
+      ? {month:"long",timeZone:"UTC"} : {month:"long",year:"numeric",timeZone:"UTC"});
+    months.set(label, [...(months.get(label) ?? []), row]);
+  }
+  const listClass = view === "grid" ? styles.grid : styles.list;
+  const group = (id:string, title:string, count:number, body:ReactNode) => {
+    if (!count) return null;
+    const open = !!normalized || !collapsed.includes(id);
+    return <section className={styles.group} aria-labelledby={"watchlist-" + id}>
+      <h2 className={styles.groupHeading}>
+        <button type="button" id={"watchlist-" + id} aria-expanded={open} aria-controls={"watchlist-" + id + "-rows"} disabled={!!normalized}
+          onClick={() => setCollapsed(current => open ? [...current, id] : current.filter(item => item !== id))}>
+          <span>{title} <small>{count}</small></span><ChevronDown size={18} aria-hidden="true"/>
+        </button>
+      </h2>
+      {open && <div id={"watchlist-" + id + "-rows"}>{body}</div>}
+    </section>;
+  };
+
   return <>
     <Helmet><title>Watch List · Marquee</title></Helmet>
-    <div className={styles.toolbar}>
-      <div className={styles.viewSwitch} role="group" aria-label="Display Watch List">
-          <button type="button" aria-label="List view" aria-pressed={view === "list"}
-            className={view === "list" ? styles.activeView : ""} onClick={() => setDisplay("list")}><List size={17}/></button>
-          <button type="button" aria-label="Grid view" aria-pressed={view === "grid"}
-            className={view === "grid" ? styles.activeView : ""} onClick={() => setDisplay("grid")}><Grid2X2 size={17}/></button>
-        </div>
-      <div className={styles.toolbarActions}><Button variant="ghost" size="icon" aria-label="Search Watch List" aria-expanded={searchOpen} onClick={()=>setSearchOpen(v=>!v)}><Search size={18}/></Button>
-      <Popover><PopoverTrigger asChild><Button variant="ghost" size="icon" aria-label="Filter and sort Watch List"><SlidersHorizontal size={18}/>{(filter!=="all"||scope!=="all"||sort!=="added")&&<span className={styles.activeDot}/>}</Button></PopoverTrigger><PopoverContent align="end" className={styles.filterPanel}><strong>Media</strong>      <div className={styles.filterBar} role="group" aria-label="Filter Watch List">
-        {([["all","All"],["movie","Movies"],["show","Series"],["anime","Anime"]] as const).map(([value,label]) =>
-          <button key={value} type="button" className={filter === value ? styles.selectedFilter : styles.filter}
-            aria-pressed={filter === value} onClick={() => setFilter(value)}>{label} <span>{counts[value]}</span></button>)}
-      </div>
-<strong>Release and sort</strong>        <Select value={scope} onValueChange={v=>setScope(v as typeof scope)}><SelectTrigger aria-label="Release availability"><SelectValue>{{all:"All releases",available:"Released",upcoming:"Upcoming",unknown:"Date unknown"}[scope]}</SelectValue></SelectTrigger><SelectContent><SelectItem value="all">All releases</SelectItem><SelectItem value="available">Released</SelectItem><SelectItem value="upcoming">Upcoming</SelectItem><SelectItem value="unknown">Date unknown</SelectItem></SelectContent></Select>
-        <Select value={sort} onValueChange={value => setSort(value as Sort)}>
-          <SelectTrigger className={styles.sort} aria-label="Sort Watch List"><SelectValue>{{added:"Recently added",title:"Title A–Z",release:"Release date"}[sort]}</SelectValue></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="added">Recently added</SelectItem>
-            <SelectItem value="title">Title A–Z</SelectItem>
-            <SelectItem value="release">Release date</SelectItem>
-          </SelectContent>
-        </Select>
-</PopoverContent></Popover></div>
+    <div className={styles.searchRow}>
+      <SearchField value={search} onValueChange={setSearch} placeholder="Search your Watch List" aria-label="Search your Watch List"/>
+      <OptionsSheet label="Watch List options" activeCount={activeCount} canReset={activeCount > 0 || sort !== "added"} onReset={resetOptions}
+        doneLabel={`Show ${rows.length} ${rows.length === 1 ? "title" : "titles"}`}>
+        <OptionChoice label="Media type" value={filter} options={MEDIA.map(([value,label]) => [value, `${label} ${counts[value]}`] as const)} onChange={setFilter}/>
+        <OptionChoice label="Sort by" value={sort} options={SORTS} onChange={setSort}/>
+        <OptionChoice label="Display" value={view} options={DISPLAYS} onChange={setDisplay}/>
+      </OptionsSheet>
     </div>
-    {(searchOpen||search)&&<SearchField value={search} onValueChange={setSearch} placeholder="Search your Watch List" aria-label="Search your Watch List"/>}
+    {activeCount > 0 && <div className={styles.filterSummary}>
+      <span><strong>{rows.length} {rows.length === 1 ? "title" : "titles"}</strong> · {MEDIA.find(([value]) => value === filter)![1]}</span>
+      <button type="button" onClick={resetOptions}>Clear filters</button>
+    </div>}
     {actionError && <div className={styles.notice} role="alert"><span>{actionError}</span>{failedAction&&<button type="button" disabled={busy!==null} onClick={()=>void change(failedAction.row,failedAction.action)}>Retry {failedAction.action==="add"?"Undo":"save"}</button>}</div>}
     {(message || removed) && <div className={styles.notice} role="status">
       <span>{removed ? removed.title + " removed from your Watch List." : message}</span>
@@ -140,7 +204,8 @@ export default function WatchlistPage() {
     {error && data && <p className={styles.empty} role="alert">Couldn’t refresh Watch List. Showing saved data. <Button variant="ghost" onClick={()=>void refetch()}>Retry</Button></p>}
     {!isLoading && !normalized && nextRelease && (() => {
       const body = <><Poster row={nextRelease}/><span className={styles.nextCopy}><small>Next release</small>
-        <strong>{nextDays === 1 ? "Tomorrow" : nextDays + " days"}</strong><span>{nextRelease.title} · {nextWhen}</span></span></>;
+        <strong>{nextDays === 1 ? "Tomorrow" : nextDays + " days"}</strong><span>{nextRelease.title} · {nextWhen}</span></span>
+        {nextRelease.titleId && <ChevronRight size={20} className={styles.nextChevron} aria-hidden="true"/>}</>;
       return nextRelease.titleId
         ? <Link className={styles.nextRelease} to={"/titles/" + nextRelease.titleId} aria-label={"Next release: " + nextRelease.title + ", " + nextWhen}>{body}</Link>
         : <div className={styles.nextRelease}>{body}</div>;
@@ -149,45 +214,17 @@ export default function WatchlistPage() {
       : error && !data ? <p className={styles.empty} role="alert">Unable to load your Watch List. <Button variant="ghost" onClick={()=>void refetch()}>Retry</Button></p>
       : !all.length ? <div className={styles.emptyState}><Bookmark size={28}/><h3>Your Watch List is empty</h3><p>Save a title here or in Rippple to start a queue.</p><Link to="/library?view=titles">Browse titles <ChevronRight size={16}/></Link></div>
       : !rows.length ? <p className={styles.empty}>No titles match these filters.</p>
-      : <div className={view === "grid" ? styles.grid : styles.list}>{rows.map(row => {
-        const key = row.mediaType + ":" + row.traktId;
-        const date = dateLabel(row.activityAt);
-        const upcoming = row.releaseDate &&
-          new Date(row.releaseDate).getTime() > Date.now();
-        const picked = preferences.data?.["pick-next"]?.key === key;
-        const togglePick = async () => { setBusy(key); try { await preferences.save({action:"pick",key:picked?null:key}); setMessage(picked?"Pick next cleared.":"Pick next saved."); } catch(e) { setMessage(e instanceof Error?e.message:"Unable to save"); } finally { setBusy(null); } };
-        return <article key={key} className={styles.row}>
-          {row.titleId ? <Link to={"/titles/" + row.titleId} className={styles.posterLink} aria-label={"View " + row.title}><Poster row={row}/></Link>
-            : <span className={styles.posterLink}><Poster row={row}/></span>}
-          <div className={styles.copy}>
-            {row.titleId ? <Link className={styles.title} to={"/titles/" + row.titleId}>{row.title}</Link>
-              : <strong className={styles.title}>{row.title}</strong>}
-            <div className={styles.metadata}>
-              <span>{row.mediaType === "show" ? <Tv2 size={13}/> : <Film size={13}/>} {row.isAnime ? "Anime" : row.mediaType === "show" ? "Series" : "Movie"}</span>
-              <span>{row.year ?? "Year unknown"}</span>
-              {upcoming && <span className={styles.upcoming}>Coming {dateLabel(row.releaseDate)}</span>}
-              {picked && <span className={styles.upcoming}>★ Pick next</span>}
-              {row.titleId !== null && <DubBadge hasEnDub={dubs?.get(row.titleId)}/>}
-            </div>
-            {row.overview && <p className={styles.overview}>{row.overview}</p>}
-            <div className={styles.footer}>
-              {!row.releaseDate&&<span>Release date unknown</span>}
-              <span>{date ? "Added " + date : "Saved to Watch List"}</span>
-              {row.pendingAction && <span className={styles.pending}>Sync pending</span>}
-              {!row.posterPath && <span>{row.tmdbId || row.titleId ? "Artwork pending" : "Artwork unavailable"}</span>}
-            </div>
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className={styles.more}
-              aria-label={"Actions for " + row.title} disabled={busy === key}><Ellipsis size={19}/></Button></DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {row.titleId && <DropdownMenuItem asChild><Link to={"/titles/" + row.titleId}>View details</Link></DropdownMenuItem>}
-              <DropdownMenuItem disabled={busy!==null||preferences.isPending} onSelect={() => void togglePick()}>{picked ? "Clear Pick next" : "Set as Pick next"}</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => void change(row,"remove")}>Remove from Watch List</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          {row.titleId && <Link className={styles.chevron} to={"/titles/" + row.titleId} aria-label={"View " + row.title + " details"}><ChevronRight size={18}/></Link>}
-        </article>;
-      })}</div>}
+      : <>
+        {group("out", "Out now", outNow.length, <>
+          <div className={listClass}>{(outNowAll || normalized ? outNow : outNow.slice(0, OUT_NOW_PAGE)).map(renderRow)}</div>
+          {!outNowAll && !normalized && outNow.length > OUT_NOW_PAGE &&
+            <button type="button" className={styles.showAll} onClick={() => setOutNowAll(true)}>Show all {outNow.length}</button>}
+        </>)}
+        {group("upcoming", "Upcoming", upcomingRows.length, [...months].map(([month, monthRows]) => <div key={month}>
+          <h3 className={styles.monthHeading}><span>{month}</span><small>{monthRows.length}</small></h3>
+          <div className={listClass}>{monthRows.map(renderRow)}</div>
+        </div>))}
+        {group("unknown", "Date unknown", unknown.length, <div className={listClass}>{unknown.map(renderRow)}</div>)}
+      </>}
   </>;
 }

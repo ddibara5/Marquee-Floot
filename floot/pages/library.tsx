@@ -1,19 +1,17 @@
 import {useRouteViewState} from "../helpers/useRouteViewState";
 import {SearchField} from "../components/SearchField";
 import {useSavedControl} from "../helpers/useSavedControl";
-import {Select,SelectContent,SelectItem,SelectTrigger,SelectValue} from "../components/Select";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useSearchParams } from "react-router-dom";
-import { Search, SlidersHorizontal, Clock3, PlayCircle, X } from "lucide-react";
+import { Search, Clock3, PlayCircle } from "lucide-react";
 import TitleCard from "../components/TitleCard";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/Accordion";
 import { Skeleton } from "../components/Skeleton";
 import { MediaImage } from "../components/MediaImage";
 import { Button } from "../components/Button";
-import { Input } from "../components/Input";
-import { Popover, PopoverContent, PopoverTrigger } from "../components/Popover";
-import type { HistoryEvent } from "../endpoints/watch-history_GET.schema";
+import { OptionChoice, OptionsSheet } from "../components/OptionsSheet";
+import { describeGroup, groupActivity } from "../helpers/groupActivity";
 import { filterAndSortTitles } from "../helpers/filterAndSortTitles";
 import { tmdbImageUrl } from "../helpers/tmdbImageUrl";
 import {useSearchTerm} from "../helpers/useSearchTerm";
@@ -25,9 +23,11 @@ type Filter = "all" | "shows" | "movies" | "anime";
 type WatchState = "all" | "in-progress" | "completed" | "unwatched";
 type Sort = "recent" | "title" | "year" | "rating" | "progress";
 
-function dayKey(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-}
+const MEDIA = [["all", "All"], ["shows", "Series"], ["movies", "Movies"], ["anime", "Anime"]] as const;
+const STATES = [["all", "All"], ["in-progress", "Watching"], ["completed", "Caught up"], ["unwatched", "Not started"]] as const;
+const SORTS = [["recent", "Recently watched"], ["title", "A to Z"], ["year", "Newest"], ["rating", "Highest rated"], ["progress", "Most progress"]] as const;
+const PAGE = 48;
+
 
 export default function LibraryPage() {
   const [params, setParams] = useSearchParams();
@@ -37,7 +37,8 @@ export default function LibraryPage() {
   const [watchState, setWatchState] = useSavedControl<WatchState>("marquee-library-state","all",["all","in-progress","completed","unwatched"]);
   const [sort, setSort] = useSavedControl<Sort>("marquee-library-sort","recent",["recent","title","year","rating","progress"]);
   const [query, setQuery] = useRouteViewState("pages/library.tsx:query","");
-  const [searchOpen, setSearchOpen] = useRouteViewState("pages/library.tsx:searchOpen",false);
+  const [shown, setShown] = useRouteViewState("pages/library.tsx:titlesShown", PAGE);
+  const [expanded, setExpanded] = useRouteViewState<string[]>("pages/library.tsx:expandedGroups", []);
   const [undatedVisible, setUndatedVisible] = useRouteViewState("pages/library.tsx:undatedVisible",12);
   const [composing,setComposing]=useState(false);
   const debouncedQuery = useSearchTerm(query,composing);
@@ -51,19 +52,15 @@ export default function LibraryPage() {
     () => history.data?.pages.flatMap(page => page.events) ?? [],
     [history.data]
   );
-  const days = useMemo(() => {
-    const grouped = new Map<string, { key: string; date: Date; events: HistoryEvent[] }>();
-    for (const event of events) {
-      const date = new Date(event.watchedAt);
-      if (!Number.isFinite(date.getTime())) continue;
-      const key = dayKey(date);
-      if (!grouped.has(key)) grouped.set(key, { key, date, events: [] });
-      grouped.get(key)!.events.push(event);
-    }
-    return [...grouped.values()];
-  }, [events]);
+  const periods = useMemo(() => groupActivity(events, new Date()), [events]);
   const undated = history.data?.pages[0]?.undated ?? [];
   const loadingHistory = history.isFetching && !history.data;
+  const titlesView = view === "titles";
+  const activeCount = Number(filter !== "all") + Number(titlesView && watchState !== "all");
+  const canReset = activeCount > 0 || (titlesView && sort !== "recent");
+  const resetOptions = () => { setFilter("all"); setWatchState("all"); setSort("recent"); };
+  const filterText = [titlesView && watchState !== "all" ? STATES.find(([v]) => v === watchState)![1] : null,
+    filter !== "all" ? MEDIA.find(([v]) => v === filter)![1] : null].filter(Boolean).join(" · ");
   const switchView = (next: string) => {
     setSavedView(next==="titles"?"titles":"history");
     setParams(previous => {
@@ -82,43 +79,23 @@ export default function LibraryPage() {
           <button type="button" aria-pressed={view === "history"} onClick={() => switchView("history")}>Activity</button>
           <button type="button" aria-pressed={view === "titles"} onClick={() => switchView("titles")}>Titles</button>
         </div>
-        <div className={styles.toolbarActions}>
-          <button type="button" className={styles.iconButton} aria-label={searchOpen ? "Close search" : "Search activity"}
-            aria-expanded={searchOpen} onClick={() => setSearchOpen(current => !current)}>
-            <Search size={18} aria-hidden="true" />{query && <span className={styles.activeDot} />}
-          </button>
-          <Popover>
-            <PopoverTrigger asChild>
-              <button type="button" className={styles.iconButton} aria-label="Filter and sort activity">
-                <SlidersHorizontal size={18} aria-hidden="true" />
-                {(filter !== "all" || (view === "titles" && (watchState !== "all" || sort !== "recent"))) && <span className={styles.activeDot} />}
-              </button>
-            </PopoverTrigger>
-            <PopoverContent align="end" sideOffset={8} className={styles.filterPanel}>
-              <strong>Media</strong>
-              <div className={styles.filterChoices} role="group" aria-label="Media type">
-                {(["all", "shows", "movies", "anime"] as const).map(value =>
-                  <button type="button" key={value} aria-pressed={filter === value} onClick={() => setFilter(value)}>
-                    {value === "all" ? "All" : value[0].toUpperCase() + value.slice(1)}
-                  </button>)}
-              </div>
-              {view === "titles" && <>
-                <strong>Watch state</strong>
-                <div className={styles.filterChoices} role="group" aria-label="Watch state">
-                  {(["all", "in-progress", "completed", "unwatched"] as const).map(value =>
-                    <button type="button" key={value} aria-pressed={watchState === value} onClick={() => setWatchState(value)}>
-                      {value === "all" ? "All" : value === "in-progress" ? "In progress" : value[0].toUpperCase() + value.slice(1)}
-                    </button>)}
-                </div>
-                <label className={styles.sortLabel}>Sort titles
-<Select value={sort} onValueChange={v=>setSort(v as Sort)}><SelectTrigger aria-label="Sort titles"><SelectValue>{{recent:"Recently watched",title:"Title A–Z",year:"Newest year",rating:"Highest rating",progress:"Most progress"}[sort]}</SelectValue></SelectTrigger><SelectContent><SelectItem value="recent">Recently watched</SelectItem><SelectItem value="title">Title A–Z</SelectItem><SelectItem value="year">Newest year</SelectItem><SelectItem value="rating">Highest rating</SelectItem><SelectItem value="progress">Most progress</SelectItem></SelectContent></Select>
-                </label>
-              </>}
-            </PopoverContent>
-          </Popover>
-        </div>
       </div>
-      {(searchOpen || query) && <SearchField aria-label={view==="history"?"Search activity":"Search titles"} placeholder={view==="history"?"Search activity":"Search titles"} value={query} onValueChange={setQuery} onCompositionChange={setComposing}/>}
+      {/* Batch C (October 17): search always visible, filters and sorting in one Options sheet, GameDeck's Library pattern. */}
+      <div className={styles.searchRow}>
+        <SearchField aria-label={titlesView ? "Search titles" : "Search activity"} placeholder={titlesView ? "Search titles" : "Search activity"} value={query} onValueChange={setQuery} onCompositionChange={setComposing}/>
+        <OptionsSheet label={titlesView ? "Title options" : "Activity options"} activeCount={activeCount} canReset={canReset} onReset={resetOptions}
+          doneLabel={titlesView ? `Show ${titles.length} ${titles.length === 1 ? "title" : "titles"}` : "Done"}>
+          <OptionChoice label="Media type" value={filter} options={MEDIA} onChange={setFilter}/>
+          {titlesView && <>
+            <OptionChoice label="Status" value={watchState} options={STATES} onChange={setWatchState}/>
+            <OptionChoice label="Sort by" value={sort} options={SORTS} onChange={setSort}/>
+          </>}
+        </OptionsSheet>
+      </div>
+      {activeCount > 0 && <div className={styles.filterSummary}>
+        <span>{titlesView && <strong>{titles.length} {titles.length === 1 ? "title" : "titles"} · </strong>}{filterText}</span>
+        <button type="button" onClick={resetOptions}>Clear filters</button>
+      </div>}
 
       {view === "history" ? (
         <div className={styles.history}>
@@ -130,27 +107,40 @@ export default function LibraryPage() {
           ) : (
             <>
               {history.error && <p role="alert" className={styles.error}>Couldn’t refresh Activity. Showing saved data.</p>}
-              {days.length ? <div className={styles.dayList}>
-                {days.map(day => <section key={day.key} className={styles.daySection} aria-label={day.date.toLocaleDateString()}>
+              {periods.length ? <div className={styles.dayList}>
+                {/* Batch C (October 17): one row per title per week or month, like GameDeck's Activity; a run of episodes opens to its rows. */}
+                {periods.map(period => <section key={period.key} className={styles.daySection} aria-label={period.label}>
                   <div className={styles.dayHeading}>
-                    <time dateTime={day.key}>{day.date.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}</time>
-                    <span>{day.events.length} {day.events.length === 1 ? "watch" : "watches"}</span>
+                    <h2 className={styles.periodLabel}>{period.label}</h2>
+                    <span>{period.count} {period.count === 1 ? "watch" : "watches"}</span>
                   </div>
                   <div className={styles.dayEvents}>
-                    {day.events.map(event => {
-                      const posterUrl = tmdbImageUrl(event.posterPath ?? undefined, "w185");
-                      const episodeNumber = event.seasonNumber !== null && event.episodeNumber !== null
-                        ? `S${event.seasonNumber} E${event.episodeNumber}` : null;
-                      return <Link to={`/titles/${event.titleId}`} key={`${event.kind}-${event.eventId}`} data-restore-focus={`history-${event.kind}-${event.eventId}`} className={styles.historyRow}>
-                        <span className={styles.historyPoster} aria-hidden="true">
-                          <MediaImage src={posterUrl} fallback={event.title.slice(0, 1)} alt="" loading="lazy" decoding="async" />
-                        </span>
-                        <span className={styles.historyCopy}>
-                          <strong>{event.title}</strong>
-                          <small>{event.kind === "movie" ? "Movie watched" : [episodeNumber, event.episodeTitle].filter(Boolean).join(" · ") || "Episode watched"}</small>
-                        </span>
-                        <PlayCircle size={16} className={styles.historyIcon} aria-hidden="true" />
-                      </Link>;
+                    {period.groups.map(group => {
+                      const open = expanded.includes(group.key);
+                      const toggle = () => setExpanded(current => open ? current.filter(key => key !== group.key) : [...current, group.key]);
+                      return <Fragment key={group.key}>
+                        <Link to={`/titles/${group.titleId}`} data-restore-focus={`history-group-${group.key}`} className={styles.historyRow}>
+                          <span className={styles.historyPoster} aria-hidden="true">
+                            <MediaImage src={tmdbImageUrl(group.posterPath ?? undefined, "w185")} fallback={group.title.slice(0, 1)} alt="" loading="lazy" decoding="async" />
+                          </span>
+                          <span className={styles.historyCopy}>
+                            <strong>{group.title}</strong>
+                            <small>{describeGroup(group)}</small>
+                          </span>
+                          <PlayCircle size={16} className={styles.historyIcon} aria-hidden="true" />
+                        </Link>
+                        {group.events.length > 1 && group.kind === "episode" && <>
+                          <button type="button" className={styles.groupToggle} aria-expanded={open} onClick={toggle}>
+                            {open ? "Hide" : "Show"} the {group.events.length} episodes
+                          </button>
+                          {open && <div className={styles.groupEvents}>
+                            {group.events.map(event => <Link to={`/titles/${event.titleId}`} key={event.eventId} data-restore-focus={`history-${event.kind}-${event.eventId}`} className={styles.groupEvent}>
+                              <span>{[event.seasonNumber !== null && event.episodeNumber !== null ? `S${event.seasonNumber} E${event.episodeNumber}` : null, event.episodeTitle].filter(Boolean).join(" · ") || "Episode watched"}</span>
+                              <time dateTime={new Date(event.watchedAt).toISOString()}>{new Date(event.watchedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</time>
+                            </Link>)}
+                          </div>}
+                        </>}
+                      </Fragment>;
                     })}
                   </div>
                 </section>)}
@@ -199,7 +189,10 @@ export default function LibraryPage() {
           <div className={styles.empty}><Search size={18} /><strong>No titles match</strong><span>Adjust your search or filters.</span></div>
         ) : (
           <>{titlesError && <p role="alert" className={styles.error}>Couldn’t refresh titles. Showing saved data.</p>}
-          <div className={styles.list}>{titles.map(t => <TitleCard key={t.id} title={t} compact />)}</div></>
+          <div className={styles.list}>{titles.slice(0, shown).map(t => <TitleCard key={t.id} title={t} compact />)}</div>
+          {shown < titles.length && <Button variant="outline" className={styles.loadMore} onClick={() => setShown(current => current + PAGE)}>
+            Show {Math.min(PAGE, titles.length - shown)} more
+          </Button>}</>
         )
       )}
     </>

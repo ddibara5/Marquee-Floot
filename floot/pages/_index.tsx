@@ -40,7 +40,6 @@ const episodeLabel = (season: number | null, episode: number | null) =>
   season != null && episode != null ? `S${season} E${episode}` : "Next episode";
 /** Catalog placeholders like "Episode 4" add nothing next to "S1 E4". */
 const namedEpisode = (name?: string | null) => name && !/^episode \d+$/i.test(name.trim()) ? name : null;
-const plural = (n: number, word: string) => n + " " + word + (n === 1 ? "" : "s");
 
 function Poster({ title, priority = false }: { title: Pick<Title, "title" | "posterPath">; priority?: boolean }) {
   const url = tmdbImageUrl(title.posterPath, "w342");
@@ -121,32 +120,12 @@ export default function HomePage() {
       .map(row => ({ key: "w" + row.id, day: storedDay(row.releaseDate!), name: row.title, to: row.titleId ? "/titles/" + row.titleId : "/watchlist",
         detail: (row.isAnime ? "Anime" : row.mediaType === "movie" ? "Movie" : "Series") + " · on your Watch List" })),
   ].sort((a, b) => a.day.localeCompare(b.day)).slice(0, 4);
-  const week = context.data?.week;
-  const weekEpisodes = week?.days.reduce((sum, day) => sum + day.episodes, 0) ?? 0;
-  const weekMovies = week?.days.reduce((sum, day) => sum + day.movies, 0) ?? 0;
-  const weekMax = Math.max(1, ...(week?.days.map(day => day.episodes + day.movies) ?? []));
   const featuredProgress = featured ? getTitleProgressSummary(featured.title) : null;
   const backdrop = featured ? tmdbImageUrl(featured.title.backdropPath, "w780") : undefined;
   const refresh = () => void client.invalidateQueries({ queryKey: ["marquee"] });
   const contextReady = !isPending && !context.isPending;
 
-  // Rendered twice: in the section order (phones, tablets, iPhone app) and beside Up next on wide web screens
-  // (GameDeck's top row, October 15). CSS shows exactly one copy, so the heading ids differ.
-  const weekSection = (headingId: string) => week && <section className={styles.week} aria-labelledby={headingId}>
-      <div className={styles.weekHead}><h2 id={headingId}>Last 7 days</h2><Link to="/insights">Insights</Link></div>
-      <div className={styles.weekBody}>
-        <div className={styles.weekTotal}><strong>{weekEpisodes + weekMovies}</strong>
-          <small>{weekMovies ? plural(weekEpisodes, "episode") + " · " + plural(weekMovies, "movie") : weekEpisodes === 1 ? "episode" : "episodes"} · {plural(week.titles, "title")}</small></div>
-        <div className={styles.weekChart} role="img" aria-label={"Watched per day: " + week.days.map(day => dayFormat(day.date, { weekday: "short" }) + " " + (day.episodes + day.movies)).join(", ")}>
-          <div className={styles.bars}>{week.days.map(day => { const n = day.episodes + day.movies;
-            return <span key={day.date} data-empty={n === 0 || undefined} data-today={day.date === today || undefined} style={n ? { height: Math.max(12, Math.round(n / weekMax * 100)) + "%" } : undefined} />; })}</div>
-          <div className={styles.barLabels} aria-hidden="true">{week.days.map(day =>
-            <span key={day.date} data-today={day.date === today || undefined}>{day.date === today ? "Today" : dayFormat(day.date, { weekday: "narrow" })}</span>)}</div>
-        </div>
-      </div>
-    </section>;
   const sections: Record<HomeSectionId, { place: "main" | "side" | "full"; node: ReactNode }> = {
-    week: { place: "side", node: weekSection("home-week") },
     keep: { place: "main", node: contextReady && (keepRows.length > 0 || !featured) && <section className={styles.section} aria-labelledby="home-keep">
       <div className={styles.heading}><div><h2 id="home-keep">Keep watching</h2>{keepRows.length > 0 && <span className={styles.count}>{keepRows.length} series</span>}</div><Link to="/library?view=titles">Library <ArrowRight size={14}/></Link></div>
       {/* Grid (October 15): a poster strip with a badge, GameDeck's cover-strip pattern. */}
@@ -201,7 +180,7 @@ export default function HomePage() {
     {error && <p className={styles.error} role="alert">Unable to load your library. <Button variant="ghost" onClick={refresh}>Retry</Button></p>}
     {context.error && <p className={styles.error} role="alert">Next episodes could not load. <Button variant="ghost" onClick={refresh}>Retry</Button></p>}
     <div className={styles.top}>
-    {(isPending || context.isPending) && <><Skeleton className={styles.featuredSkeleton} /><Skeleton className={styles.topWeekSkeleton} /></>}
+    {(isPending || context.isPending) && <Skeleton className={styles.featuredSkeleton} />}
     {!isPending && !context.isPending && featured && <section className={styles.featured} data-backdrop={backdrop ? "" : undefined} aria-labelledby="home-up-next">
       {backdrop && <span className={styles.backdrop} aria-hidden="true">
         <MediaImage className={styles.backdropFill} src={backdrop} fallback="" alt="" decoding="async"/>
@@ -220,7 +199,6 @@ export default function HomePage() {
         <div className={styles.featuredActions}><Button asChild><Link to={"/titles/"+featured.title.id}>Next episode <ArrowRight size={14}/></Link></Button></div>
       </div>
     </section>}
-    {!isPending && !context.isPending && featured && !layout.hidden.includes("week") && <div className={styles.topWeek}>{weekSection("home-week-top")}</div>}
     </div>
     {/* Grid (October 15): sync status sits under Up next, like GameDeck, so the show you're watching leads Home. */}
     <SyncLine />
@@ -228,7 +206,7 @@ export default function HomePage() {
     {/* Wait for both the library and Home context so Up next doesn't pop in above already-drawn sections. */}
     {!isPending && !context.isPending && <div className={styles.dashboard}>
       {layout.order.filter(id => !layout.hidden.includes(id)).map(id => sections[id].node &&
-        <div key={id} className={styles[sections[id].place] + (id === "week" && featured ? " " + styles.dashWeek : "")}>{sections[id].node}</div>)}
+        <div key={id} className={styles[sections[id].place]}>{sections[id].node}</div>)}
     </div>}
     {!isPending && !context.isPending && <div className={styles.customize}><HomeCustomizeSheet layout={layout} onChange={save} onReset={reset} /></div>}
   </>;

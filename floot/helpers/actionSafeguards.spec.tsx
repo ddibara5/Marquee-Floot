@@ -25,6 +25,7 @@ describe("Marquee action safeguards",()=>{
  it("keeps failed Undo visible alongside its retry and removal context",async()=>{
   const fetchSpy=spyOn(globalThis,"fetch").and.callFake(async(_url,init)=>init?.method==="POST"?response({saved:true,synced:false,message:"Saved."}):response({...personal,watchlist:[]}));
   mount(<WatchlistPage/>);
+  fireEvent.click(screen.getByRole("button",{name:/Date unknown/})); // undated titles start collapsed (Batch C)
   fireEvent.keyDown(screen.getByRole("button",{name:"Actions for Audit series"}),{key:"ArrowDown"});
   await waitFor(()=>expect(screen.getByRole("menuitem",{name:/Remove/})).toBeTruthy());
   fireEvent.click(screen.getByRole("menuitem",{name:/Remove/}));

@@ -1,20 +1,4 @@
 .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; min-height: 44px; }
-.toolbarActions { display: flex; gap: 0.25rem; flex: none; }
-.iconButton { position: relative; display: grid; place-items: center; width: 44px; height: 44px; color: var(--primary); border: 0; border-radius: 0.5rem; background: transparent; cursor: pointer; }
-.iconButton:hover, .iconButton:focus-visible { background: color-mix(in srgb, var(--primary) 12%, transparent); }
-.activeDot { position: absolute; right: 7px; top: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
-.searchWrap { position: relative; min-width: 0; margin-top: 0.45rem; }
-.searchWrap > svg { position: absolute; left: 0.72rem; top: 50%; z-index: 1; transform: translateY(-50%); color: var(--primary); pointer-events: none; }
-.searchWrap > button { position: absolute; right: 0; top: 0; display: grid; place-items: center; width: 44px; height: 44px; border: 0; background: transparent; color: var(--muted-foreground); cursor: pointer; }
-.searchInput { height: 44px; padding-left: 2.2rem !important; padding-right: 2.6rem !important; border-color: color-mix(in srgb, var(--primary) 24%, var(--border)) !important; border-radius: 0.5rem !important; background: color-mix(in srgb, var(--surface) 82%, transparent) !important; font-family: var(--font-family-monospace) !important; font-size: 0.72rem !important; }
-.searchInput::placeholder { color: var(--muted-foreground); }
-.filterPanel { width: min(20rem, calc(100vw - 2rem)); display: grid; gap: 0.55rem; padding: 0.8rem !important; }
-.filterPanel strong, .sortLabel { font: 700 0.72rem var(--font-family-monospace); color: var(--muted-foreground); text-transform: uppercase; }
-.filterChoices { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-.filterChoices button { min-height: 40px; padding: 0.4rem 0.65rem; border: 1px solid var(--border); border-radius: 0.45rem; background: var(--surface); color: var(--foreground); cursor: pointer; }
-.filterChoices button[aria-pressed="true"] { border-color: var(--primary); color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, var(--surface)); }
-.sortLabel { display: grid; gap: 0.3rem; }
-.sortLabel select { min-height: 44px; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.45rem; background: var(--surface); color: var(--foreground); font: 500 0.8rem var(--font-family-monospace); }
 .list { display: grid; gap: 0.55rem; margin-top: 0.7rem; }
 .list > a { content-visibility: auto; contain-intrinsic-size: auto 5.5rem; }
 .error { margin-top: var(--spacing-4); padding: var(--spacing-4); color: var(--error); background: color-mix(in srgb, var(--error) 8%, var(--card)); border: 1px solid color-mix(in srgb, var(--error) 28%, var(--border)); border-radius: var(--radius); }
@@ -71,12 +55,6 @@
 .viewTabs button { padding:8px 12px; font:500 14px var(--font-family-base); letter-spacing:0; text-transform:none; }
 .viewTabs button:first-child { padding-left:0; }
 .viewTabs button[aria-pressed=true] { color:var(--foreground); border-bottom-color:var(--primary); }
-.searchWrap { margin-top:16px; }
-.filterPanel { padding:16px!important; gap:16px; }
-.filterPanel strong,.sortLabel { font:600 12px var(--font-family-base); text-transform:none; }
-.filterChoices { gap:8px; }
-.filterChoices button { min-height:44px; min-width:44px; border:0; border-bottom:2px solid transparent; border-radius:0; background:transparent; font-size:13px; padding:8px; }
-.filterChoices button[aria-pressed=true] { border-color:var(--primary); color:var(--primary); background:transparent; }
 .history { max-width:760px; margin-top:24px; }
 .dayList { gap:32px; }
 .daySection { padding-left:0; }
@@ -105,8 +83,6 @@
 .viewTabs.viewTabs { flex:1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); max-width:360px; padding:4px; border:1px solid var(--glass-border); border-radius:999px; background:var(--glass-control); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); }
 .viewTabs.viewTabs button, .viewTabs.viewTabs button:first-child { min-height:44px; padding:0 12px; border:0; border-radius:999px; color:var(--muted-foreground); font:600 13px var(--font-family-base); }
 .viewTabs.viewTabs button[aria-pressed=true] { background:var(--glass-control-on); color:var(--foreground); }
-.iconButton.iconButton { border:1px solid var(--glass-border); border-radius:999px; background:var(--glass-control); color:var(--foreground); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); }
-.searchInput.searchInput { border-color:var(--glass-border)!important; border-radius:999px!important; background:var(--glass-control)!important; font:16px var(--font-family-base)!important; }
 .dayHeading.dayHeading { margin:0; min-height:36px; align-items:center; border-top:1px solid var(--glass-hairline); }
 .dayHeading.dayHeading time { color:var(--muted-foreground); font-size:15px; }
 .dayList.dayList { gap:12px; }
@@ -123,3 +99,15 @@
 .daySkeleton { height:20px; width:55%; margin-block:8px; }
 .rowSkeleton { height:76px; }
 .posterSkeleton { aspect-ratio:2/3; width:100%; }
+/* Batch C (October 17): search with Options beside it, a filter line only while filtered, grouped Activity rows. */
+.searchRow { display:flex; align-items:center; gap:8px; margin-top:16px; }
+.searchRow > :first-child { flex:1; min-width:0; }
+.filterSummary { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; color:var(--muted-foreground); font-size:13px; }
+.filterSummary strong { color:var(--foreground); font-weight:600; }
+.filterSummary button { flex:none; min-height:44px; padding:0 4px; border:0; background:transparent; color:var(--primary); font:600 13px var(--font-family-base); cursor:pointer; }
+.periodLabel { margin:0; color:var(--muted-foreground); font:700 15px/1.3 var(--font-family-display); }
+.groupToggle { display:block; min-height:44px; margin:-8px 0 4px 56px; padding:0; border:0; background:transparent; color:var(--primary); font:600 13px var(--font-family-base); text-align:left; cursor:pointer; }
+.groupEvents { display:grid; margin:0 0 8px 56px; }
+.groupEvent { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:44px; border-top:1px solid var(--glass-hairline); color:var(--foreground); font-size:13px; text-decoration:none; }
+.groupEvent time { flex:none; color:var(--muted-foreground); font-size:12px; }
+:is(.filterSummary button,.groupToggle,.groupEvent):focus-visible { outline:2px solid var(--primary); outline-offset:2px; }

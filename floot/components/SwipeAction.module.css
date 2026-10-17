@@ -1,0 +1,6 @@
+.swipe { position:relative; overflow:hidden; }
+.action { position:absolute; top:0; right:0; bottom:0; overflow:hidden; border:0; background:var(--error); color:var(--error-foreground); font:700 14px var(--font-family-base); white-space:nowrap; cursor:pointer; transition:width .2s ease; }
+.content { position:relative; touch-action:pan-y; transition:transform .2s ease; }
+.swipe[data-dragging] :is(.action,.content) { transition:none; }
+.action:focus-visible { outline:2px solid var(--foreground); outline-offset:-4px; }
+@media (prefers-reduced-motion:reduce) { .action, .content { transition:none; } }

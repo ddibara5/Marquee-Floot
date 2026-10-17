@@ -62,8 +62,6 @@
   --border: #c5d1dd;
   --brand: #e0263a;
   --grid-line: rgba(10,122,150,.12);
-  --beam-a: rgba(10,122,150,.6);
-  --beam-b: rgba(224,38,58,.6);
   --sky: #d6ecf7;
   --glow: rgba(224,38,58,.1);
   --font-family-base: 'Archivo', system-ui, sans-serif;
@@ -121,8 +119,6 @@
   --border: #1d3550;
   --brand: #ff3448;
   --grid-line: rgba(72,229,255,.14);
-  --beam-a: rgba(72,229,255,.75);
-  --beam-b: rgba(255,52,72,.75);
   --sky: #0f2740;
   --glow: rgba(255,52,72,.18);
   --shadow: none;
