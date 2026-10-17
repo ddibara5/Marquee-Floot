@@ -5,7 +5,7 @@ Dave approved the refined interactive Premiere mockup for implementation. Authen
 ## Visual brief
 A quiet cinematic screening room: aubergine surfaces, warm peach actions, complete film/TV/anime posters and Archivo throughout. Establish hierarchy through artwork, typography and space. Avoid neon glow, technical grids, ornamental rails and repeated eyebrow/section labels.
 
-Use complete 2:3 foreground posters with object-fit:contain and fixed aspect-ratio frames, including missing/broken artwork fallback. Main posters: 156px; shelves: 144px; activity rows: 48px. Phone main/shelf posters: 132px; Home at under 360px uses 108px inside the feature to preserve readable episode controls. Artwork does not stretch to match text height. Poster captions share the artwork's left edge; peer section headings/first content rows align.
+Use complete 2:3 foreground posters with object-fit:contain and fixed aspect-ratio frames, including missing/broken artwork fallback. Main posters: 156px; shelves: 144px; activity rows: 48px. Titles and Watch List grid posters fill their grid column (October 17, Dave approved Batch B); the fixed sizes apply to Home shelves, feature and detail posters. Phone main/shelf posters: 132px; Home at under 360px uses 108px inside the feature to preserve readable episode controls. Artwork does not stretch to match text height. Poster captions share the artwork's left edge; peer section headings/first content rows align.
 
 ## Tokens and ownership
 Model B: base.css is the canonical runtime token owner. This document mirrors accepted values; seeded controls and CSS modules consume semantic variables, not a second palette. helpers/themeMode.tsx keeps existing System/Dark/Light preference behavior and dark default.

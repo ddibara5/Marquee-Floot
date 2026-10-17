@@ -244,7 +244,7 @@ export default function TitleDetailPage() {
       {/* Hold the next-episode card's space while episodes load, so the page doesn't move after it opens. */}
       {!relationalData && !relationalError && title.type === "show" &&
         (title.watchedEpisodes ?? 0) > 0 && (title.watchedEpisodes ?? 0) < (title.releasedEpisodes ?? 0) && (
-        <section className={styles.nextEpisode} aria-hidden="true"><Skeleton style={{ height: 86 }} /></section>
+        <section className={styles.nextEpisode} aria-hidden="true"><Skeleton style={{ height: 100 }} /></section>
       )}
       {nextEpisode && numericTitleId && !["paused", "dropped"].includes(manualStatus ?? "") && (
         <section className={[styles.nextEpisode, nextStillPath ? styles.nextEpisodeWithImage : ""].filter(Boolean).join(" ")} aria-label="Next episode">

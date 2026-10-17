@@ -26,9 +26,9 @@
 .shell :is(a,button):focus-visible { outline:2px solid var(--primary); outline-offset:2px; }
 /* Phone web dock (October 17, from GameDeck): the tab bar plus a separate Search button, like the iPhone app's detached search tab. */
 .mobileDock { position:fixed; left:50%; bottom:calc(24px + var(--safe-area-inset-bottom)); transform:translateX(-50%); z-index:30; display:flex; gap:10px; width:calc(100% - 28px - var(--safe-area-inset-left) - var(--safe-area-inset-right)); max-width:600px; }
-.dockSearch,.dockSearchActive { flex:none; width:64px; display:grid; place-items:center; border:1px solid var(--border); border-radius:20px; background:color-mix(in srgb,var(--surface) 96%,transparent); box-shadow:var(--shadow-lg); backdrop-filter:blur(12px); color:var(--muted-foreground); text-decoration:none; }
+.dockSearch,.dockSearchActive { flex:none; width:64px; display:grid; place-items:center; border:1px solid var(--border); border-radius:20px; background:color-mix(in srgb,var(--surface) 96%,transparent); box-shadow:var(--shadow-lg); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); color:var(--muted-foreground); text-decoration:none; }
 .dockSearchActive { color:var(--primary); }
-.mobileNav { flex:1; min-width:0; display:flex; padding:4px; border:1px solid var(--border); border-radius:20px; background:color-mix(in srgb,var(--surface) 96%,transparent); box-shadow:var(--shadow-lg); backdrop-filter:blur(12px); }
+.mobileNav { flex:1; min-width:0; display:flex; padding:4px; border:1px solid var(--border); border-radius:20px; background:color-mix(in srgb,var(--surface) 96%,transparent); box-shadow:var(--shadow-lg); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); }
 .navLink,.active { position:relative; display:flex; align-items:center; justify-content:center; gap:8px; min-height:44px; color:var(--muted-foreground); text-decoration:none; font-size:13px; font-weight:500; }
 .active { color:var(--primary); }
 .mobileNav :is(.navLink,.active) { flex:1; min-width:0; flex-direction:column; gap:4px; min-height:54px; padding:4px 2px; border-radius:16px; font-size:12px; white-space:nowrap; }

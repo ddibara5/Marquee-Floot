@@ -201,7 +201,7 @@ export default function HomePage() {
     {error && <p className={styles.error} role="alert">Unable to load your library. <Button variant="ghost" onClick={refresh}>Retry</Button></p>}
     {context.error && <p className={styles.error} role="alert">Next episodes could not load. <Button variant="ghost" onClick={refresh}>Retry</Button></p>}
     <div className={styles.top}>
-    {(isPending || context.isPending) && <Skeleton className={styles.featuredSkeleton} />}
+    {(isPending || context.isPending) && <><Skeleton className={styles.featuredSkeleton} /><Skeleton className={styles.topWeekSkeleton} /></>}
     {!isPending && !context.isPending && featured && <section className={styles.featured} data-backdrop={backdrop ? "" : undefined} aria-labelledby="home-up-next">
       {backdrop && <span className={styles.backdrop} aria-hidden="true">
         <MediaImage className={styles.backdropFill} src={backdrop} fallback="" alt="" decoding="async"/>

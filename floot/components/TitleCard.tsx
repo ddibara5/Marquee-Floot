@@ -9,7 +9,7 @@ export default function TitleCard({ title, compact = false, className = "" }: { 
   const watched = title.watchedEpisodes ?? 0;
   const released = title.releasedEpisodes ?? 0;
   const progress = released > 0 ? Math.min(100, Math.round((watched / released) * 100)) : undefined;
-  const posterUrl = tmdbImageUrl(title.posterPath, compact ? "w185" : "w342");
+  const posterUrl = tmdbImageUrl(title.posterPath, "w342");
 
   return (
     <Link to={"/titles/" + title.id} className={[styles.card, compact ? styles.compact : "", className].filter(Boolean).join(" ")}>

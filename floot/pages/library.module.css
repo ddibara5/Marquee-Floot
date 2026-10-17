@@ -120,6 +120,6 @@
 /* Loading placeholders shaped like the content they stand in for (October 17). */
 .historySkeleton { display:grid; gap:20px; margin-top:16px; }
 .historySkeleton > div { display:grid; gap:12px; }
-.daySkeleton { height:20px; width:55%; }
+.daySkeleton { height:20px; width:55%; margin-block:8px; }
 .rowSkeleton { height:76px; }
 .posterSkeleton { aspect-ratio:2/3; width:100%; }

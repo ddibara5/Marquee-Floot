@@ -78,15 +78,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           ? { type: "authenticated", user: data }
           : { type: "unauthenticated" };
 
+  // Signed out for any reason (sign-out here, an expired session, or a sign-out elsewhere): drop the saved
+  // Marquee data from this device and from memory, so the next account never sees it.
+  const signedOut = status === "error" || (status === "success" && !data);
+  useEffect(() => {
+    if (!signedOut) return;
+    forgetQueryCache();
+    queryClient.removeQueries({ queryKey: ["marquee"] });
+  }, [signedOut, queryClient]);
+
   const logout = useCallback(async () => {
     // Optimistically update UI
     queryClient.setQueryData(AUTH_QUERY_KEY, null);
     forgetQueryCache();
-    // Make the actual API call
-    await postLogout();
-    // Invalidate all queries after login so previous user's state don't corrupt new user state.
-    queryClient.resetQueries();
-    forgetQueryCache(); // again, in case a save was already queued before sign-out
+    try {
+      // Make the actual API call
+      await postLogout();
+    } finally {
+      // Invalidate all queries after login so previous user's state don't corrupt new user state.
+      queryClient.resetQueries();
+      forgetQueryCache(); // again, in case a save was already queued before sign-out
+    }
   }, [queryClient]);
 
   // This should only be used for login. For user profile changes, create separate endpoints and react query hooks
