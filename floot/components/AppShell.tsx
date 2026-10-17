@@ -104,8 +104,10 @@ export default function AppShell({ children }: PropsWithChildren) {
     { to: "/watchlist", label: "Watch List", icon: Bookmark },
     { to: "/insights", label: "Insights", icon: ChartNoAxesCombined },
   ];
+  const titleSearch = path === "/library" && new URLSearchParams(location.search).get("view") === "titles";
   const navItems = () => nav.map(({ to, label, icon: Icon }) => {
-    const active = to === "/" ? location.pathname === "/" : location.pathname.startsWith(to);
+    // Titles search counts as Search, not Activity, matching the iPhone app's tab bar.
+    const active = to === "/" ? location.pathname === "/" : location.pathname.startsWith(to) && !(to === "/library" && titleSearch);
     return (
       <Link key={to} to={to} title={label} aria-label={label} aria-current={active ? "page" : undefined} className={active ? styles.active : styles.navLink}>
         <Icon size={20} strokeWidth={2.1} aria-hidden="true" />
@@ -129,7 +131,6 @@ export default function AppShell({ children }: PropsWithChildren) {
   // iPhone app (October 15): native Liquid Glass tab bar and header replace the web bars below 900px.
   // Search titles is iOS 26's detached round search button beside the tabs.
   const navigate = useNavigate();
-  const titleSearch = path === "/library" && new URLSearchParams(location.search).get("view") === "titles";
   const selectedTab = titleSearch ? SEARCH_TAB : path.startsWith("/titles/") ? "/library" : path;
   const dialogOpen = useDialogOpen(nativeNavigationSupported());
   const nativeTabs = useNativeTabBar([...nav.map(({ to, label }) => ({ to, label })), { to: SEARCH_TAB, label: "Search", role: "search" as const }], selectedTab, dialogOpen, subpage);
@@ -153,7 +154,7 @@ export default function AppShell({ children }: PropsWithChildren) {
         </div>
         <nav className={styles.sidebarNav} aria-label="Primary desktop">{navItems()}</nav>
         <div className={styles.sidebarBottom}>
-          <Link className={styles.navLink} to="/library?view=titles" title="Search titles" aria-label="Search titles"><Search size={20} aria-hidden="true" /><span>Search titles</span></Link>
+          <Link className={titleSearch ? styles.active : styles.navLink} to="/library?view=titles" title="Search titles" aria-label="Search titles" aria-current={titleSearch ? "page" : undefined}><Search size={20} aria-hidden="true" /><span>Search titles</span></Link>
           <Link className={settingsActive ? styles.active : styles.navLink} to="/settings" title="Settings" aria-label="Settings" aria-current={settingsActive ? "page" : undefined}><Settings size={20} aria-hidden="true" /><span>Settings</span></Link>
         </div>
       </aside>
@@ -171,7 +172,7 @@ export default function AppShell({ children }: PropsWithChildren) {
               <span className={styles.rootTitle} aria-hidden="true">{accessibleTitle}</span>
             </>}
           <div className={styles.headerActions}>
-            <Link className={styles.headerAction} to="/library?view=titles" aria-label="Search titles" title="Search titles"><Search size={20} aria-hidden="true" /></Link>
+            <Link className={styles.headerAction + " " + styles.headerSearch} to="/library?view=titles" aria-label="Search titles" title="Search titles"><Search size={20} aria-hidden="true" /></Link>
             <Link className={styles.headerAction} to="/settings" aria-label="Settings" title="Settings"><Settings size={20} aria-hidden="true" /></Link>
           </div>
         </header>
@@ -196,7 +197,10 @@ export default function AppShell({ children }: PropsWithChildren) {
           </>}
         </main>
       </div>
-      {!subpage && !nativeTabs && <nav className={styles.mobileNav} aria-label="Primary mobile">{navItems()}</nav>}
+      {!subpage && !nativeTabs && <div className={styles.mobileDock}>
+        <nav className={styles.mobileNav} aria-label="Primary mobile">{navItems()}</nav>
+        <Link to="/library?view=titles" aria-label="Search titles" aria-current={titleSearch ? "page" : undefined} className={titleSearch ? styles.dockSearchActive : styles.dockSearch}><Search size={22} aria-hidden="true" /></Link>
+      </div>}
     </div>
   );
 }
