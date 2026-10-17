@@ -60,7 +60,8 @@ function SyncLine() {
   const trakt = useTraktStatus();
   const crunchyroll = useQuery({ queryKey: ["marquee", "crunchyroll-status"], queryFn: getCrunchyrollStatus, retry: false });
   // Wait for both sources so the line doesn't briefly show only the older one.
-  if (trakt.isPending || crunchyroll.isPending) return null;
+  // Keep the line's height while loading so the sections below don't shift when it appears.
+  if (trakt.isPending || crunchyroll.isPending) return <div className={styles.syncLine} aria-hidden="true" />;
   const sources = [
     trakt.data?.connected ? { name: "Trakt", at: trakt.data.lastSyncAt } : null,
     crunchyroll.data?.connected ? { name: "Crunchyroll", at: crunchyroll.data.lastSuccessAt } : null,
@@ -197,10 +198,10 @@ export default function HomePage() {
 
   return <>
     <Helmet><title>Home · Marquee</title></Helmet>
-    {(isPending || context.isPending) && <div className={styles.loadingGrid}><Skeleton style={{ height: 190 }} /><Skeleton style={{ height: 100 }} /></div>}
     {error && <p className={styles.error} role="alert">Unable to load your library. <Button variant="ghost" onClick={refresh}>Retry</Button></p>}
     {context.error && <p className={styles.error} role="alert">Next episodes could not load. <Button variant="ghost" onClick={refresh}>Retry</Button></p>}
     <div className={styles.top}>
+    {(isPending || context.isPending) && <Skeleton className={styles.featuredSkeleton} />}
     {!isPending && !context.isPending && featured && <section className={styles.featured} data-backdrop={backdrop ? "" : undefined} aria-labelledby="home-up-next">
       {backdrop && <span className={styles.backdrop} aria-hidden="true">
         <MediaImage className={styles.backdropFill} src={backdrop} fallback="" alt="" decoding="async"/>
@@ -223,11 +224,12 @@ export default function HomePage() {
     </div>
     {/* Grid (October 15): sync status sits under Up next, like GameDeck, so the show you're watching leads Home. */}
     <SyncLine />
+    {(isPending || context.isPending) && <div className={styles.loadingGrid} aria-busy="true"><Skeleton style={{ height: 150 }} /><Skeleton style={{ height: 220 }} /></div>}
     {/* Wait for both the library and Home context so Up next doesn't pop in above already-drawn sections. */}
     {!isPending && !context.isPending && <div className={styles.dashboard}>
       {layout.order.filter(id => !layout.hidden.includes(id)).map(id => sections[id].node &&
         <div key={id} className={styles[sections[id].place] + (id === "week" && featured ? " " + styles.dashWeek : "")}>{sections[id].node}</div>)}
     </div>}
-    <div className={styles.customize}><HomeCustomizeSheet layout={layout} onChange={save} onReset={reset} /></div>
+    {!isPending && !context.isPending && <div className={styles.customize}><HomeCustomizeSheet layout={layout} onChange={save} onReset={reset} /></div>}
   </>;
 }

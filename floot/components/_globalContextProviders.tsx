@@ -8,14 +8,17 @@ import { TooltipProvider } from "./Tooltip";
 import { SonnerToaster } from "./SonnerToaster";
 import { ScrollToHashElement } from "./ScrollToHashElement";
 import { AuthProvider } from "../helpers/useAuth";
+import { persistQueryCache, restoreQueryCache } from "../helpers/queryCachePersist";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 60 * 1000, // 1 minute "fresh" window
+      gcTime: 24 * 60 * 60 * 1000, // keep visited screens in the saved cache between launches
     },
   },
 });
+if (typeof window !== "undefined") { restoreQueryCache(queryClient); persistQueryCache(queryClient); }
 
 // Tells iOS and other browsers this is an installable web app, so a home screen shortcut opens
 // full screen (no Safari address bar or toolbar). Same tags as GameDeck, in Marquee's colors.

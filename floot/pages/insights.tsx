@@ -35,12 +35,13 @@ export default function InsightsPage() {
   const months = calendarMonths([...byMonth.keys()],period).map(month=>byMonth.get(month)??{month,episodes:0,movies:0});
   const maxWatches = Math.max(1, ...months.map(month => month.episodes + month.movies));
 
-  if (isFetching && titles.length === 0) {
+  // Wait for your ratings and dated watches too, so no number changes after the page draws.
+  if ((isFetching && titles.length === 0) || context.isPending) {
     return (
-      <div className={styles.loading}>
-        <Skeleton style={{ height: 88 }} />
-        <Skeleton style={{ height: 180 }} />
-        <Skeleton style={{ height: 180 }} />
+      <div className={styles.loading} aria-busy="true">
+        <Skeleton style={{ height: 84 }} />
+        <div className={styles.loadingTiles}><Skeleton /><Skeleton /><Skeleton /></div>
+        <Skeleton style={{ height: 480 }} />
       </div>
     );
   }
@@ -113,7 +114,7 @@ export default function InsightsPage() {
             variant={period === value ? "primary" : "ghost"} aria-pressed={period === value}
             onClick={() => setPeriod(value)}>{value === "all" ? "All" : value + " mo"}</Button>)}
         </div>
-        {context.isPending ? <Skeleton style={{ height: 130 }} /> : months.length
+        {months.length
           ? <div className={styles.months}>{months.map(month => <div className={styles.month} key={month.month}>
               <span>{new Date(month.month + "-01T12:00:00").toLocaleDateString("en-US", { month: "short", year: "2-digit" })}</span>
               <div className={styles.monthTrack} aria-label={month.episodes + " episode watches and " + month.movies + " movie watches"}>

@@ -13,6 +13,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from "../components/Input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/Select";
 import { Skeleton } from "../components/Skeleton";
+import { MediaImage } from "../components/MediaImage";
 import { changePersonalState } from "../endpoints/personal-state_POST.schema";
 import { changeTracking } from "../endpoints/tracking_POST.schema";
 import type { PersonalRow } from "../endpoints/personal-state_GET.schema";
@@ -31,8 +32,7 @@ const dateLabel = (value?: Date | null) =>
 function Poster({row}: {row:PersonalRow}) {
   const src = tmdbImageUrl(row.posterPath ?? undefined, "w342");
   return <span className={styles.poster} aria-hidden="true"><span>{row.title.slice(0,1)}</span>
-    {src && <img src={src} alt="" loading="lazy" decoding="async"
-      onError={event => { event.currentTarget.style.display = "none"; }}/>}
+    <MediaImage src={src} fallback="" alt="" loading="lazy" decoding="async"/>
   </span>;
 }
 
@@ -145,7 +145,7 @@ export default function WatchlistPage() {
         ? <Link className={styles.nextRelease} to={"/titles/" + nextRelease.titleId} aria-label={"Next release: " + nextRelease.title + ", " + nextWhen}>{body}</Link>
         : <div className={styles.nextRelease}>{body}</div>;
     })()}
-    {isLoading ? <div className={styles.list}><Skeleton style={{height:108}}/><Skeleton style={{height:108}}/></div>
+    {isLoading ? <div className={styles.list} aria-busy="true">{[0, 1, 2].map(row => <Skeleton key={row} style={{height:132, margin:"8px 0"}}/>)}</div>
       : error && !data ? <p className={styles.empty} role="alert">Unable to load your Watch List. <Button variant="ghost" onClick={()=>void refetch()}>Retry</Button></p>
       : !all.length ? <div className={styles.emptyState}><Bookmark size={28}/><h3>Your Watch List is empty</h3><p>Save a title here or in Rippple to start a queue.</p><Link to="/library?view=titles">Browse titles <ChevronRight size={16}/></Link></div>
       : !rows.length ? <p className={styles.empty}>No titles match these filters.</p>

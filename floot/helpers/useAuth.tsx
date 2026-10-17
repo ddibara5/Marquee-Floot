@@ -8,6 +8,7 @@ import React, {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSession } from "../endpoints/auth/session_GET.schema";
 import { postLogout } from "../endpoints/auth/logout_POST.schema";
+import { forgetQueryCache } from "./queryCachePersist";
 import { User } from "./User";
 
 // React Query key for auth session. Make sure to optimistically update user infos using this.
@@ -80,10 +81,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = useCallback(async () => {
     // Optimistically update UI
     queryClient.setQueryData(AUTH_QUERY_KEY, null);
+    forgetQueryCache();
     // Make the actual API call
     await postLogout();
     // Invalidate all queries after login so previous user's state don't corrupt new user state.
     queryClient.resetQueries();
+    forgetQueryCache(); // again, in case a save was already queued before sign-out
   }, [queryClient]);
 
   // This should only be used for login. For user profile changes, create separate endpoints and react query hooks

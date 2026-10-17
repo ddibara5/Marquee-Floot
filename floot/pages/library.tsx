@@ -9,6 +9,7 @@ import { Search, SlidersHorizontal, Clock3, PlayCircle, X } from "lucide-react";
 import TitleCard from "../components/TitleCard";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/Accordion";
 import { Skeleton } from "../components/Skeleton";
+import { MediaImage } from "../components/MediaImage";
 import { Button } from "../components/Button";
 import { Input } from "../components/Input";
 import { Popover, PopoverContent, PopoverTrigger } from "../components/Popover";
@@ -122,7 +123,8 @@ export default function LibraryPage() {
       {view === "history" ? (
         <div className={styles.history}>
           {loadingHistory ? (
-            <div className={styles.list}><Skeleton style={{height:135}}/><Skeleton style={{height:135}}/></div>
+            <div className={styles.historySkeleton} aria-busy="true">{[0, 1, 2].map(day =>
+              <div key={day}><Skeleton className={styles.daySkeleton}/><Skeleton className={styles.rowSkeleton}/></div>)}</div>
           ) : history.error && !history.data ? (
             <p className={styles.error} role="alert">Unable to load activity. <Button variant="ghost" onClick={()=>void history.refetch()}>Retry</Button></p>
           ) : (
@@ -141,7 +143,7 @@ export default function LibraryPage() {
                         ? `S${event.seasonNumber} E${event.episodeNumber}` : null;
                       return <Link to={`/titles/${event.titleId}`} key={`${event.kind}-${event.eventId}`} data-restore-focus={`history-${event.kind}-${event.eventId}`} className={styles.historyRow}>
                         <span className={styles.historyPoster} aria-hidden="true">
-                          {posterUrl ? <img src={posterUrl} alt="" loading="lazy" decoding="async" /> : event.title.slice(0, 1)}
+                          <MediaImage src={posterUrl} fallback={event.title.slice(0, 1)} alt="" loading="lazy" decoding="async" />
                         </span>
                         <span className={styles.historyCopy}>
                           <strong>{event.title}</strong>
@@ -172,7 +174,7 @@ export default function LibraryPage() {
                         const posterUrl = tmdbImageUrl(title.posterPath ?? undefined, "w185");
                         return <Link key={title.titleId} to={`/titles/${title.titleId}`} className={styles.undatedRow}>
                           <span className={styles.undatedPoster} aria-hidden="true">
-                            {posterUrl ? <img src={posterUrl} alt="" loading="lazy" decoding="async" /> : title.title.slice(0, 1)}
+                            <MediaImage src={posterUrl} fallback={title.title.slice(0, 1)} alt="" loading="lazy" decoding="async" />
                           </span>
                           <span><strong>{title.title}</strong><small>{title.mediaType === "show" ? `${title.count} ${title.count === 1 ? "episode" : "episodes"} watched` : "Movie watched"} · date unknown</small></span>
                         </Link>;
@@ -190,7 +192,7 @@ export default function LibraryPage() {
         </div>
       ) : (
         titlesFetching && allTitles.length === 0 ? (
-          <div className={styles.list}><Skeleton style={{height:96}}/><Skeleton style={{height:96}}/><Skeleton style={{height:96}}/></div>
+          <div className={styles.list} aria-busy="true">{[0, 1, 2, 3].map(tile => <Skeleton key={tile} className={styles.posterSkeleton}/>)}</div>
         ) : titlesError && !allTitles.length ? (
           <p className={styles.error} role="alert">Unable to load titles. <Button variant="ghost" onClick={()=>void refetchTitles()}>Retry</Button></p>
         ) : titles.length === 0 ? (

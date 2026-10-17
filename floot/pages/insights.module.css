@@ -1,7 +1,9 @@
 .loading {
   display: grid;
-  gap: 0.65rem;
+  gap: 12px;
 }
+.loadingTiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.loadingTiles > * { height: 74px; }
 
 .error {
   padding: var(--spacing-4);

@@ -68,6 +68,7 @@
 .countdown { flex:none; color:var(--muted-foreground); font-size:12px; white-space:nowrap; }
 .empty { margin:0; color:var(--muted-foreground); font-size:13px; line-height:1.5; }
 .loadingGrid { display:grid; gap:24px; }
+.featuredSkeleton { height:233px; border-radius:var(--radius-tile, 16px); }
 .error { padding:16px; color:var(--error); background:var(--surface); border:1px solid var(--error); border-radius:8px; }
 
 /* Last 7 days */

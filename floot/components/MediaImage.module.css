@@ -1,1 +1,5 @@
-/* empty */
+/* Hidden until loaded, then fades to whatever opacity the page gives it. */
+.image:not([data-loaded]) { visibility: hidden; }
+.image[data-loaded] { animation: media-fade 200ms ease-out; }
+@keyframes media-fade { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .image[data-loaded] { animation: none; } }
