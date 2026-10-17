@@ -651,7 +651,7 @@
 .metric.metric strong { font:800 20px/1.1 var(--font-family-display); white-space:nowrap; }
 .metricIcon.metricIcon { border-radius:999px; box-shadow:0 0 14px color-mix(in srgb,var(--primary) 25%,transparent); }
 .periods.periods { display:inline-flex; gap:2px; padding:4px; border:1px solid var(--glass-border); border-radius:999px; background:var(--glass-control); }
-.periods.periods button { min-height:36px; border-radius:999px; }
+.periods.periods button { min-height:44px; border-radius:999px; }
 .rankRow.rankRow { padding:10px 0; background:none; border:0; border-top:1px solid var(--glass-hairline); border-radius:0; }
 .rankNumber.rankNumber { border:1px solid var(--glass-border); border-radius:7px; background:none; }
 .recentMetrics.recentMetrics span { background:var(--glass-control); border-radius:14px; }

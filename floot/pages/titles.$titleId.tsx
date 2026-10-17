@@ -251,7 +251,7 @@ export default function TitleDetailPage() {
           {nextStillPath &&
             <img src={tmdbImageUrl(nextStillPath, "w342") ?? ""} alt="" loading="lazy" decoding="async" />}
           <div className={styles.nextCopy}>
-            <span>{nextEpisode.episode.airedAt ? "READY TO WATCH" : "UP NEXT"} · S{nextEpisode.season.seasonNumber ?? "—"} E{nextEpisode.episode.episodeNumber ?? "—"}</span>
+            <span>{nextEpisode.episode.airedAt ? "Ready to watch" : "Up next"} · S{nextEpisode.season.seasonNumber ?? "—"} E{nextEpisode.episode.episodeNumber ?? "—"}</span>
             <h2>{nextEpisode.episode.displayTitle || "Next episode"}</h2>
             {(nextEpisode.episode.airedAt || nextEpisode.episode.runtimeMinutes || episodeCatalog.data?.runtimeMinutes) &&
               <p>{nextEpisode.episode.airedAt &&

@@ -103,7 +103,7 @@
 /* Grid (October 15): GameDeck's capsule controls and hairline rows on Marquee's backdrop. */
 .toolbar.toolbar { gap:8px; }
 .viewTabs.viewTabs { flex:1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); max-width:360px; padding:4px; border:1px solid var(--glass-border); border-radius:999px; background:var(--glass-control); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); }
-.viewTabs.viewTabs button, .viewTabs.viewTabs button:first-child { min-height:36px; padding:0 12px; border:0; border-radius:999px; color:var(--muted-foreground); font:600 13px var(--font-family-base); }
+.viewTabs.viewTabs button, .viewTabs.viewTabs button:first-child { min-height:44px; padding:0 12px; border:0; border-radius:999px; color:var(--muted-foreground); font:600 13px var(--font-family-base); }
 .viewTabs.viewTabs button[aria-pressed=true] { background:var(--glass-control-on); color:var(--foreground); }
 .iconButton.iconButton { border:1px solid var(--glass-border); border-radius:999px; background:var(--glass-control); color:var(--foreground); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); }
 .searchInput.searchInput { border-color:var(--glass-border)!important; border-radius:999px!important; background:var(--glass-control)!important; font:16px var(--font-family-base)!important; }

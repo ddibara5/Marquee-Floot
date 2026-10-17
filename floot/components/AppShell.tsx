@@ -14,6 +14,8 @@ import { usePageGestures } from "../helpers/usePageGestures";
 import { nextPageStack, type PageEntry } from "../helpers/pageStack";
 import { useMediaQuery } from "../helpers/useMediaQuery";
 import AppBackButton from "./AppBackButton";
+import { useQueryClient } from "@tanstack/react-query";
+import { titleEpisodesQuery } from "../helpers/useTitleEpisodes";
 import styles from "./AppShell.module.css";
 
 const SIDEBAR_KEY = "marquee-sidebar-collapsed";
@@ -112,6 +114,17 @@ export default function AppShell({ children }: PropsWithChildren) {
     );
   });
   const settingsActive = path.startsWith("/settings") || path.startsWith("/sync");
+  // Touch-down on a title link starts loading its episodes before the tap lands, so the detail opens complete (October 17, from GameDeck).
+  const client = useQueryClient();
+  useEffect(() => {
+    const down = (event: PointerEvent) => {
+      const href = event.target instanceof Element ? event.target.closest("a[href^='/titles/']")?.getAttribute("href") : null;
+      const titleId = href ? Number(href.slice("/titles/".length)) : NaN;
+      if (Number.isSafeInteger(titleId) && titleId > 0) void client.prefetchQuery(titleEpisodesQuery(titleId));
+    };
+    document.addEventListener("pointerdown", down, { capture: true, passive: true });
+    return () => document.removeEventListener("pointerdown", down, true);
+  }, [client]);
 
   // iPhone app (October 15): native Liquid Glass tab bar and header replace the web bars below 900px.
   // Search titles is iOS 26's detached round search button beside the tabs.
@@ -149,7 +162,10 @@ export default function AppShell({ children }: PropsWithChildren) {
           <div className={styles.headerSide}>
             {subpage && <AppBackButton fallback={fallback} fallbackLabel={fallback === "/" ? "Home" : fallback === "/settings" ? "Settings" : "Activity"} iconSize={20} onBack={back} />}
           </div>
-          {subpage ? <strong className={styles.headerTitle}>{title}</strong> :
+          {/* Title pages show the brand, as GameDeck's detail does; the page's own heading names the title. */}
+          {subpage ? path.startsWith("/titles/")
+            ? <span className={styles.brand} aria-hidden="true"><span className={styles.brandMark}><MarqueeMark size={25} /></span><span>Marquee</span></span>
+            : <strong className={styles.headerTitle}>{title}</strong> :
             <>
               <Link to="/" className={styles.brand + (path === "/" ? " " + styles.homeBrand : "")}><span className={styles.brandMark}><MarqueeMark size={25} /></span><span>Marquee</span></Link>
               <span className={styles.rootTitle} aria-hidden="true">{accessibleTitle}</span>

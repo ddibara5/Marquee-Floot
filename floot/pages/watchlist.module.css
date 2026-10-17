@@ -89,7 +89,7 @@ a.title:hover { color:var(--primary); }
 .nextCopy strong { font:800 40px/.95 var(--font-family-display); letter-spacing:-.03em; }
 .nextCopy span { font-size:13px; color:var(--muted-foreground); }
 .viewSwitch.viewSwitch { padding:4px; gap:2px; border:1px solid var(--glass-border); border-radius:999px; background:var(--glass-control); }
-.viewSwitch.viewSwitch button { width:40px; height:36px; border:0; border-radius:999px; }
+.viewSwitch.viewSwitch button { width:44px; height:44px; border:0; border-radius:999px; }
 .viewSwitch.viewSwitch .activeView { background:var(--glass-control-on); color:var(--foreground); }
 .toolbarActions.toolbarActions button { border:1px solid var(--glass-border); border-radius:999px; background:var(--glass-control); }
 .row.row { border-bottom:0; border-top:1px solid var(--glass-hairline); }
@@ -101,7 +101,7 @@ a.title:hover { color:var(--primary); }
 .chevron { display:none; }
 .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px 16px; }
 .grid .row { grid-template-columns:minmax(0,1fr) 44px; padding:0; gap:8px 0; border:0; }
-.grid .posterLink { width:100%; max-width:var(--poster-shelf); }
+.grid .posterLink { width:100%; }
 .grid .copy { grid-column:1/-1; padding-right:0; }
 .grid .more { grid-column:2; grid-row:3; justify-self:end; }
 .grid .footer { display:block; }

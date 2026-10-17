@@ -16,7 +16,8 @@
 .compact { grid-template-columns:var(--compact-poster-width) minmax(0,1fr); }
 
 .compact { display:block; border:0; padding:0; }
-.compact .poster { width:min(100%,var(--poster-shelf)); }
+/* Grid posters fill their column, so caption, progress and art share one width (October 17). */
+.compact .poster { width:100%; border-radius:10px; }
 .compact .body { margin-top:8px; }
 .compact .topline { flex-wrap:wrap; }
 .compact .topline h3 { flex-basis:100%; }
