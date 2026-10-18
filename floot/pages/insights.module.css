@@ -572,3 +572,10 @@
 .barDetail { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:44px; margin-top:4px; font-size:13px; }
 .barDetail a { flex:none; display:inline-flex; align-items:center; gap:2px; min-height:44px; color:var(--primary); font-weight:600; text-decoration:none; }
 .trendNote.trendNote i { background:var(--primary); } .trendNote.trendNote b { background:var(--brand); }
+/* Clean pass (October 18): bars fill the row (44px+ tall, about 28px wide on a 440px phone); labels and legends stay at 13px or larger. */
+.months.months { gap:2px; }
+.bar.bar { flex:1 0 20px; min-width:20px; min-height:44px; font-size:13px; }
+.trendNote.trendNote { display:flex; align-items:center; gap:4px; font-size:13px; }
+.trendNote.trendNote b { margin-left:12px; }
+.legend.legend > div,.legend.legend span,.ratedCount.ratedCount,.summary.summary span,.mostRow.mostRow > span,.rankRow > div span,.mixLabel.mixLabel,.progressMeta.progressMeta,.score.score,.credits.credits p { font-size:13px; }
+.mostRow.mostRow > span { color:var(--muted-foreground); font-family:var(--font-family-base); font-weight:500; }

@@ -1,7 +1,6 @@
 .heading{display:flex;justify-content:space-between;align-items:center;margin-top:12px}.muted{font-size:12px;color:var(--muted-foreground);line-height:1.5}.tabs,.actions{display:flex;gap:8px;flex-wrap:wrap}.rows{display:grid;gap:10px}.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}.evidence{font-size:12px;overflow-wrap:anywhere;color:var(--muted-foreground)}.match{display:grid;gap:10px;margin-top:14px}.match label{display:grid;gap:6px}.tabs button,.actions button{min-height:44px}
 
 
-.backLink { display:inline-flex; align-items:center; min-height:44px; margin-bottom:8px; }
 .heading { gap:16px; flex-wrap:wrap; margin:0 0 24px; }
 .tabs { gap:16px; margin-bottom:24px; }
 .tabs button { background:transparent; color:var(--muted-foreground); padding:8px 0; border:0; border-bottom:2px solid transparent; border-radius:0; min-height:44px; }

@@ -41,7 +41,13 @@ describe("Marquee action safeguards",()=>{
   mount(<TitleDetailPage/>,"/titles/1");
   expect(screen.getByText("1/2 released")).toBeTruthy();
   expect(screen.getByText(/2 released episodes/)).toBeTruthy();
-  fireEvent.click(screen.getByRole("button",{name:"Mark available episodes watched"}));
+  // Catch-up actions live in the "Series actions" menu (clean pass).
+  const openCatchUp=async()=>{
+   fireEvent.keyDown(screen.getByRole("button",{name:"Series actions"}),{key:"ArrowDown"});
+   fireEvent.click(await screen.findByRole("menuitem",{name:"Mark available episodes watched"}));
+   await screen.findByRole("dialog");
+  };
+  await openCatchUp();
   const dialog=screen.getByRole("dialog");
   expect(dialog.textContent).toContain("mark 2 missing episodes");
   expect(dialog.textContent).toContain("1 have no known air date");
@@ -50,7 +56,9 @@ describe("Marquee action safeguards",()=>{
   expect(document.activeElement).toBe(within(dialog).getByRole("button",{name:"Cancel"}));
   fireEvent.click(within(dialog).getByRole("button",{name:"Cancel"}));
   expect(screen.queryByRole("dialog")).toBeNull();expect(fetchSpy).not.toHaveBeenCalled();
-  fireEvent.click(screen.getByRole("button",{name:"Mark available episodes watched"}));
+  // Cancel returns focus to the menu trigger; wait for it so the reopened menu isn't dismissed by that focus move.
+  await waitFor(()=>{if(document.activeElement?.getAttribute("aria-label")!=="Series actions")throw new Error("Focus did not return to Series actions");});
+  await openCatchUp();
   fireEvent.click(within(screen.getByRole("dialog")).getByRole("button",{name:"Mark watched"}));
   await waitFor(()=>expect(within(screen.getByRole("dialog")).getByRole("alert").textContent).toContain("Could not save"));
   expect(within(screen.getByRole("dialog")).getByRole("button",{name:"Retry"})).toBeTruthy();

@@ -6,7 +6,7 @@ import { useState, type ReactNode } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { Bookmark, ChevronDown, ChevronRight, Ellipsis, Film, Tv2 } from "lucide-react";
+import { Bookmark, ChevronDown, ChevronRight, Ellipsis } from "lucide-react";
 import { Button } from "../components/Button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../components/DropdownMenu";
 import { OptionChoice, OptionsSheet } from "../components/OptionsSheet";
@@ -29,8 +29,8 @@ const MEDIA = [["all","All"],["show","Series"],["movie","Movies"],["anime","Anim
 const SORTS = [["added","Recently added"],["title","A to Z"],["release","Release date"]] as const;
 const DISPLAYS = [["list","List"],["grid","Grid"]] as const;
 const OUT_NOW_PAGE = 8;
-const dateLabel = (value?: Date | null) =>
-  value ? new Date(value).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}) : null;
+const releaseLabel = (value: Date) => new Date(value).toLocaleDateString(undefined, new Date(value).getUTCFullYear() === new Date().getFullYear()
+  ? {month:"short",day:"numeric",timeZone:"UTC"} : {month:"short",day:"numeric",year:"numeric",timeZone:"UTC"});
 
 function Poster({row}: {row:PersonalRow}) {
   const src = tmdbImageUrl(row.posterPath ?? undefined, "w342");
@@ -111,9 +111,11 @@ export default function WatchlistPage() {
   const resetOptions = () => { setFilter("all"); setSort("added"); };
   const renderRow = (row:PersonalRow) => {
     const key = row.mediaType + ":" + row.traktId;
-    const date = dateLabel(row.activityAt);
     const upcoming = row.releaseDate &&
       new Date(row.releaseDate).getTime() > Date.now();
+    // Clean pass (October 18): one meta line, kind then year, or the release date while it is still upcoming.
+    const when = upcoming ? releaseLabel(row.releaseDate!) : row.year;
+    const meta = (row.isAnime ? "Anime" : row.mediaType === "show" ? "Series" : "Movie") + (when ? " · " + when : "");
     const picked = preferences.data?.["pick-next"]?.key === key;
     const togglePick = async () => { setBusy(key); try { await preferences.save({action:"pick",key:picked?null:key}); setMessage(picked?"Pick next cleared.":"Pick next saved."); } catch(e) { setMessage(e instanceof Error?e.message:"Unable to save"); } finally { setBusy(null); } };
     const article = <article className={styles.row}>
@@ -123,18 +125,10 @@ export default function WatchlistPage() {
         {row.titleId ? <Link className={styles.title} to={"/titles/" + row.titleId}>{row.title}</Link>
           : <strong className={styles.title}>{row.title}</strong>}
         <div className={styles.metadata}>
-          <span>{row.mediaType === "show" ? <Tv2 size={13}/> : <Film size={13}/>} {row.isAnime ? "Anime" : row.mediaType === "show" ? "Series" : "Movie"}</span>
-          <span>{row.year ?? "Year unknown"}</span>
-          {upcoming && <span className={styles.upcoming}>Coming {dateLabel(row.releaseDate)}</span>}
+          <span>{meta}</span>
           {picked && <span className={styles.upcoming}>★ Pick next</span>}
-          {row.titleId !== null && <DubBadge hasEnDub={dubs?.get(row.titleId)}/>}
-        </div>
-        {row.overview && <p className={styles.overview}>{row.overview}</p>}
-        <div className={styles.footer}>
-          {!row.releaseDate&&<span>Release date unknown</span>}
-          <span>{date ? "Added " + date : "Saved to Watch List"}</span>
           {row.pendingAction && <span className={styles.pending}>Sync pending</span>}
-          {!row.posterPath && <span>{row.tmdbId || row.titleId ? "Artwork pending" : "Artwork unavailable"}</span>}
+          {row.titleId !== null && <DubBadge hasEnDub={dubs?.get(row.titleId)}/>}
         </div>
       </div>
       <DropdownMenu>
@@ -203,8 +197,8 @@ export default function WatchlistPage() {
     </div>}
     {error && data && <p className={styles.empty} role="alert">Couldn’t refresh Watch List. Showing saved data. <Button variant="ghost" onClick={()=>void refetch()}>Retry</Button></p>}
     {!isLoading && !normalized && nextRelease && (() => {
-      const body = <><Poster row={nextRelease}/><span className={styles.nextCopy}><small>Next release</small>
-        <strong>{nextDays === 1 ? "Tomorrow" : nextDays + " days"}</strong><span>{nextRelease.title} · {nextWhen}</span></span>
+      const body = <><Poster row={nextRelease}/><span className={styles.nextCopy}><small>Next release · {nextWhen}</small>
+        <strong>{nextDays === 1 ? "Tomorrow" : nextDays + " days"}</strong><span>{nextRelease.title}</span></span>
         {nextRelease.titleId && <ChevronRight size={20} className={styles.nextChevron} aria-hidden="true"/>}</>;
       return nextRelease.titleId
         ? <Link className={styles.nextRelease} to={"/titles/" + nextRelease.titleId} aria-label={"Next release: " + nextRelease.title + ", " + nextWhen}>{body}</Link>

@@ -58,7 +58,7 @@ export default function InsightsPage() {
     { label: "Paused", value: insights.paused, className: styles.pausedSegment },
     { label: "Dropped", value: insights.dropped, className: styles.droppedSegment },
     { label: "Unwatched", value: insights.unwatched, className: styles.unwatchedSegment },
-  ];
+  ].filter(segment => segment.value > 0);
 
   const mediaMix = [
     { label: "Shows", value: insights.shows, icon: Tv2 },
@@ -84,8 +84,8 @@ export default function InsightsPage() {
       </div>
 
       <section className={styles.summary} aria-label="Summary">
-        <div><strong>{periodWatches}</strong><span>dated watches</span></div>
-        <div><strong>{insights.completionRate}%</strong><span>{insights.completed} complete</span></div>
+        <div><strong>{periodWatches}</strong><span>watches</span></div>
+        <div><strong>{insights.completed}</strong><span>completed</span></div>
         <div><strong>{insights.averageRating ?? "None"}</strong><span>avg rating</span></div>
       </section>
 
@@ -112,17 +112,18 @@ export default function InsightsPage() {
             </div>
           </>
           : <p className={styles.empty}>No dated watches in this period.</p>}
-        <p className={styles.trendNote}>Episodes <i/> · Movies <b/>. Older imported dates may be less reliable; completions without a date are excluded.</p>
+        <p className={styles.trendNote}><i/>Episodes <b/>Movies</p>
       </section>
 
-      {context.data && <section className={styles.panel}>
-        <div className={styles.panelHeading}><div><p>LAST 30 DAYS</p><h2>Recently watched</h2></div><span className={styles.ratedCount}>Last 30 days</span></div>
-        <div className={styles.recentMetrics}><span><strong>{context.data.recentEpisodes}</strong> episode watches</span><span><strong>{context.data.recentMovies}</strong> movie watches</span></div>
-        {context.data.mostWatched.length > 0 && <><h3 className={styles.subheading}>Most watched titles</h3>
-          <div className={styles.rankedList}>{context.data.mostWatched.map(row =>
-            <Link className={styles.rankRow + " " + styles.mostRow} key={row.titleId} to={"/titles/" + row.titleId}>
-              <strong>{row.title}</strong><span>{row.watches} dated watches</span>
-            </Link>)}</div></>}
+      {/* Clean pass (October 18): month bars cover recent counts, so only the 30-day title list stays. */}
+      {context.data && context.data.mostWatched.length > 0 && <section className={styles.panel}>
+        <div className={styles.panelHeading}><div><h2>Most watched</h2></div><span className={styles.ratedCount}>Last 30 days</span></div>
+        <div className={styles.rankedList}>{context.data.mostWatched.map(row => {
+          const movie = titles.find(title => title.id === String(row.titleId))?.type === "movie";
+          return <Link className={styles.rankRow + " " + styles.mostRow} key={row.titleId} to={"/titles/" + row.titleId}>
+            <strong>{row.title}</strong><span>{row.watches} {movie ? (row.watches === 1 ? "watch" : "watches") : (row.watches === 1 ? "episode" : "episodes")}</span>
+          </Link>;
+        })}</div>
       </section>}
 
       <section className={styles.panel}>

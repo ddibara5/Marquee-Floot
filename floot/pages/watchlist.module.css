@@ -117,3 +117,6 @@ a.title { display:flex; align-items:center; min-width:44px; min-height:44px; mar
 .showAll { width:100%; border-top:1px solid var(--glass-hairline); }
 :is(.groupHeading button,.filterSummary button,.showAll):focus-visible { outline:2px solid var(--primary); outline-offset:2px; }
 @media (prefers-reduced-motion:reduce) { .groupHeading svg { transition:none; } }
+/* Clean pass (October 18): rows are title plus one meta line; phone text stays at 13px or larger. */
+.metadata.metadata,.nextCopy.nextCopy small { font-size:13px; }
+.nextCopy.nextCopy > span { font-size:15px; font-weight:600; line-height:1.3; }

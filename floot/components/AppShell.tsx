@@ -160,13 +160,13 @@ export default function AppShell({ children }: PropsWithChildren) {
         </div>
       </aside>
       <div ref={panelRef} className={`${styles.content} ${subpage ? styles.subpage : ""}`}>
-        <header className={styles.header} data-root={!subpage}>
+        <header className={styles.header} data-root={!subpage} data-detail={path.startsWith("/titles/") || undefined}>
           <div className={styles.headerSide}>
             {subpage && <AppBackButton fallback={fallback} fallbackLabel={fallback === "/" ? "Home" : fallback === "/settings" ? "Settings" : "Activity"} iconSize={20} onBack={back} />}
           </div>
-          {/* Title pages show the brand, as GameDeck's detail does; the page's own heading names the title. */}
+          {/* Title pages show only Back over the artwork (October 18, GameDeck pattern); the page's own heading names the title. */}
           {subpage ? path.startsWith("/titles/")
-            ? <span className={styles.brand} aria-hidden="true"><span>Marquee</span></span>
+            ? <span aria-hidden="true" />
             : <strong className={styles.headerTitle}>{title}</strong> :
             <>
               {/* Text-only brand, like GameDeck (October 17); the ticket mark stays in the desktop sidebar and the app icon. */}
