@@ -17,3 +17,4 @@
 .group { background:var(--surface); border-radius:8px; }
 .row { gap:16px; padding:16px; min-height:76px; }
 .row small { font-size:12px; line-height:1.5; }
+.rowButton { width:100%; border:0; background:transparent; text-align:left; font:inherit; cursor:pointer; }
