@@ -1,5 +1,6 @@
 import { db } from "./db";
 import { User } from "./User";
+import { householdAccess } from "./householdAccess";
 
 import {
   CleanupProbability,
@@ -44,6 +45,7 @@ export function createServerUserSession(database:typeof db=db, allowUser:(userId
       "users.displayName",
       "users.role",
       "users.avatarUrl",
+      "users.isBot",
     ])
     .where("sessions.id", "=", session.id)
     .where("sessions.expiresAt", ">", new Date())
@@ -56,8 +58,9 @@ export function createServerUserSession(database:typeof db=db, allowUser:(userId
 
   const result = results[0];
   if(!await allowUser(result.id))throw new NotAuthenticatedError();
+  // The automation account acts as the owner (October 22, 2026).
   const user = {
-    id: result.id,
+    id: result.isBot ? householdAccess.ownerId : result.id,
     email: result.email,
     displayName: result.displayName,
     avatarUrl: result.avatarUrl,
@@ -74,6 +77,8 @@ export function createServerUserSession(database:typeof db=db, allowUser:(userId
 
   return {
     user: user satisfies User,
+    isBot: result.isBot,
+    accountId: result.id,
     // make sure to update the session in cookie
     session: {
       ...session,
