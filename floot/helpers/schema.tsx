@@ -494,6 +494,7 @@ export interface Users {
   displayName: string;
   email: string;
   id: Generated<number>;
+  isBot: Generated<boolean>;
   role: Generated<UserRole>;
   updatedAt: Generated<Timestamp | null>;
 }

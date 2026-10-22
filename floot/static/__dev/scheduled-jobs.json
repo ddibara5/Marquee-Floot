@@ -1,4 +1,9 @@
 {
+  "checkDubsDaily": {
+    "enabled": true,
+    "schedule": "30 9 * * *",
+    "timezone": "Etc/UTC"
+  },
   "syncTraktDaily": {
     "enabled": true,
     "schedule": "17 11 * * *",
@@ -17,11 +22,6 @@
   "syncCrunchyrollDaily": {
     "enabled": true,
     "schedule": "0 9 * * *",
-    "timezone": "Etc/UTC"
-  },
-  "checkDubsDaily": {
-    "enabled": true,
-    "schedule": "30 9 * * *",
     "timezone": "Etc/UTC"
   }
 }

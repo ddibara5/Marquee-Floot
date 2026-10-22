@@ -27,6 +27,8 @@ import Page_11 from "./pages/settings.account.tsx";
 import PageLayout_11 from "./pages/settings.account.pageLayout.tsx";
 import Page_12 from "./pages/settings.appearance.tsx";
 import PageLayout_12 from "./pages/settings.appearance.pageLayout.tsx";
+import Page_15 from "./pages/settings.household.tsx";
+import PageLayout_15 from "./pages/settings.household.pageLayout.tsx";
 import Page_13 from "./pages/migration-verification.tsx";
 import PageLayout_13 from "./pages/migration-verification.pageLayout.tsx";
 import Page_14 from "./pages/$.tsx";
@@ -40,7 +42,7 @@ if (!window.requestIdleCallback) {
 
 import "./base.css";
 
-const fileNameToRoute = new Map([["./pages/sync.tsx","/sync"],["./pages/login.tsx","/login"],["./pages/_index.tsx","/"],["./pages/library.tsx","/library"],["./pages/insights.tsx","/insights"],["./pages/settings.tsx","/settings"],["./pages/watchlist.tsx","/watchlist"],["./pages/sync.review.tsx","/sync/review"],["./pages/reset-password.tsx","/reset-password"],["./pages/forgot-password.tsx","/forgot-password"],["./pages/titles.$titleId.tsx","/titles/:titleId"],["./pages/settings.account.tsx","/settings/account"],["./pages/settings.appearance.tsx","/settings/appearance"],["./pages/migration-verification.tsx","/migration-verification"],["./pages/$.tsx","/*"]]);
+const fileNameToRoute = new Map([["./pages/sync.tsx","/sync"],["./pages/login.tsx","/login"],["./pages/_index.tsx","/"],["./pages/library.tsx","/library"],["./pages/insights.tsx","/insights"],["./pages/settings.tsx","/settings"],["./pages/watchlist.tsx","/watchlist"],["./pages/sync.review.tsx","/sync/review"],["./pages/reset-password.tsx","/reset-password"],["./pages/forgot-password.tsx","/forgot-password"],["./pages/titles.$titleId.tsx","/titles/:titleId"],["./pages/settings.account.tsx","/settings/account"],["./pages/settings.appearance.tsx","/settings/appearance"],["./pages/settings.household.tsx","/settings/household"],["./pages/migration-verification.tsx","/migration-verification"],["./pages/$.tsx","/*"]]);
 const fileNameToComponent = new Map([
     ["./pages/sync.tsx", Page_0],
 ["./pages/login.tsx", Page_1],
@@ -55,6 +57,7 @@ const fileNameToComponent = new Map([
 ["./pages/titles.$titleId.tsx", Page_10],
 ["./pages/settings.account.tsx", Page_11],
 ["./pages/settings.appearance.tsx", Page_12],
+["./pages/settings.household.tsx", Page_15],
 ["./pages/migration-verification.tsx", Page_13],
 ["./pages/$.tsx", Page_14],
   ]);
@@ -170,6 +173,7 @@ export function App() {
 "./pages/titles.$titleId.tsx": PageLayout_10,
 "./pages/settings.account.tsx": PageLayout_11,
 "./pages/settings.appearance.tsx": PageLayout_12,
+"./pages/settings.household.tsx": PageLayout_15,
 "./pages/migration-verification.tsx": PageLayout_13,
 "./pages/$.tsx": PageLayout_14,
 }), fileNameToRoute, makePageRoute })} 

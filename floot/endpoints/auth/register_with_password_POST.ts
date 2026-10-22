@@ -76,5 +76,7 @@ export function createPasswordRegistration(database:typeof db=db){
 
 
 }
-const handleRequest=createPasswordRegistration();
+// Public sign-up is closed (October 22, 2026): the owner adds accounts in Settings > Household access.
+// createPasswordRegistration stays for the migration exercises that import it.
+const handleRequest=async(_request:Request)=>new Response(superjson.stringify({message:"Sign-up is closed. Ask the owner to add you in Settings."}),{status:403,headers:{"Content-Type":"application/json"}});
 export const handle = marqueeWriter.endpoint(handleRequest, "auth/register_with_password_POST.ts", true); 
