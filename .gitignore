@@ -11,3 +11,4 @@ ios/DerivedData/
 ios/App/build/
 xcuserdata/
 floot/pnpm-lock.yaml
+__pycache__/

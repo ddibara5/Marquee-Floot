@@ -67,7 +67,7 @@ def parse_listing(text):
                 if name: deps[name] = ver
         else:
             m = LISTED.match(line)
-            if m and not m.group(1).endswith("history.md"): files[m.group(1)] = int(m.group(2))
+            if m and m.group(1) != "static/__dev/history.md": files[m.group(1)] = int(m.group(2))
     return files, deps, version
 
 
@@ -114,7 +114,7 @@ def check(listing, dumps_dir, mirror, write=False, allow_unpublished=False):
     floot, history, capped = {}, None, set()
     for name in sorted(os.listdir(dumps_dir)):
         for path, rec in parse_dump(read(os.path.join(dumps_dir, name))).items():
-            if path.endswith("__dev/history.md"): history = rec[0]  # generated; only its top matters
+            if path == "static/__dev/history.md": history = rec[0]  # generated; only its top matters
             elif not rec[2]: capped.add(path)
             elif path not in floot or rec[1] > floot[path][1]: floot[path] = rec
     problems, size_only = [], []  # problems = incomplete Floot input
@@ -195,6 +195,7 @@ def self_test():
     assert base_css_tail(css + "\n/* kept */\n@layer base { a{} }\n").startswith("/* kept */")
     f, deps, v = parse_listing("version: 9\nbase.css (12 chars)\ndependencies: a@1.0.0, @x/y@2.0.0 — full map")
     assert f == {"base.css": 12} and deps == {"a": "1.0.0", "@x/y": "2.0.0"} and v == "9"
+    assert parse_listing("notes/price-history.md (5 chars)")[0] == {"notes/price-history.md": 5}  # only the generated history is skipped
     assert unpublished("# Project history\nintro\n\n── Published 2026 ──\n## Checkpoint: x") is False
     assert unpublished("# Project history\n\n## Checkpoint: y\n── Published") is True
     assert unpublished("# Project history\n- 2026 · updated a\n── Published") is True
