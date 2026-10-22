@@ -27,7 +27,7 @@ codemagic.yaml  Build, sign, upload to TestFlight (internal testers); starts on 
    incomplete. Add `--write` to refresh `floot/` from Floot (it keeps the base.css platform block and never touches
    `App.tsx` or the other shell files), then run it again until it reports 0.
 3. If it flags a missing route, add the page to `floot/App.tsx` by hand. If it flags a native plugin, pin it in the
-   root `package.json`, run `npm ci && npx cap sync ios`, and commit `ios/` changes.
+   root `package.json`, run `npm ci && bash scripts/apply-patches.sh && npx cap sync ios`, and commit `ios/` changes.
 4. `npm run build:web`, then open a PR into `main` with the drift report in the description.
 5. Merging the PR (owner's approval) is the only thing that starts the Codemagic build (workflow **Marquee iOS to TestFlight**).
 6. iPhone: install the new build from TestFlight (about 10 to 20 minutes after the build finishes).
