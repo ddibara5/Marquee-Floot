@@ -8,6 +8,8 @@ import { Link } from "react-router-dom";
 import { Button } from "../components/Button";
 import { Skeleton } from "../components/Skeleton";
 import HomeCustomizeSheet from "../components/HomeCustomizeSheet";
+import { HomeCalendar } from "../components/HomeCalendar";
+import { addDays, type CalendarItem } from "../helpers/homeCalendar";
 import { getHomeContext } from "../endpoints/home-context_GET.schema";
 import { getCrunchyrollStatus } from "../endpoints/crunchyroll-status_GET.schema";
 import {getTitleProgressSummary} from "../helpers/getTitleProgressSummary";
@@ -121,6 +123,21 @@ export default function HomePage() {
       .map(row => ({ key: "w" + row.id, day: storedDay(row.releaseDate!), name: row.title, to: row.titleId ? "/titles/" + row.titleId : "/watchlist",
         detail: (row.isAnime ? "Anime" : row.mediaType === "movie" ? "Movie" : "Series") + " · on your Watch List" })),
   ].sort((a, b) => a.day.localeCompare(b.day)).slice(0, 4);
+  // Desktop calendar (October 23): every dated episode (older servers send only the first per show) plus dated Watch List items, 60 days.
+  const calendarEnd = addDays(today, 60);
+  const calendarItems: CalendarItem[] = [
+    ...(context.data?.calendar ?? context.data?.upcoming ?? []).flatMap(row => {
+      const title = byId.get(row.titleId);
+      return title ? [{ key: "e" + row.titleId + "-" + storedDay(row.airedAt), day: storedDay(row.airedAt), name: title.title, to: "/titles/" + title.id,
+        detail: episodeLabel(row.seasonNumber, row.episodeNumber) }] : [];
+    }),
+    ...watchlist.filter(row => row.releaseDate && storedDay(row.releaseDate) >= today && storedDay(row.releaseDate) <= calendarEnd)
+      .map(row => ({ key: "w" + row.id, day: storedDay(row.releaseDate!), name: row.title, to: row.titleId ? "/titles/" + row.titleId : "/watchlist",
+        detail: (row.isAnime ? "Anime" : row.mediaType === "movie" ? "Movie" : "Series") + " · Watch List" })),
+  ];
+  const watchedDays = new Map((context.data?.monthDays ?? []).map(day => [day.date, day]));
+  // Turning Coming up off in Customize Home also hides the calendar that replaces it on wide screens.
+  const showCalendar = !layout.hidden.includes("upcoming");
   const featuredProgress = featured ? getTitleProgressSummary(featured.title) : null;
   const backdrop = featured ? tmdbImageUrl(featured.title.backdropPath, "w780") : undefined;
   const refresh = () => void client.invalidateQueries({ queryKey: ["marquee"] });
@@ -196,8 +213,9 @@ export default function HomePage() {
     <Helmet><title>Home · Marquee</title></Helmet>
     {error && <p className={styles.error} role="alert">Unable to load your library. <Button variant="ghost" onClick={refresh}>Retry</Button></p>}
     {context.error && <p className={styles.error} role="alert">Next episodes could not load. <Button variant="ghost" onClick={refresh}>Retry</Button></p>}
+    {/* October 23 (GameDeck parity): from 1100px Up next and the calendar share the top row and the sync chip centers under them. */}
+    <div className={styles.top} data-home-wide="" data-pair={(contextReady && featured && showCalendar) || undefined}>
     <SyncLine />
-    <div className={styles.top}>
     {(isPending || context.isPending) && <Skeleton className={styles.featuredSkeleton} />}
     {!isPending && !context.isPending && featured && <section className={styles.featured} data-backdrop={backdrop ? "" : undefined} aria-labelledby="home-up-next">
       {backdrop && <span className={styles.backdrop} aria-hidden="true">
@@ -217,12 +235,13 @@ export default function HomePage() {
         <div className={styles.featuredActions}><Button asChild><Link to={"/titles/"+featured.title.id}>Next episode <ArrowRight size={14}/></Link></Button></div>
       </div>
     </section>}
+    {contextReady && showCalendar && <HomeCalendar className={styles.calendar} items={calendarItems} watched={watchedDays} today={today} />}
     </div>
     {(isPending || context.isPending) && <div className={styles.loadingGrid} aria-busy="true"><Skeleton style={{ height: 150 }} /><Skeleton style={{ height: 220 }} /></div>}
     {/* Wait for both the library and Home context so Up next doesn't pop in above already-drawn sections. */}
     {!isPending && !context.isPending && <div className={styles.dashboard}>
       {layout.order.filter(id => !layout.hidden.includes(id)).map(id => sections[id].node &&
-        <div key={id} className={styles[sections[id].place]}>{sections[id].node}</div>)}
+        <div key={id} className={styles[sections[id].place] + (id === "upcoming" ? " " + styles.upcomingSlot : "")}>{sections[id].node}</div>)}
     </div>}
     {!isPending && !context.isPending && <div className={styles.customize}><HomeCustomizeSheet layout={layout} onChange={save} onReset={reset} /></div>}
   </>;

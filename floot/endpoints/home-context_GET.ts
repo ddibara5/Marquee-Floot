@@ -32,8 +32,24 @@ async function handleRequest(request: Request) {
       SELECT 1 FROM marquee_episode_unwatched corrected
       WHERE corrected.user_id = ${user.id} AND corrected.episode_id = w.episode_id)`;
     const weekStart = sql`(((now() AT TIME ZONE 'America/New_York')::date - 6)::timestamp AT TIME ZONE 'America/New_York')`;
+    // Distinct episodes and movie watches per Eastern day, for the `back` days before today plus today.
+    const dayCounts = (back: ReturnType<typeof sql>) => sql<WeekDay>`
+      SELECT to_char(d.day, 'YYYY-MM-DD') AS "date",
+        (SELECT count(DISTINCT w.episode_id)::int FROM marquee_watch_events w
+          WHERE w.user_id = ${user.id}
+            AND w.watched_at >= (d.day::timestamp AT TIME ZONE 'America/New_York')
+            AND w.watched_at < ((d.day + 1)::timestamp AT TIME ZONE 'America/New_York')
+            AND ${notCorrected}) AS "episodes",
+        (SELECT count(*)::int FROM marquee_title_watch_events m
+          WHERE m.user_id = ${user.id}
+            AND m.watched_at >= (d.day::timestamp AT TIME ZONE 'America/New_York')
+            AND m.watched_at < ((d.day + 1)::timestamp AT TIME ZONE 'America/New_York')) AS "movies"
+      FROM (SELECT ((now() AT TIME ZONE 'America/New_York')::date - g)::date AS day
+        FROM generate_series(0, ${back}) g) d
+      ORDER BY d.day
+    `.execute(db);
 
-    const [next, days, weekTitles, upcoming, lastEpisodes] = await Promise.all([
+    const [next, days, weekTitles, upcoming, lastEpisodes, calendar, monthDays] = await Promise.all([
       sql<NextEpisode>`
       SELECT t.id AS "titleId", next_episode.id AS "episodeId",
         next_episode.season_number AS "seasonNumber",
@@ -75,21 +91,7 @@ async function handleRequest(request: Request) {
       LIMIT 12
     `.execute(db),
       // Last 7 Eastern days, today included: distinct episodes and movie watches per day.
-      sql<WeekDay>`
-      SELECT to_char(d.day, 'YYYY-MM-DD') AS "date",
-        (SELECT count(DISTINCT w.episode_id)::int FROM marquee_watch_events w
-          WHERE w.user_id = ${user.id}
-            AND w.watched_at >= (d.day::timestamp AT TIME ZONE 'America/New_York')
-            AND w.watched_at < ((d.day + 1)::timestamp AT TIME ZONE 'America/New_York')
-            AND ${notCorrected}) AS "episodes",
-        (SELECT count(*)::int FROM marquee_title_watch_events m
-          WHERE m.user_id = ${user.id}
-            AND m.watched_at >= (d.day::timestamp AT TIME ZONE 'America/New_York')
-            AND m.watched_at < ((d.day + 1)::timestamp AT TIME ZONE 'America/New_York')) AS "movies"
-      FROM (SELECT ((now() AT TIME ZONE 'America/New_York')::date - g)::date AS day
-        FROM generate_series(0, 6) g) d
-      ORDER BY d.day
-    `.execute(db),
+      dayCounts(sql`6`),
       sql<{ n: number }>`
       SELECT (
         (SELECT count(DISTINCT COALESCE(alias.canonical_title_id, s.title_id))
@@ -135,12 +137,33 @@ async function handleRequest(request: Request) {
         ORDER BY COALESCE(alias.canonical_title_id, s.title_id), w.watched_at DESC
       ) latest ORDER BY "watchedAt" DESC LIMIT 20
     `.execute(db),
+      // Desktop calendar (October 23): every dated episode of started shows, today through the next 60 days.
+      sql<UpcomingEpisode>`
+      SELECT DISTINCT ON (t.id, e.aired_at::date) t.id AS "titleId", s.season_number AS "seasonNumber",
+        e.episode_number AS "episodeNumber", e.display_title AS "episodeTitle", e.aired_at AS "airedAt"
+      FROM marquee_episodes e
+      JOIN marquee_seasons s ON s.id = e.season_id
+      LEFT JOIN marquee_title_aliases alias ON alias.duplicate_title_id = s.title_id
+      JOIN marquee_titles t ON t.id = COALESCE(alias.canonical_title_id, s.title_id)
+      LEFT JOIN marquee_manual_title_statuses manual
+        ON manual.title_id = t.id AND manual.user_id = ${user.id}
+      WHERE t.media_type = 'show' AND t.watched_episodes > 0
+        AND COALESCE(manual.status, '') NOT IN ('paused', 'dropped')
+        AND e.aired_at::date >= (now() AT TIME ZONE 'America/New_York')::date
+        AND e.aired_at::date <= (now() AT TIME ZONE 'America/New_York')::date + 60
+      ORDER BY t.id, e.aired_at::date, s.season_number, e.episode_number
+      LIMIT 200
+    `.execute(db),
+      // This Eastern month so far, for the calendar's watched-day marks.
+      dayCounts(sql`EXTRACT(DAY FROM now() AT TIME ZONE 'America/New_York')::int - 1`),
     ]);
     const response = new Response(superjson.stringify({
       nextEpisodes: next.rows,
       week: { days: days.rows, titles: weekTitles.rows[0]?.n ?? 0 },
       upcoming: upcoming.rows,
       lastEpisodes: lastEpisodes.rows,
+      calendar: calendar.rows,
+      monthDays: monthDays.rows,
     } satisfies OutputType), { headers: { "Content-Type": "application/json" } });
     await setServerSession(response, {
       id: session.id, createdAt: session.createdAt,

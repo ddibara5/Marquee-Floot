@@ -1,3 +1,4 @@
+
 .poster { display:grid; place-items:center; flex:none; width:48px; aspect-ratio:2/3; overflow:hidden; border-radius:var(--radius-poster); background:var(--surface); color:var(--muted-foreground); font:600 24px var(--font-family-display); }
 .poster img { display:block; width:100%; height:100%; object-fit:contain; }
 .visuallyHidden { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
@@ -71,7 +72,7 @@
 .empty { margin:0; color:var(--muted-foreground); font-size:13px; line-height:1.5; }
 .loadingGrid { display:grid; gap:24px; }
 .featuredSkeleton { height:233px; border-radius:var(--radius-tile); }
-@media(min-width:1100px) { .featuredSkeleton { height:326px; } }
+@media(min-width:1100px) { .featuredSkeleton { height:288px; } }
 .error { padding:16px; color:var(--error); background:var(--surface); border:1px solid var(--error); border-radius:8px; }
 
 /* Watch List poster shelf: three across on phone, six where the full row fits them. */
@@ -138,13 +139,27 @@
 /* Web, wide screens (October 15): a compact Up next card whose backdrop becomes a color wash; Last 7 days left Home
    on October 17. 1100px+ only, so phones and the iPhone app keep their layout. */
 @media(min-width:1100px) {
-  .featured.featured, .featured.featured[data-backdrop] { grid-template-columns:184px minmax(0,1fr); grid-template-areas:"poster copy"; gap:24px; align-items:center; align-content:center; padding:24px; }
-  .featured.featured>.poster { width:184px; border-radius:12px; }
+  .featured.featured, .featured.featured[data-backdrop] { grid-template-columns:160px minmax(0,1fr); grid-template-areas:"poster copy"; gap:22px; align-items:center; align-content:center; padding:22px; }
+  .featured.featured>.poster { width:160px; border-radius:12px; }
   .featured[data-backdrop] .backdrop.backdrop { position:absolute; inset:0; z-index:calc(0 - 1); grid-area:auto; margin:0; max-height:none; aspect-ratio:auto; border-radius:0; background:none; }
   .backdropArt.backdropArt { display:none; }
   .backdropFill.backdropFill { opacity:.4; filter:blur(36px) saturate(1.3); }
-  .featuredCopy h2 { font-size:34px; line-height:1.05; }
-  .synopsis { -webkit-line-clamp:3; }
+  .featuredCopy h2 { font-size:32px; line-height:1.05; }
+  .synopsis { -webkit-line-clamp:2; }
   .homeProgress { margin-top:12px; }
   .featuredActions { margin-top:12px; }
+}
+
+/* Top row (October 23, GameDeck parity). Below 1100px: sync chip, then Up next, as before; the calendar stays off. */
+.top { display:grid; grid-template-columns:minmax(0,1fr); }
+.calendar { display:none; }
+@media(min-width:1100px) {
+  .top { column-gap:16px; }
+  .top[data-pair] { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .top>.syncLine { grid-column:1/-1; grid-row:2; justify-content:center; margin:16px 0 0; }
+  .calendar { display:flex; }
+  /* The calendar replaces the Coming up list; the remaining sections sit in two equal columns, like GameDeck. */
+  .upcomingSlot { display:none; }
+  .dashboard { grid-template-columns:repeat(2,minmax(0,1fr)); margin-top:20px; }
+  .main,.side { grid-column:auto; grid-row:auto; }
 }
