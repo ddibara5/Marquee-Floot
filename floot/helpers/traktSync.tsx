@@ -32,10 +32,14 @@ const HISTORY_OVERLAP_MS = 48 * 60 * 60 * 1000;
 const isExcludedTitle = (title?: string) =>
   ["one piece", "fairy tail"].includes(title?.trim().toLowerCase() ?? "");
 
+// Trakt "watched on release date" stamps (e.g. 1981 for Raiders) predate Dave (born 1993): store them as the
+// 1970 unknown-date marker the rest of the app already reads as "Earlier watches".
+const UNDATED_BEFORE = Date.UTC(1993, 0, 1);
 const validDate = (value: string | undefined) => {
   if (!value) return null;
   const date = new Date(value);
-  return Number.isFinite(date.getTime()) ? date : null;
+  if (!Number.isFinite(date.getTime())) return null;
+  return date.getTime() < UNDATED_BEFORE ? new Date(0) : date;
 };
 
 const tokenProvider=createTraktTokenProvider(db);
@@ -574,7 +578,7 @@ export const syncTraktHistory = async (
         .where("id", "=", titleId)
         .executeTakeFirst();
 
-      if (!title?.lastWatchedAt || watchedAt > title.lastWatchedAt) {
+      if (watchedAt.getTime() > 0 && (!title?.lastWatchedAt || watchedAt > title.lastWatchedAt)) {
         await db
           .updateTable("marqueeTitles")
           .set({ lastWatchedAt: watchedAt, updatedAt: new Date() })

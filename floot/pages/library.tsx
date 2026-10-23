@@ -10,6 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "..
 import { Skeleton } from "../components/Skeleton";
 import { MediaImage } from "../components/MediaImage";
 import { Button } from "../components/Button";
+import { StateBlock } from "../components/StateBlock";
 import { OptionChoice, OptionsSheet } from "../components/OptionsSheet";
 import { describeGroup, groupActivity } from "../helpers/groupActivity";
 import { filterAndSortTitles } from "../helpers/filterAndSortTitles";
@@ -103,10 +104,10 @@ export default function LibraryPage() {
             <div className={styles.historySkeleton} aria-busy="true">{[0, 1, 2].map(day =>
               <div key={day}><Skeleton className={styles.daySkeleton}/><Skeleton className={styles.rowSkeleton}/></div>)}</div>
           ) : history.error && !history.data ? (
-            <p className={styles.error} role="alert">Unable to load activity. <Button variant="ghost" onClick={()=>void history.refetch()}>Retry</Button></p>
+            <StateBlock kind="error" title="Activity didn't load" onRetry={()=>void history.refetch()}>Check your connection, then try again.</StateBlock>
           ) : (
             <>
-              {history.error && <p role="alert" className={styles.error}>Couldn’t refresh Activity. Showing saved data.</p>}
+              {history.error && <p role="alert" className={styles.error}>Couldn’t refresh Activity. Showing saved data. <Button variant="ghost" onClick={()=>void history.refetch()}>Retry</Button></p>}
               {periods.length ? <div className={styles.dayList}>
                 {/* Batch C (October 17): one row per title per week or month, like GameDeck's Activity; a run of episodes opens to its rows. */}
                 {periods.map(period => <section key={period.key} className={styles.daySection} aria-label={period.label}>
@@ -184,11 +185,11 @@ export default function LibraryPage() {
         titlesFetching && allTitles.length === 0 ? (
           <div className={styles.list} aria-busy="true">{[0, 1, 2, 3].map(tile => <Skeleton key={tile} className={styles.posterSkeleton}/>)}</div>
         ) : titlesError && !allTitles.length ? (
-          <p className={styles.error} role="alert">Unable to load titles. <Button variant="ghost" onClick={()=>void refetchTitles()}>Retry</Button></p>
+          <div className={styles.stateGap}><StateBlock kind="error" title="Titles didn't load" onRetry={()=>void refetchTitles()}>Check your connection, then try again.</StateBlock></div>
         ) : titles.length === 0 ? (
           <div className={styles.empty}><Search size={18} /><strong>No titles match</strong><span>Adjust your search or filters.</span></div>
         ) : (
-          <>{titlesError && <p role="alert" className={styles.error}>Couldn’t refresh titles. Showing saved data.</p>}
+          <>{titlesError && <p role="alert" className={styles.error}>Couldn’t refresh titles. Showing saved data. <Button variant="ghost" onClick={()=>void refetchTitles()}>Retry</Button></p>}
           <div className={styles.list}>{titles.slice(0, shown).map(t => <TitleCard key={t.id} title={t} compact />)}</div>
           {shown < titles.length && <Button variant="outline" className={styles.loadMore} onClick={() => setShown(current => current + PAGE)}>
             Show {Math.min(PAGE, titles.length - shown)} more

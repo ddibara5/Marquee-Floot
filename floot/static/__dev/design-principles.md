@@ -1,39 +1,39 @@
-# Marquee Premiere — approved October 3, 2026
+# Marquee Grid: design principles (rewritten October 22, 2026)
 
-Dave approved the refined interactive Premiere mockup for implementation. Authenticated staged review is recorded in ui-contract.md; Dave approved the staged preview and publication; Premiere was published October 3, 2026 at https://marquee-ddibara.floot.app. This supersedes the neon cinema identity; GameDeck remains independent and unchanged.
+Grid replaced Premiere (aubergine/peach) on October 15, 2026, with Dave's approval; Premiere and the earlier neon identity are history. The October 22 design review consolidated the system below. Canvas: "Marquee design review" (Claude artifact, private). GameDeck stays independent.
 
 ## Visual brief
-A quiet cinematic screening room: aubergine surfaces, warm peach actions, complete film/TV/anime posters and Archivo throughout. Establish hierarchy through artwork, typography and space. Avoid neon glow, technical grids, ornamental rails and repeated eyebrow/section labels.
+A night screening room seen from the grid floor: night ground with a deep-blue top glow, a faint perspective grid at the bottom (AppShell backdrop), complete posters, Archivo throughout. Hierarchy comes from artwork, type and space. One glass hero tile per page; everything else sits on the backdrop under a hairline.
 
-Use complete 2:3 foreground posters with object-fit:contain and fixed aspect-ratio frames, including missing/broken artwork fallback. Main posters: 156px; shelves: 144px; activity rows: 48px. Titles and Watch List grid posters fill their grid column (October 17, Dave approved Batch B); the fixed sizes apply to Home shelves, feature and detail posters. Phone main/shelf posters: 132px; Home at under 360px uses 108px inside the feature to preserve readable episode controls. Artwork does not stretch to match text height. Poster captions share the artwork's left edge; peer section headings/first content rows align.
-
-## Tokens and ownership
-Model B: base.css is the canonical runtime token owner. This document mirrors accepted values; seeded controls and CSS modules consume semantic variables, not a second palette. helpers/themeMode.tsx keeps existing System/Dark/Light preference behavior and dark default.
-
-| Role | Runtime token | Premiere dark | Light interpretation |
+## Tokens (base.css is the only owner)
+| Role | Token | Dark | Light |
 | --- | --- | --- | --- |
-| Canvas | --background | #1d171e | #f6f0ec |
-| Surface/card | --surface / --card | #2a232c | #eee4df / #fffaf7 |
-| Main text | --foreground | #fff4ee | #2a2029 |
-| Secondary text | --muted-foreground | #c4b6c1 | #72616c |
-| Action/focus/progress | --primary | #f0b88f | #875036 |
-| Divider | --border | #51414f | #d6c6cd |
-| Soft state | --secondary / --muted | #372d38 | #e8dcd6 |
-| Display/body/UI labels | --font-family-display / --font-family-base / --font-family-monospace | Archivo, system-ui, sans-serif | Same |
-| Spacing | --spacing-1/2/3/4/6/8 | 4/8/12/16/24/32px | Same |
-| Typography | --text-display / --text-heading / --text-body | 32/18/14px; display 24px on phone | Same |
-| Artwork | --poster-main / --poster-shelf / --compact-poster-width | 156/144/48px | Same |
-| Touch target | --touch-target | 44px minimum | Same |
+| Ground | --background | #070a12 | #eef2f7 |
+| Surface | --surface / --card | #0b1726 | #e2e9f1 / #ffffff |
+| Text | --foreground | #eaf6ff | #0b1320 |
+| Secondary text | --muted-foreground | #8fa6bb | #4a5a6b |
+| Action, focus, progress | --primary | #48e5ff (cyan) | #0a7a96 |
+| Brand (mark, Watched pill) | --brand | #ff3448 | #e0263a |
+| Charts only | --chart-color-1..5 | cyan, red, amber, violet, green | deeper variants |
+| Divider | --border / --glass-hairline | #1d3550 / cyan 12% | #c5d1dd / teal 12% |
+| Glass tile | --glass-bg, --glass-border | card 72%, cyan 16% | same mix |
 
-base.css also owns status/error/chart semantic colors, focus/scrollbar visibility and reduced motion. Muted status colors must retain accompanying text/labels. Keep body line-height 1.5; headings 1.2–1.3 and weight 600. Metadata 12px; no essential-content truncation to manufacture a fit.
+Color rule: cyan means "you can press this or it shows progress"; red means Marquee itself; amber appears only in charts and ratings. Nothing else gets a color.
 
-## Responsive structure
-AppShell.tsx owns horizontal desktop underline navigation at 760px and above, sticky header and floating phone root navigation. The former sidebar collapse setting no longer applies to this top-bar layout; all four destinations and Settings remain available. Back, refresh, search and restoration owners are retained.
-Home uses a poster/text spotlight; phone title spans the card before poster/next-episode content. Recent activity and Watch List become equal desktop columns; Continue/New episode tiles are preserved when populated.
-Details use a full-width title on phone, poster/next information row, full-width inline status/rating/bookmark row, synopsis and scoped progress. Desktop seasons and history share a heading baseline, with full-width synopsis/progress and catalog metadata below.
-Titles become an aligned poster shelf. Activity keeps dated groups and Earlier watches. Watch List preserves list/grid/search/filter/sort/Pick next/Undo controls; grid captions align with complete posters. Insights uses a deliberate desktop panel grid with all existing metrics and dated periods intact.
-Compact tabs and inline dropdowns keep 44px targets. Long titles and metadata grow/reflow in meaningful groups; content remains reachable above fixed navigation.
+Radii: --radius-tile 20px (glass tiles, groups, cards, state blocks), --radius-poster 10px (every poster), --radius-control 12px (buttons, inputs, notices); pills 999px.
+Type: Archivo only. Display 30px (24 to 26 phone), section 20px/700, body 15px, meta 13px. Floor 12px. Sentence case everywhere: no uppercase labels, no monospace.
+Spacing: --spacing-1..8 (4/8/12/16/24/32). Touch target 44px minimum.
+Artwork: complete 2:3 posters. Home feature 156px (132px phone, 116px phone card), shelves 144px, rows 44 to 48px; grid posters fill their column. Missing art keeps the frame and shows the title's first letter.
+
+## Shared patterns
+- Section header: hairline on top, 20px title, optional count (13px muted) and link (13px cyan), 44px row. Used on Home, Watch List groups, Insights, title details.
+- Segmented control: 4px inset on --surface, 14px outer radius, 10px buttons, active = --glass-control-on with cyan text. Used by Activity/Titles, Insights period, Mapping review.
+- StateBlock (components/StateBlock.tsx): one shell for empty (dashed) and error (red outline, always Retry when the caller can retry).
+- Title row: 44 to 48px poster, title 15px/600, meta 13px, 4 to 6px progress on --muted.
+- Settings and Sync: glass groups with icon tiles and sentence-case group labels.
+
+## Structure
+AppShell owns the backdrop, sticky header, phone page stack, floating dock with detached Search, and the collapsible desktop sidebar from 900px. Home: sync chip, Up next tile, then Keep watching (rows for 1 to 2 series, poster strip for 3+), Coming up, Recent activity, Watch List shelf; Customize Home order saved per device. Title details: phone backdrop fades behind a centered poster; from 700px the backdrop runs edge to edge behind poster and title. Insights: period switch, one hero tile (headline count, completed, avg rating, tappable month bars), then open sections with poster rows.
 
 ## Behavior and verification
-static/__dev/ui-contract.md owns workflow requirements and capability owners. Do not change authentication, data architecture, endpoint shapes, source matching, ingestion, sync jobs/schedules or historical records. Never invent dates, counts or activity. Preserve tracking, ratings/clear, Watch List, search/Clear, filters, preferences, source provenance, known/unknown date semantics, episode/season actions, confirmations, Undo/error recovery, loading/empty states, keyboard/touch access and Back restoration of view/filter/query/scroll/focus.
-Before publishing: clean Floot typecheck, relevant regression suites, authenticated staged root/detail/settings/state review on phone/intermediate/desktop, coherent checkpoint, then Dave's explicit preview/publication approval. Mockup screenshots or current production are not staged acceptance.
+static/__dev/ui-contract.md owns workflow requirements. Do not change authentication, data architecture, endpoint shapes, source matching, ingestion, sync jobs or historical records. Never invent dates, counts or activity. Before publishing: clean typecheck, relevant specs, staged visual QA at phone 440, intermediate and desktop sizes (dark and light), a coherent checkpoint, then Dave's explicit approval. The iPhone app ships through the Marquee-Floot mirror PR.

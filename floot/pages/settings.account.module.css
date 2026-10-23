@@ -1,6 +1,6 @@
 .section { max-width:38rem; margin:0 auto; }
-.label { margin:0 0 16px; color:var(--muted-foreground); font:500 12px var(--font-family-base); }
-.identity { display:grid; gap:4px; padding:18px; background:var(--card); border:1px solid var(--border); border-radius:10px; overflow-wrap:anywhere; }
+.label { margin:0 4px 10px; color:var(--muted-foreground); font:600 13px var(--font-family-base); }
+.identity { display:grid; gap:4px; padding:18px; background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius-tile); overflow-wrap:anywhere; }
 .identity strong { font:600 15px var(--font-family-base); }
 .identity span { color:var(--muted-foreground); font-size:13px; }
 .signOut { margin-top:20px; min-height:44px; }

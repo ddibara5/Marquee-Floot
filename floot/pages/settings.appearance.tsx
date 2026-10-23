@@ -14,7 +14,7 @@ export default function AppearancePage() {
   return <>
     <Helmet><title>Appearance · Marquee</title></Helmet>
     <section className={styles.section} aria-label="Display mode">
-      <p className={styles.label}>DISPLAY MODE</p>
+      <h2 className={styles.label}>Display mode</h2>
       <div className={styles.options}>
         {(["auto","dark","light"] as const).map(mode => <Button key={mode} variant="ghost" className={styles.option}
           aria-pressed={theme.mode === mode} onClick={() => choose(mode)}>

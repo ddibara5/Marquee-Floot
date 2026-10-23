@@ -5,6 +5,7 @@ import { Button } from "../components/Button";
 import { Input } from "../components/Input";
 import { Checkbox } from "../components/Checkbox";
 import { Skeleton } from "../components/Skeleton";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "../components/Dialog";
 import { getHouseholdAccounts, type HouseholdAccount } from "../endpoints/household-accounts_GET.schema";
 import { postHouseholdAccounts, type InputType } from "../endpoints/household-accounts_POST.schema";
 import styles from "./settings.household.module.css";
@@ -21,7 +22,20 @@ function AccountRow({ account, run, busy }: { account: HouseholdAccount; run: (i
     <Input type="password" aria-label={"New password for " + account.email} placeholder="New password" value={password} autoComplete="new-password" onChange={e => setPassword(e.target.value)} />
     <Button variant="outline" disabled={busy || password.length < 8} onClick={() => { run({ action: "setPassword", userId: account.id, password }); setPassword(""); }}>{account.canSignIn ? "Set password" : "Restore access"}</Button>
    </div>
-   {account.canSignIn && <div className={styles.actions}><Button variant="destructive" disabled={busy} onClick={() => run({ action: "revoke", userId: account.id })}>Revoke access</Button></div>}
+   {/* October 22: Revoke asks first. It signs the account out everywhere, so a stray tap shouldn't do it. */}
+   {account.canSignIn && <div className={styles.actions}><Dialog>
+    <DialogTrigger asChild><Button variant="destructive" disabled={busy}>Revoke access</Button></DialogTrigger>
+    <DialogContent>
+     <DialogHeader>
+      <DialogTitle>Revoke access for {account.displayName || account.email}?</DialogTitle>
+      <DialogDescription>They're signed out everywhere and can't sign in until you set a new password.</DialogDescription>
+     </DialogHeader>
+     <DialogFooter>
+      <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+      <DialogClose asChild><Button variant="destructive" onClick={() => run({ action: "revoke", userId: account.id })}>Revoke access</Button></DialogClose>
+     </DialogFooter>
+    </DialogContent>
+   </Dialog></div>}
   </>}
  </div>;
 }
@@ -43,9 +57,9 @@ export default function HouseholdPage() {
  return <>
   <Helmet><title>Household access · Marquee</title></Helmet>
   <section className={styles.section}>
-   <p className={styles.label}>HOUSEHOLD ACCESS</p>
+   <p className={styles.label}>Household access</p>
    <p className={styles.intro}>Sign-up is closed. Add one member with their own watch history, and one automation account that uses your library for nightly checks. Revoke signs an account out everywhere.</p>
-   {accounts.isPending ? <Skeleton style={{ height: 120 }} /> : accounts.error ? <p role="alert" className={styles.error}>{accounts.error.message}</p> :
+   {accounts.isPending ? <Skeleton style={{ height: 120 }} /> : accounts.error ? <p role="alert" className={styles.error}>{accounts.error.message} <Button variant="ghost" onClick={() => void accounts.refetch()}>Retry</Button></p> :
     <div className={styles.list}>{list.map(a => <AccountRow key={a.id} account={a} run={run} busy={change.isPending} />)}</div>}
    {change.error && <p role="alert" className={styles.error}>{change.error.message}</p>}
    {status && <p role="status" className={styles.status}>{status}</p>}

@@ -15,7 +15,8 @@
       box-shadow var(--animation-duration-normal) ease,
       transform var(--animation-duration-fast) ease;
     outline: none;
-    height: 2.5rem;
+    /* 44px touch target (October 23 visual QA). */
+    height: 2.75rem;
     box-shadow:
       inset 0 1px 2px rgba(0, 0, 0, 0.02),
       0 1px 0 rgba(255, 255, 255, 0.3);

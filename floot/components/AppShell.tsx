@@ -43,7 +43,7 @@ export default function AppShell({ children }: PropsWithChildren) {
   const known = path.startsWith("/titles/") || path === "/migration-verification";
   const fallback = path === "/sync/review"?"/sync":path === "/settings" ? "/" : path.startsWith("/settings/") || path === "/sync" ? "/settings" : known ? "/library" : "/";
   const title = path === "/settings" ? "Settings" : path === "/settings/appearance" ? "Appearance" :
-    path === "/settings/account" ? "Account" : path === "/sync" ? "Data & sync" : path === "/sync/review"?"Mapping review": known ? "Title details" : "Page not found";
+    path === "/settings/account" ? "Account" : path === "/settings/household" ? "Household access" : path === "/sync" ? "Data & sync" : path === "/sync/review"?"Mapping review": known ? "Title details" : "Page not found";
   const accessibleTitle = path === "/" ? "Home" : path === "/library" ?
     new URLSearchParams(location.search).get("view") === "titles" ? "Titles" : "Activity" :
     path === "/watchlist" ? "Watch List" : path === "/insights" ? "Insights" : title;

@@ -1,16 +1,18 @@
-
-.poster { display:grid; place-items:center; flex:none; width:48px; aspect-ratio:2/3; overflow:hidden; border-radius:4px; background:var(--surface); color:var(--muted-foreground); font:600 24px var(--font-family-display); }
+.poster { display:grid; place-items:center; flex:none; width:48px; aspect-ratio:2/3; overflow:hidden; border-radius:var(--radius-poster); background:var(--surface); color:var(--muted-foreground); font:600 24px var(--font-family-display); }
 .poster img { display:block; width:100%; height:100%; object-fit:contain; }
 .visuallyHidden { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 
-/* Sync freshness line */
-.syncLine { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:44px; margin:-8px 0 8px; font-size:13px; color:var(--muted-foreground); }
-.syncState { display:flex; align-items:center; gap:8px; min-width:0; }
-.syncState strong { color:var(--foreground); font-weight:600; white-space:nowrap; }
-.syncDot { flex:none; width:8px; height:8px; border-radius:999px; background:var(--primary); }
+/* Sync freshness chip (October 22): right-aligned above Up next, opens Data & sync. Its row keeps its height while loading. */
+.syncLine { display:flex; justify-content:flex-end; min-height:44px; margin:-12px 0 4px; }
+.syncChip { display:inline-flex; align-items:center; gap:8px; min-width:0; min-height:44px; padding:0 14px; border:1px solid var(--glass-border); border-radius:999px; background:var(--glass-bg); color:var(--muted-foreground); font-size:13px; text-decoration:none; -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); }
+.syncChip strong { color:var(--foreground); font-weight:600; white-space:nowrap; }
+.syncChip:hover strong { color:var(--primary); }
+.syncChip:focus-visible { outline:2px solid var(--primary); outline-offset:2px; }
+.syncChipPlaceholder { display:block; width:150px; height:44px; }
+.syncDot { flex:none; width:8px; height:8px; border-radius:999px; background:var(--success); }
 .syncDot[data-overdue] { background:var(--error); }
 .syncSources { display:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.syncLine a { display:inline-flex; align-items:center; min-height:44px; color:var(--primary); font-weight:500; text-decoration:none; white-space:nowrap; }
+.ready { color:var(--primary); font-weight:600; }
 
 /* Up next. Backdrop and poster are both shown whole (contain); only the backdrop frame is decorative. */
 .featured { display:grid; grid-template-columns:var(--poster-main) minmax(0,1fr); grid-template-areas:"poster copy"; gap:16px 24px; align-items:start; padding:24px; background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
@@ -88,7 +90,9 @@
   .syncSources { display:inline; }
   .dashboard { grid-template-columns:minmax(0,1fr) minmax(280px,384px); grid-auto-flow:row dense; align-items:start; gap:36px 40px; margin-top:32px; }
   .main { grid-column:1; }
-  .side { grid-column:2; }
+  /* Balanced columns (Jet Money's desktop pattern, October 23): the side column spans two rows so the next
+     main section rises under the first instead of waiting below the taller side section. */
+  .side { grid-column:2; grid-row:span 2; }
   .full { grid-column:1/-1; }
   .shelf .activityList { grid-template-columns:repeat(6,minmax(0,var(--poster-shelf))); justify-content:space-between; gap:20px; }
   .shelf .activityList>:nth-child(n+4) { display:block; }
@@ -101,10 +105,8 @@
 .featured.featured { position:relative; isolation:isolate; background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius-tile); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 6%,transparent); }
 .pill { background:color-mix(in srgb,var(--brand) 16%,transparent); border:1px solid color-mix(in srgb,var(--brand) 45%,transparent); }
 .pill::before { background:var(--brand); box-shadow:0 0 8px var(--brand); }
-.syncLine { justify-content:center; flex-wrap:wrap; gap:4px 12px; margin:8px 0 0; }
-.syncDot { background:var(--success); }
 .section { border-top:1px solid var(--glass-hairline); padding-top:4px; }
-.heading h2 { font-size:22px; }
+.heading h2 { font-size:20px; }
 .count { color:var(--muted-foreground); font-size:12px; }
 .row,.activityRow { border-bottom-color:var(--glass-hairline); }
 /* Poster strips with a badge (GameDeck cover strips). */

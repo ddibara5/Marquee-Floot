@@ -16,20 +16,20 @@ export default function SettingsPage() {
   return <>
     <Helmet><title>Settings · Marquee</title></Helmet>
     <div className={styles.menu}>
-      <p className={styles.groupLabel}>PREFERENCES</p>
+      <h2 className={styles.groupLabel}>Preferences</h2>
       <nav className={styles.group} aria-label="Settings">
         <Link className={styles.row} to="/settings/appearance"><SunMoon size={19} aria-hidden="true"/><span><strong>Appearance</strong><small>{theme.mode === "auto" ? "System" : theme.mode === "dark" ? "Dark" : "Light"}</small></span><ChevronRight size={18} aria-hidden="true"/></Link>
         <Link className={styles.row} to="/sync"><RefreshCw size={19} aria-hidden="true"/><span><strong>Connections &amp; sync</strong><small>{trakt.isError ? "Status unavailable" : trakt.isLoading ? "Checking…" : trakt.data?.connected ? "Trakt connected" : "Connect Trakt"}</small></span><ChevronRight size={18} aria-hidden="true"/></Link>
       </nav>
       {isDave && <>
-        <p className={styles.groupLabel}>FEEDBACK</p>
+        <h2 className={styles.groupLabel}>Feedback</h2>
         <div className={styles.group}>
           <FeedbackSheet>
             <button type="button" className={`${styles.row} ${styles.rowButton}`}><MessageSquare size={19} aria-hidden="true"/><span><strong>Send feedback</strong><small>Bugs and ideas go to your vault</small></span><ChevronRight size={18} aria-hidden="true"/></button>
           </FeedbackSheet>
         </div>
       </>}
-      <p className={styles.groupLabel}>ACCOUNT</p>
+      <h2 className={styles.groupLabel}>Account</h2>
       <nav className={styles.group} aria-label="Account settings">
         <Link className={styles.row} to="/settings/account"><CircleUserRound size={19} aria-hidden="true"/><span><strong>Account</strong></span><ChevronRight size={18} aria-hidden="true"/></Link>
         {isDave && <Link className={styles.row} to="/settings/household"><Users size={19} aria-hidden="true"/><span><strong>Household access</strong><small>Members and automation account</small></span><ChevronRight size={18} aria-hidden="true"/></Link>}

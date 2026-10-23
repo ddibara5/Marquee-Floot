@@ -1,0 +1,7 @@
+.block { display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding:16px; border:1px dashed var(--border); border-radius:var(--radius-tile); color:var(--foreground); }
+.block[data-kind=error] { border-style:solid; border-color:color-mix(in srgb,var(--error) 45%,transparent); background:color-mix(in srgb,var(--error) 6%,transparent); }
+.icon { color:var(--muted-foreground); }
+.block[data-kind=error] .icon { color:var(--error); }
+.block strong { font-size:15px; font-weight:600; }
+.body { color:var(--muted-foreground); font-size:13px; line-height:1.5; }
+.retry { min-height:44px; }
