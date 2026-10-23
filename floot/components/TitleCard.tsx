@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { PlayCircle, Star } from "lucide-react";
 import type { Title } from "../helpers/Title";
 import { tmdbImageUrl } from "../helpers/tmdbImageUrl";
+import { ratingText } from "../helpers/titleRatings";
 import styles from "./TitleCard.module.css";
 
 export default function TitleCard({ title, compact = false, className = "" }: { title: Title; compact?: boolean; className?: string }) {
@@ -23,7 +24,7 @@ export default function TitleCard({ title, compact = false, className = "" }: { 
       <div className={styles.body}>
         <div className={styles.topline}>
           <h3>{title.title}</h3>
-          {title.score !== undefined && <span className={styles.score}><Star size={13} fill="currentColor" />{title.score}</span>}
+          {title.score !== undefined && <span className={styles.score}><Star size={13} fill="currentColor" />{ratingText(title.score)}</span>}
         </div>
         <p className={styles.meta}>
           {title.year ?? "—"} · {title.anime ? "Anime " : ""}{title.type === "show" ? "Series" : "Movie"}

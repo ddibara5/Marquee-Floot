@@ -1,5 +1,6 @@
 import { z } from "zod";
 import superjson from "superjson";
+import { isRatingValue } from "../helpers/titleRatings";
 
 const titleId = z.number().int().positive();
 export const schema = z.discriminatedUnion("action", [
@@ -48,7 +49,7 @@ export const schema = z.discriminatedUnion("action", [
   z.object({
     action: z.literal("rating"),
     titleId,
-    rating: z.number().int().min(1).max(10).nullable(),
+    rating: z.number().refine(isRatingValue, "Rating must be 1 to 10 in half points").nullable(),
   }),
   z.object({
     action: z.literal("status"),

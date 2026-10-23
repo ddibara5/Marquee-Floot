@@ -70,7 +70,8 @@ export const GlobalContextProviders = ({
           <TooltipProvider>
             {/* Last line of defence: a crash outside a page (the shell itself) still shows Reload, not a blank screen. */}
             <PageErrorBoundary>{children}</PageErrorBoundary>
-            <SonnerToaster />
+            {/* AF-20261023-05: top, below the safe area (Cookbook pattern), so toasts clear the iPhone app's Liquid Glass tab bar. */}
+            <SonnerToaster position="top-right" />
           </TooltipProvider>
         </ThemeModeProvider>
       </AuthProvider>

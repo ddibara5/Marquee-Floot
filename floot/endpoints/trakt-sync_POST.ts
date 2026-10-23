@@ -7,11 +7,13 @@ import {
   setServerSession,
 } from "../helpers/getSetServerSession";
 import { syncTraktHistory } from "../helpers/traktSync";
+import { runTraktSync, traktSyncErrorStatus } from "../helpers/traktSyncGate";
 
 async function handleRequest(request: Request) {
   try {
-    const { user, session } = await getServerUserSession(request);
-    const result = await marqueeLegacyLock("trakt", () => syncTraktHistory(user.id));
+    const { user, session, isBot } = await getServerUserSession(request);
+    // AF-20261023-03: the automation account gets a result with nothing synced (helpers/traktSyncGate).
+    const result = await runTraktSync(isBot, () => marqueeLegacyLock("trakt", () => syncTraktHistory(user.id)));
 
     const response = new Response(superjson.stringify(result), {
       headers: { "Content-Type": "application/json" },
@@ -36,11 +38,7 @@ async function handleRequest(request: Request) {
     const message =
       error instanceof Error ? error.message : "Unable to sync Trakt history";
 
-    const status = message.includes("duplicate key")
-      ? 409
-      : message.includes("not connected")
-        ? 400
-        : 500;
+    const status = traktSyncErrorStatus(message);
 
     return new Response(superjson.stringify({ error: message }), {
       status,

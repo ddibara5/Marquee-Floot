@@ -10,4 +10,9 @@ describe("local title rating", () => {
     expect(() => schema.parse({ action: "rating", titleId: 41, rating: 0 })).toThrow();
     expect(() => schema.parse({ action: "rating", titleId: 41, rating: 11 })).toThrow();
   });
+  it("accepts half points and rejects other fractions", () => {
+    expect(schema.parse({ action: "rating", titleId: 41, rating: 7.5 })).toEqual({ action: "rating", titleId: 41, rating: 7.5 });
+    expect(() => schema.parse({ action: "rating", titleId: 41, rating: 7.25 })).toThrow();
+    expect(() => schema.parse({ action: "rating", titleId: 41, rating: 10.5 })).toThrow();
+  });
 });

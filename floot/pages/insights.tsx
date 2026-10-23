@@ -13,6 +13,7 @@ import { TmdbLogo } from "../components/TmdbLogo";
 import { insightsContextQuery } from "../helpers/warmAppData";
 import { buildLibraryInsights } from "../helpers/buildLibraryInsights";
 import { tmdbImageUrl } from "../helpers/tmdbImageUrl";
+import { ratingText } from "../helpers/titleRatings";
 import type { Title } from "../helpers/Title";
 import { useTitles } from "../helpers/useTitles";
 import styles from "./insights.module.css";
@@ -184,7 +185,7 @@ export default function InsightsPage() {
               <Link className={styles.row} key={title.id} to={"/titles/" + title.id}>
                 <RowPoster title={byId.get(title.id)} name={title.title} />
                 <span className={styles.rowCopy}><strong>{title.title}</strong><small>{title.year ?? "Year unknown"} · {title.anime ? "Anime" : title.type === "show" ? "Series" : "Movie"}</small></span>
-                <span className={styles.score}><Star size={14} fill="currentColor" aria-hidden="true" />{title.score}</span>
+                <span className={styles.score}><Star size={14} fill="currentColor" aria-hidden="true" />{ratingText(title.score ?? 0)}</span>
               </Link>
             ))}
           </div>

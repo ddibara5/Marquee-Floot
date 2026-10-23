@@ -45,7 +45,9 @@ async function handleRequest(request: Request) {
         SELECT t.id AS "titleId", COALESCE(tr.rating, local.score::numeric, t.score)::float AS score
         FROM marquee_titles t
         LEFT JOIN LATERAL (
-          SELECT r.rating FROM marquee_trakt_ratings r
+          -- Half-point score only while it still rounds to the Trakt whole number (AF-20261023-06).
+          SELECT CASE WHEN round(r.rating_score) = r.rating THEN r.rating_score ELSE r.rating END AS rating
+          FROM marquee_trakt_ratings r
           WHERE r.user_id = ${user.id} AND r.title_id = t.id
             AND r.rating IS NOT NULL AND r.pending_action IS DISTINCT FROM 'remove'
           ORDER BY r.rated_at DESC NULLS LAST LIMIT 1
