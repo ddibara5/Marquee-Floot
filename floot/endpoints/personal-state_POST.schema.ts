@@ -1,12 +1,14 @@
 import { z } from "zod";
 import superjson from "superjson";
+import { isRatingValue } from "../helpers/titleRatings";
 
 export const schema = z.object({
   kind:z.enum(["watchlist","rating"]),
   mediaType:z.enum(["movie","show"]),
   traktId:z.string().regex(/^\d+$/),
   action:z.enum(["add","remove","set"]),
-  rating:z.number().int().min(1).max(10).optional(),
+  // Half points (October 23); whole numbers from older clients stay valid.
+  rating:z.number().refine(isRatingValue,"Rating must be 1 to 10 in half points").optional(),
 }).refine(value => value.kind === "watchlist"
   ? value.action !== "set"
   : value.action !== "add" && (value.action !== "set" || value.rating !== undefined));

@@ -178,3 +178,15 @@
     }
   }
 }
+
+/* AF-20261023-05 (October 23, 2026): bottom toasts sat under the iPhone app's Liquid Glass tab bar. Toasts now show at the
+   top (Cookbook pattern, AF-20261021-03), starting below the status bar and Dynamic Island. Outside the layer and !important
+   so it beats Sonner's own unlayered rules. Safe area is 0 on desktop and plain web. */
+.toaster[data-y-position="top"] {
+  top: calc(var(--offset, 32px) + var(--safe-area-inset-top, 0px)) !important;
+}
+@media (max-width: 600px) {
+  .toaster[data-y-position="top"] {
+    top: calc(12px + var(--safe-area-inset-top, 0px)) !important;
+  }
+}

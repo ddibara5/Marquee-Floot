@@ -3,8 +3,9 @@
 .poster img { display:block; width:100%; height:100%; object-fit:contain; }
 .visuallyHidden { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 
-/* Sync freshness chip (October 22): right-aligned above Up next, opens Data & sync. Its row keeps its height while loading. */
-.syncLine { display:flex; justify-content:flex-end; min-height:44px; margin:-12px 0 4px; }
+/* Sync freshness chip (October 22): opens Data & sync. Its row keeps its height while loading.
+   AF-20261023-04 (October 23): centered under Up next at every width (phone, iPad, iPhone app), as on desktop and in GameDeck. */
+.syncLine { display:flex; justify-content:center; min-height:44px; margin:12px 0 0; order:1; }
 .syncChip { display:inline-flex; align-items:center; gap:8px; min-width:0; min-height:44px; padding:0 14px; border:1px solid var(--glass-border); border-radius:999px; background:var(--glass-bg); color:var(--muted-foreground); font-size:13px; text-decoration:none; -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); }
 .syncChip strong { color:var(--foreground); font-weight:600; white-space:nowrap; }
 .syncChip:hover strong { color:var(--primary); }
@@ -150,7 +151,7 @@
   .featuredActions { margin-top:12px; }
 }
 
-/* Top row (October 23, GameDeck parity). Below 1100px: sync chip, then Up next, as before; the calendar stays off. */
+/* Top row (October 23, GameDeck parity). Below 1100px: Up next, then the sync chip; the calendar stays off. */
 .top { display:grid; grid-template-columns:minmax(0,1fr); }
 .calendar { display:none; }
 @media(min-width:1100px) {

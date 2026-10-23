@@ -33,6 +33,7 @@ import { getCatalogDetail } from "../endpoints/catalog-detail_GET.schema";
 import { foldRuns } from "../helpers/foldRuns";
 import { getTitleProgressSummary } from "../helpers/getTitleProgressSummary";
 import { tmdbImageUrl } from "../helpers/tmdbImageUrl";
+import { ratingText } from "../helpers/titleRatings";
 import { useTitleEpisodes } from "../helpers/useTitleEpisodes";
 import { usePersonalState } from "../helpers/usePersonalState";
 import { useTitles } from "../helpers/useTitles";
@@ -260,6 +261,8 @@ export default function TitleDetailPage() {
           <div className={styles.actionRow}>
           {numericTitleId && <TraktActions
         titleId={numericTitleId}
+        title={title.title}
+        posterPath={title.posterPath}
         statusLabel={displayStatusLabel}
         statusIcon={statusIcon}
         displayRating={effectiveRating}
@@ -425,7 +428,7 @@ export default function TitleDetailPage() {
                         <div>
                           <strong>{seasonLabel}</strong>
                           <span>{releasedCount} {catalogProgressMismatch?"catalog released episodes":"released episodes"}{unknownCount?" · "+unknownCount+" air dates unknown":""}
-                            {seasonRating ? " · " + seasonRating.score + "/10" : ""}
+                            {seasonRating ? " · " + ratingText(seasonRating.score) + "/10" : ""}
                             {seasonStatus ? " · " + seasonStatus.status : ""}
                           </span>
                         </div>

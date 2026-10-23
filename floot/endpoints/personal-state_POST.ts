@@ -5,6 +5,7 @@ import { getServerUserSession } from "../helpers/getServerUserSession";
 import { NotAuthenticatedError, setServerSession } from "../helpers/getSetServerSession";
 import { getTraktAccessToken } from "../helpers/traktSync";
 import { syncTraktPersonalState } from "../helpers/traktPersonalSync";
+import { wholeRating } from "../helpers/titleRatings";
 import { schema } from "./personal-state_POST.schema";
 
 async function handleRequest(request:Request) {
@@ -52,13 +53,16 @@ async function handleRequest(request:Request) {
         .where("userId","=",user.id).where("titleId","=",mapping.titleId)
         .where("source","=","manual").execute();
     } else {
+      // Trakt keeps the whole number; the half-point score is Marquee's own (AF-20261023-06).
+      const rating = input.action === "set" ? wholeRating(input.rating!) : null;
+      const ratingScore = input.action === "set" ? input.rating! : null;
       await db.insertInto("marqueeTraktRatings").values({
-        ...common, rating:input.action === "set" ? input.rating! : null,
+        ...common, rating, ratingScore,
         ratedAt:input.action === "set" ? new Date() : null,
         pendingAction:input.action, tasteEligible:true,
       }).onConflict(oc => oc.columns(["userId","mediaType","traktId"])
         .doUpdateSet({
-          rating:input.action === "set" ? input.rating! : null,
+          rating, ratingScore,
           ratedAt:input.action === "set" ? new Date() : null,
           pendingAction:input.action,tasteEligible:true,updatedAt:common.updatedAt,
         })).execute();

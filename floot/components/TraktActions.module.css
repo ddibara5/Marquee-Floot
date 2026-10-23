@@ -3,6 +3,8 @@
 .actions { display:flex; align-items:center; flex-wrap:wrap; gap:8px 16px; }
 .chip { display:inline-flex; align-items:center; gap:8px; min-height:44px; height:auto; max-width:100%; padding:8px 0; border:0; border-bottom:1px solid var(--border); border-radius:0; background:transparent; color:var(--foreground); font:500 14px/1.4 var(--font-family-base); white-space:normal; text-align:left; }
 .chip svg { flex:none; color:var(--primary); }
+/* Ratings are amber per the design principles. */
+.chip[data-rated] svg { color:var(--chart-color-3); }
 .bookmark { display:grid; place-items:center; width:44px; height:44px; padding:0; border:0; border-radius:4px; background:transparent; color:var(--muted-foreground); }
 .bookmark[data-saved=true],.bookmark:hover { color:var(--primary); }
 .chip:focus-visible,.bookmark:focus-visible { outline:2px solid var(--primary); outline-offset:2px; }

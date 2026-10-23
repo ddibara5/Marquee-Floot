@@ -3,6 +3,7 @@ import superjson from "superjson";
 import { db } from "../helpers/db";
 import { getServerUserSession } from "../helpers/getServerUserSession";
 import { NotAuthenticatedError, setServerSession } from "../helpers/getSetServerSession";
+import { effectiveRating } from "../helpers/titleRatings";
 import type { OutputType } from "./personal-state_GET.schema";
 
 async function handleRequest(request: Request) {
@@ -62,7 +63,7 @@ async function handleRequest(request: Request) {
       ratings: rating.map(row => ({
         id:row.id, titleId:row.titleId, mediaType:row.mediaType,
         traktId:row.traktId, title:row.sourceTitle, year:row.sourceYear,
-        rating:row.rating, tasteEligible:row.tasteEligible,
+        rating:effectiveRating(row.rating, row.ratingScore), tasteEligible:row.tasteEligible,
         pendingAction:row.pendingAction, activityAt:row.ratedAt,
         ...metadata(row.titleId),
       })),

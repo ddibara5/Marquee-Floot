@@ -74,7 +74,8 @@ function SyncLine() {
   const latest = times.reduce<Date | null>((max, time) => time && (!max || time > max) ? time : max, null);
   const stamp = (time: Date) => easternDay(time) === easternDay(new Date()) ? clock(time)
     : time.toLocaleDateString(undefined, { month: "short", day: "numeric" }) + ", " + clock(time);
-  // October 22 design pass: sync status is a quiet chip above Up next that opens Data & sync, not a row between sections.
+  // October 22 design pass: sync status is a quiet chip that opens Data & sync, not a row between sections.
+  // AF-20261023-04: CSS order places it centered under Up next at every width.
   return <div className={styles.syncLine}>
     <Link to="/sync" className={styles.syncChip} aria-label={(overdue ? "Sync needs a look" : latest ? "Synced " + stamp(latest) : "Not synced yet") + ". Open Data and sync"}>
       <span className={styles.syncDot} data-overdue={overdue || undefined} aria-hidden="true" />

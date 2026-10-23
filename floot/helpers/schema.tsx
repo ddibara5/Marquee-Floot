@@ -409,6 +409,7 @@ export interface MarqueeTraktRatings {
   pendingAction: string | null;
   ratedAt: Timestamp | null;
   rating: number | null;
+  ratingScore: Numeric | null;
   sourceTitle: string;
   sourceYear: number | null;
   tasteEligible: Generated<boolean>;
