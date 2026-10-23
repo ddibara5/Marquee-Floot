@@ -39,6 +39,11 @@ export type OutputType = {
   week?: { days: WeekDay[]; titles: number };
   upcoming?: UpcomingEpisode[];
   lastEpisodes?: LastEpisode[];
+  // Added October 23, 2026 for the desktop calendar (additive, optional for older clients).
+  /** First episode per show per air day, today through 60 days ahead. */
+  calendar?: UpcomingEpisode[];
+  /** Each Eastern day of the current month so far. */
+  monthDays?: WeekDay[];
 };
 
 export async function getHomeContext(): Promise<OutputType> {

@@ -1,0 +1,43 @@
+/* Desktop Home calendar tile (October 23, 2026): the same glass tile as Up next, a month grid beside the next items. */
+.tile { container-type:inline-size; display:flex; flex-direction:column; gap:12px; min-width:0; box-sizing:border-box; padding:18px 22px 20px; background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius-tile); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 6%,transparent); }
+.header { display:flex; align-items:center; gap:4px; min-height:44px; }
+.header h2 { flex:1; margin:0; font:700 20px/1.3 var(--font-family-display); letter-spacing:-.02em; }
+.today { min-height:32px; margin-right:4px; padding:0 12px; border:1px solid var(--glass-border); border-radius:999px; background:transparent; color:var(--foreground); font:600 12px var(--font-family-base); cursor:pointer; }
+.today:hover { color:var(--primary); }
+.arrow { display:grid; place-items:center; width:44px; height:44px; padding:0; border:0; border-radius:10px; background:transparent; color:var(--muted-foreground); cursor:pointer; }
+.arrow:hover:not(:disabled) { color:var(--foreground); background:var(--muted); }
+.arrow:disabled { opacity:.35; cursor:default; }
+.month { min-width:118px; text-align:center; font-size:14px; font-weight:600; }
+.body { display:grid; grid-template-columns:minmax(220px,250px) minmax(0,1fr); gap:20px; min-height:0; }
+.grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:2px; align-content:start; }
+.weekday { text-align:center; font-size:12px; color:var(--muted-foreground); text-decoration:none; padding-bottom:4px; }
+.day { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; height:28px; padding:0; border:0; border-radius:8px; background:transparent; color:var(--foreground); font:500 12px var(--font-family-base); font-variant-numeric:tabular-nums; cursor:pointer; }
+.day:hover { background:color-mix(in srgb,var(--primary) 8%,transparent); }
+.day[data-past] { color:var(--muted-foreground); }
+.day[data-today] { box-shadow:inset 0 0 0 1.5px var(--primary); }
+.day[aria-pressed="true"] { background:var(--glass-control-on, color-mix(in srgb,var(--primary) 16%,transparent)); color:var(--primary); font-weight:700; }
+.mark { width:4px; height:4px; border-radius:999px; }
+.mark[data-kind="release"] { width:5px; height:5px; background:var(--primary); }
+.mark[data-kind="watched"] { background:var(--muted-foreground); opacity:.7; }
+.agenda { min-width:0; display:flex; flex-direction:column; padding-left:20px; border-left:1px solid var(--glass-hairline); }
+.agendaHead { margin:0; min-height:18px; font-size:12px; color:var(--muted-foreground); }
+/* Same height as an agenda row, so picking a past day doesn't resize the tile. */
+.note { display:flex; align-items:center; height:47px; margin:0; padding:4px 0; box-sizing:border-box; border-bottom:1px solid var(--glass-hairline); font-size:13px; color:var(--foreground); }
+.item { display:flex; align-items:center; gap:10px; height:47px; box-sizing:border-box; padding:4px 0; border-bottom:1px solid var(--glass-hairline); color:var(--foreground); text-decoration:none; }
+.item:hover strong { color:var(--primary); }
+.chip { flex:none; display:grid; justify-items:center; width:40px; padding:4px 0; border-radius:8px; background:var(--muted); line-height:1.05; }
+.chip small { color:var(--primary); font-size:12px; font-weight:700; }
+.chip strong { font-size:15px; font-weight:800; }
+.copy { min-width:0; flex:1; }
+.copy strong,.copy small { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.copy strong { font-size:13px; font-weight:600; }
+.copy small { font-size:12px; color:var(--muted-foreground); }
+.empty { margin:8px 0 0; font-size:13px; color:var(--muted-foreground); }
+.visuallyHidden { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+/* Narrow tile (roughly 1100 to 1400px windows): the agenda moves under the month and shows two rows. */
+@container (max-width:470px) {
+  .body { grid-template-columns:minmax(0,1fr); gap:12px; }
+  .agenda { padding:12px 0 0; border-left:0; border-top:1px solid var(--glass-hairline); }
+  /* Heading plus two rows (the watched note counts as one). */
+  .agenda>:nth-child(n+4) { display:none; }
+}
