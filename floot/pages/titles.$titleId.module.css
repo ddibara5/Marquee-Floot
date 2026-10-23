@@ -1,4 +1,3 @@
-
 .detailLayout { display:grid; grid-template-columns:minmax(0,1fr); grid-template-areas:"hero" "overview" "episodes" "history" "catalog"; gap:24px; }
 .hero { grid-area:hero; display:grid; grid-template-columns:var(--poster-main) minmax(0,1fr); gap:12px 24px; align-items:start; margin:0; }
 .heroWithArtwork { background:transparent; }
@@ -31,10 +30,10 @@
 .upNextProgress .track { flex:1; }
 .upNextProgress>span { flex:none; color:var(--muted-foreground); font-size:12px; font-variant-numeric:tabular-nums; }
 .overview { grid-area:overview; margin:0; font-size:14px; line-height:1.6; color:var(--muted-foreground); }
-.activityHeading h2,.episodeHeading h2,.catalogSection h2 { margin:0; font:600 18px/1.3 var(--font-family-display); letter-spacing:-.02em; }
+.activityHeading h2,.episodeHeading h2,.catalogSection h2 { margin:0; font:700 20px/1.3 var(--font-family-display); letter-spacing:-.02em; }
 .track { height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
 .track span { display:block; height:100%; background:var(--primary); }
-.trackingMessage { padding:16px; background:var(--surface); border:1px solid var(--border); border-radius:8px; font-size:13px; overflow-wrap:break-word; }
+.trackingMessage { padding:16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-control); font-size:13px; overflow-wrap:break-word; }
 .activity { grid-area:history; min-width:0; }
 .activityHeading,.episodeHeading { display:flex; justify-content:space-between; align-items:center; gap:16px; min-height:44px; margin-bottom:12px; }
 .episodeHeading>span { color:var(--muted-foreground); font-size:12px; flex:none; }
@@ -46,12 +45,11 @@
 .timelineDay p,.activityEmpty { margin:4px 0 0; color:var(--muted-foreground); font-size:12px; line-height:1.5; }
 .episodeSection { grid-area:episodes; min-width:0; }
 .episodeLoading { display:grid; gap:12px; }
-.episodeMessage { padding:12px; margin:0 0 16px; border:1px solid var(--border); border-radius:4px; color:var(--muted-foreground); font-size:12px; line-height:1.5; }
+.episodeMessage { padding:12px; margin:0 0 16px; border:1px solid var(--border); border-radius:var(--radius-control); color:var(--muted-foreground); font-size:13px; line-height:1.5; }
 .seasonAccordion { display:grid; gap:12px; }
-.seasonItem { margin:0!important; background:var(--surface)!important; border:1px solid var(--border); border-radius:8px!important; box-shadow:none!important; }
+.seasonItem { position:relative; margin:0!important; background:var(--glass-bg)!important; border:1px solid var(--glass-border); border-radius:var(--radius-tile)!important; box-shadow:none!important; }
 .seasonTrigger { min-height:64px; padding:16px!important; font-family:var(--font-family-base)!important; }
 .seasonSummary { display:flex; align-items:center; flex-wrap:wrap; justify-content:space-between; gap:8px 16px; min-width:0; flex:1; text-align:left; padding-right:52px; }
-.seasonItem { position:relative; }
 .menuButton { min-width:44px; min-height:44px; color:var(--muted-foreground); }
 .seasonMenu { position:absolute; top:10px; right:40px; }
 .episodeFold { border-bottom:1px solid var(--border); }
@@ -114,7 +112,8 @@
 }
 
 /* Grid (October 15): GameDeck's detail language. Up next is the one glass tile on phone; other sections sit under hairlines. */
-.poster.poster { border-radius:12px; box-shadow:0 22px 40px -14px rgba(0,0,0,.75), 0 0 0 1px var(--glass-border); }
+/* Shadow from the shared token so Light mode doesn't get a hard black halo (October 22). */
+.poster.poster { border-radius:var(--radius-poster); box-shadow:var(--shadow-lg), 0 0 0 1px var(--glass-border); }
 .poster.poster>img { object-fit:cover; }
 /* Phone: faded backdrop across the top, poster and title centered, up next in a glass tile below. */
 @media(max-width:699px) {
@@ -125,6 +124,17 @@
  .copy>h1 { grid-column:1; grid-row:3; font-size:30px; line-height:1.05; letter-spacing:-.03em; font-weight:800; }
  .copy>.meta.meta { grid-column:1; grid-row:4; justify-content:center; margin-bottom:0; }
  .copy>.actionRow { grid-column:1; grid-row:5; justify-self:center; justify-content:center; }
- .upNext.upNext { grid-column:1; grid-row:6; justify-self:stretch; margin-top:6px; padding:12px 14px; text-align:left; border:1px solid color-mix(in srgb,var(--primary) 30%,transparent); border-radius:18px; background:color-mix(in srgb,var(--primary) 9%,transparent); }
+ .upNext.upNext { grid-column:1; grid-row:6; justify-self:stretch; margin-top:6px; padding:12px 14px; text-align:left; border:1px solid color-mix(in srgb,var(--primary) 30%,transparent); border-radius:var(--radius-tile); background:color-mix(in srgb,var(--primary) 9%,transparent); }
  .movieFacts.movieFacts { grid-column:1; grid-row:6; justify-self:stretch; margin-top:6px; }
 }
+/* Tablet and desktop hero (October 22 design pass): the backdrop runs edge to edge behind the poster and title,
+   faded left and down so text stays on the night ground. */
+@media(min-width:700px) {
+ .heroWithArtwork { position:relative; isolation:isolate; padding-top:clamp(120px,16vw,200px); --bleed:20px; }
+ .heroWithArtwork .backdrop { display:block; position:absolute; top:calc(0px - var(--bleed)); left:calc(0px - var(--bleed)); width:calc(100% + 2 * var(--bleed)); height:calc(100% + var(--bleed)); max-height:460px; z-index:calc(0 - 1); object-fit:cover; object-position:center 20%; opacity:.55; -webkit-mask-image:linear-gradient(#000 40%,transparent); mask-image:linear-gradient(#000 40%,transparent); }
+ /* The poster column grows with the poster, or the title copy starts inside the poster (October 23 visual QA). */
+ .heroWithArtwork { grid-template-columns:clamp(156px,16vw,200px) minmax(0,1fr); }
+ .heroWithArtwork .poster.poster { width:clamp(156px,16vw,200px); }
+ .heroWithArtwork .copy>h1 { font-size:clamp(32px,4vw,48px); font-weight:800; line-height:1.02; letter-spacing:-.035em; }
+}
+@media(min-width:900px) { .heroWithArtwork { --bleed:32px; } }

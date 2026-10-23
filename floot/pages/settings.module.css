@@ -1,20 +1,14 @@
-.menu { max-width: 38rem; margin: 0 auto; display:grid; gap:10px; }
-.groupLabel { margin:12px 0 0; color:var(--primary); font:600 11px var(--font-family-monospace); letter-spacing:.12em; }
-.group { border:1px solid var(--border); border-radius:10px; background:var(--card); overflow:hidden; }
-.row { display:flex; align-items:center; gap:13px; min-height:62px; padding:10px 14px; color:var(--foreground); text-decoration:none; }
-.row + .row { border-top:1px solid var(--border); }
-.row > svg:first-child { flex:none; color:var(--primary); }
+/* Settings, consolidated October 22, 2026: glass groups, sentence-case labels, icon tiles. */
+.menu { max-width:38rem; margin:0 auto; display:grid; gap:10px; }
+.groupLabel { margin:16px 4px 0; color:var(--muted-foreground); font:600 13px var(--font-family-base); }
+.group { overflow:hidden; border:1px solid var(--glass-border); border-radius:var(--radius-tile); background:var(--glass-bg); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); }
+.row { display:flex; align-items:center; gap:14px; min-height:64px; padding:10px 16px; color:var(--foreground); text-decoration:none; }
+.row + .row { border-top:1px solid var(--glass-hairline); }
+.row > svg:first-child { flex:none; box-sizing:content-box; padding:6px; border-radius:10px; background:var(--glass-control-on); color:var(--primary); }
 .row > svg:last-child { flex:none; margin-left:auto; color:var(--muted-foreground); }
-.row span { display:grid; gap:3px; min-width:0; }
-.row strong { font:600 14px var(--font-family-base); }
-.row small { color:var(--muted-foreground); font:500 11px var(--font-family-monospace); }
-.row:hover { background:var(--surface); }
+.row span { display:grid; gap:2px; min-width:0; }
+.row strong { font:600 15px var(--font-family-base); }
+.row small { color:var(--muted-foreground); font:400 13px/1.5 var(--font-family-base); }
+.row:hover { background:color-mix(in srgb,var(--primary) 5%,transparent); }
 .row:focus-visible { outline:2px solid var(--primary); outline-offset:-3px; }
-
-
-.menu { gap:16px; }
-.groupLabel { margin:16px 0 0; color:var(--muted-foreground); font-size:12px; letter-spacing:0; }
-.group { background:var(--surface); border-radius:8px; }
-.row { gap:16px; padding:16px; min-height:76px; }
-.row small { font-size:12px; line-height:1.5; }
 .rowButton { width:100%; border:0; background:transparent; text-align:left; font:inherit; cursor:pointer; }

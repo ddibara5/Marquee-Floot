@@ -61,7 +61,7 @@ function SyncLine() {
   const crunchyroll = useQuery({ queryKey: ["marquee", "crunchyroll-status"], queryFn: getCrunchyrollStatus, retry: false });
   // Wait for both sources so the line doesn't briefly show only the older one.
   // Keep the line's height while loading so the sections below don't shift when it appears.
-  if (trakt.isPending || crunchyroll.isPending) return <div className={styles.syncLine} aria-hidden="true" />;
+  if (trakt.isPending || crunchyroll.isPending) return <div className={styles.syncLine} aria-hidden="true"><span className={styles.syncChipPlaceholder} /></div>;
   const sources = [
     trakt.data?.connected ? { name: "Trakt", at: trakt.data.lastSyncAt } : null,
     crunchyroll.data?.connected ? { name: "Crunchyroll", at: crunchyroll.data.lastSuccessAt } : null,
@@ -72,14 +72,14 @@ function SyncLine() {
   const latest = times.reduce<Date | null>((max, time) => time && (!max || time > max) ? time : max, null);
   const stamp = (time: Date) => easternDay(time) === easternDay(new Date()) ? clock(time)
     : time.toLocaleDateString(undefined, { month: "short", day: "numeric" }) + ", " + clock(time);
+  // October 22 design pass: sync status is a quiet chip above Up next that opens Data & sync, not a row between sections.
   return <div className={styles.syncLine}>
-    <span className={styles.syncState}>
+    <Link to="/sync" className={styles.syncChip} aria-label={(overdue ? "Sync needs a look" : latest ? "Synced " + stamp(latest) : "Not synced yet") + ". Open Data and sync"}>
       <span className={styles.syncDot} data-overdue={overdue || undefined} aria-hidden="true" />
       <strong>{overdue ? "Sync needs a look" : latest ? "Synced " + stamp(latest) : "Not synced yet"}</strong>
       <span className={styles.syncSources}>{sources.map((source, index) =>
         <span key={source.name}>{index > 0 && " · "}{source.name} {source.at ? stamp(new Date(source.at)) : "never"}</span>)}</span>
-    </span>
-    <Link to="/sync">Data &amp; sync</Link>
+    </Link>
   </div>;
 }
 
@@ -134,7 +134,19 @@ export default function HomePage() {
     keep: { place: "main", node: contextReady && (keepRows.length > 0 || !featured) && <section className={styles.section} aria-labelledby="home-keep">
       <div className={styles.heading}><div><h2 id="home-keep">Keep watching</h2>{keepRows.length > 0 && <span className={styles.count}>{keepRows.length} series</span>}</div><Link to="/library?view=titles">Library <ArrowRight size={14}/></Link></div>
       {/* Grid (October 15): a poster strip with a badge, GameDeck's cover-strip pattern. */}
-      {keepRows.length ? <div className={styles.strip}>{keepRows.map(({ row, title }) => { const progress = getTitleProgressSummary(title); const ready = row.readyCount ?? 0;
+      {/* October 22: one or two series read as title rows with progress; three or more become the poster strip. */}
+      {keepRows.length > 0 && keepRows.length <= 2 ? <div className={styles.rows}>{keepRows.map(({ row, title }) => { const progress = getTitleProgressSummary(title); const ready = row.readyCount ?? 0;
+        const next = episodeLabel(row.seasonNumber, row.episodeNumber);
+        return <Link className={styles.row} to={"/titles/" + title.id} key={title.id}>
+          <Poster title={title}/>
+          <span className={styles.rowCopy}><strong>{title.title}</strong>
+            <small>{next} next{ready > 1 && <> · <span className={styles.ready}>{ready} ready</span></>}{progress.released > 0 && <> · {progress.watched} of {progress.released}</>}</small>
+            {progress.released > 0 && <Progress value={progress.percent} className={styles.rowProgress} aria-label={title.title + " progress"} aria-valuetext={progress.watched + " of " + progress.released + " released episodes watched"}/>}
+          </span>
+          <DubBadge hasEnDub={dubs?.get(row.titleId)}/>
+          <ChevronRight className={styles.rowAction} size={17} aria-hidden="true"/>
+        </Link>; })}</div>
+      : keepRows.length ? <div className={styles.strip}>{keepRows.map(({ row, title }) => { const progress = getTitleProgressSummary(title); const ready = row.readyCount ?? 0;
         const next = episodeLabel(row.seasonNumber, row.episodeNumber);
         return <Link className={styles.stripItem} to={"/titles/" + title.id} key={title.id}
           aria-label={title.title + ", " + next + " next" + dubLabel(dubs?.get(row.titleId)) + (ready > 1 ? ", " + ready + " episodes ready" : "") + (progress.released > 0 ? ", " + progress.watched + " of " + progress.released + " watched" : "")}>
@@ -184,6 +196,7 @@ export default function HomePage() {
     <Helmet><title>Home · Marquee</title></Helmet>
     {error && <p className={styles.error} role="alert">Unable to load your library. <Button variant="ghost" onClick={refresh}>Retry</Button></p>}
     {context.error && <p className={styles.error} role="alert">Next episodes could not load. <Button variant="ghost" onClick={refresh}>Retry</Button></p>}
+    <SyncLine />
     <div className={styles.top}>
     {(isPending || context.isPending) && <Skeleton className={styles.featuredSkeleton} />}
     {!isPending && !context.isPending && featured && <section className={styles.featured} data-backdrop={backdrop ? "" : undefined} aria-labelledby="home-up-next">
@@ -205,8 +218,6 @@ export default function HomePage() {
       </div>
     </section>}
     </div>
-    {/* Grid (October 15): sync status sits under Up next, like GameDeck, so the show you're watching leads Home. */}
-    <SyncLine />
     {(isPending || context.isPending) && <div className={styles.loadingGrid} aria-busy="true"><Skeleton style={{ height: 150 }} /><Skeleton style={{ height: 220 }} /></div>}
     {/* Wait for both the library and Home context so Up next doesn't pop in above already-drawn sections. */}
     {!isPending && !context.isPending && <div className={styles.dashboard}>

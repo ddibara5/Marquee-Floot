@@ -11,7 +11,7 @@ export default function AccountPage() {
   return <>
     <Helmet><title>Account · Marquee</title></Helmet>
     <section className={styles.section}>
-      <p className={styles.label}>SIGNED IN AS</p>
+      <h2 className={styles.label}>Signed in as</h2>
       <div className={styles.identity}>
         <strong>{authState.type === "authenticated" ? authState.user.displayName || authState.user.email : "Marquee account"}</strong>
         {authState.type === "authenticated" && <span>{authState.user.email}</span>}

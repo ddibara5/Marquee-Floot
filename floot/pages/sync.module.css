@@ -1,17 +1,17 @@
 .sections { display:grid; gap:24px; max-width:760px; margin:0 auto; }
-.status, .list { border-radius:8px; background:var(--surface); }
+.status, .list { border:1px solid var(--glass-border); border-radius:var(--radius-tile); background:var(--glass-bg); }
 .status { padding:12px 16px; }
 .statusLine { display:flex; align-items:center; gap:12px; min-height:44px; }
 .statusLine button { flex:none; min-height:44px; }
-.label { margin:0 0 8px; padding:0 4px; color:var(--muted-foreground); font:600 12px var(--font-family-monospace); letter-spacing:.08em; text-transform:uppercase; }
+.label { margin:0 0 10px; padding:0 4px; color:var(--muted-foreground); font:600 13px var(--font-family-base); }
 .list { list-style:none; margin:0; padding:0 16px; }
-.item + .item { border-top:1px solid var(--border); }
+.item + .item { border-top:1px solid var(--glass-hairline); }
 .row { display:flex; align-items:center; gap:12px; width:100%; min-height:56px; padding:10px 0; border:0; background:none; color:var(--foreground); font:inherit; text-align:left; text-decoration:none; cursor:pointer; }
 .row:focus-visible { outline:2px solid var(--primary); outline-offset:2px; border-radius:4px; }
 .rowText { display:grid; gap:2px; flex:1; min-width:0; }
 .rowText strong { font-size:15px; font-weight:600; overflow-wrap:anywhere; }
 .rowText span { color:var(--muted-foreground); font-size:13px; line-height:1.4; }
-.meta { flex:none; color:var(--muted-foreground); font:500 12px var(--font-family-monospace); text-align:right; }
+.meta { flex:none; color:var(--muted-foreground); font:500 13px var(--font-family-base); text-align:right; }
 .chevron { flex:none; color:var(--muted-foreground); transition:transform .15s; }
 .row[aria-expanded=true] .chevron { transform:rotate(180deg); }
 .dot { flex:none; width:10px; height:10px; border-radius:50%; background:var(--muted-foreground); }
@@ -29,6 +29,7 @@
 .panel details ol { padding-left:20px; overflow-wrap:anywhere; }
 .panel details li { margin:8px 0; }
 .actions { display:flex; flex-wrap:wrap; gap:10px; }
-.hint { margin:8px 4px 0; color:var(--muted-foreground); font-size:12px; }
-.code { display:block; margin:14px 0; color:var(--primary); font:700 22px var(--font-family-monospace); letter-spacing:.12em; }
+.hint { margin:8px 4px 0; color:var(--muted-foreground); font-size:13px; }
+/* The device code keeps tabular figures so it reads like the code Trakt shows. */
+.code { display:block; margin:14px 0; color:var(--primary); font:700 24px var(--font-family-base); font-variant-numeric:tabular-nums; letter-spacing:.12em; }
 @media (prefers-reduced-motion: reduce) { .chevron { transition:none; } }

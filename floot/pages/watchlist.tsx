@@ -13,6 +13,7 @@ import { OptionChoice, OptionsSheet } from "../components/OptionsSheet";
 import { SwipeAction } from "../components/SwipeAction";
 import { Skeleton } from "../components/Skeleton";
 import { MediaImage } from "../components/MediaImage";
+import { StateBlock } from "../components/StateBlock";
 import { changePersonalState } from "../endpoints/personal-state_POST.schema";
 import { changeTracking } from "../endpoints/tracking_POST.schema";
 import type { PersonalRow } from "../endpoints/personal-state_GET.schema";
@@ -177,7 +178,7 @@ export default function WatchlistPage() {
   return <>
     <Helmet><title>Watch List · Marquee</title></Helmet>
     <div className={styles.searchRow}>
-      <SearchField value={search} onValueChange={setSearch} placeholder="Search your Watch List" aria-label="Search your Watch List"/>
+      <SearchField value={search} onValueChange={setSearch} placeholder="Search" aria-label="Search your Watch List"/>
       <OptionsSheet label="Watch List options" activeCount={activeCount} canReset={activeCount > 0 || sort !== "added"} onReset={resetOptions}
         doneLabel={`Show ${rows.length} ${rows.length === 1 ? "title" : "titles"}`}>
         <OptionChoice label="Media type" value={filter} options={MEDIA.map(([value,label]) => [value, `${label} ${counts[value]}`] as const)} onChange={setFilter}/>
@@ -195,7 +196,7 @@ export default function WatchlistPage() {
       {removed && <button type="button" disabled={busy !== null} onClick={() => void change(removed,"add")}>Undo</button>}
       {removed && <button type="button" aria-label="Dismiss notice" onClick={() => {setRemoved(null);setMessage("");}}>×</button>}
     </div>}
-    {error && data && <p className={styles.empty} role="alert">Couldn’t refresh Watch List. Showing saved data. <Button variant="ghost" onClick={()=>void refetch()}>Retry</Button></p>}
+    {error && data && <div className={styles.notice} role="alert"><span>Couldn’t refresh Watch List. Showing saved data.</span><button type="button" onClick={()=>void refetch()}>Retry</button></div>}
     {!isLoading && !normalized && nextRelease && (() => {
       const body = <><Poster row={nextRelease}/><span className={styles.nextCopy}><small>Next release · {nextWhen}</small>
         <strong>{nextDays === 1 ? "Tomorrow" : nextDays + " days"}</strong><span>{nextRelease.title}</span></span>
@@ -204,8 +205,8 @@ export default function WatchlistPage() {
         ? <Link className={styles.nextRelease} to={"/titles/" + nextRelease.titleId} aria-label={"Next release: " + nextRelease.title + ", " + nextWhen}>{body}</Link>
         : <div className={styles.nextRelease}>{body}</div>;
     })()}
-    {isLoading ? <div className={styles.list} aria-busy="true">{[0, 1, 2].map(row => <Skeleton key={row} style={{height:132, margin:"8px 0"}}/>)}</div>
-      : error && !data ? <p className={styles.empty} role="alert">Unable to load your Watch List. <Button variant="ghost" onClick={()=>void refetch()}>Retry</Button></p>
+    {isLoading ? <div className={styles.list} aria-busy="true">{[0, 1, 2].map(row => <Skeleton key={row} style={{height:64, margin:"12px 0"}}/>)}</div>
+      : error && !data ? <StateBlock kind="error" title="Watch List didn't load" onRetry={()=>void refetch()}>Check your connection, then try again.</StateBlock>
       : !all.length ? <div className={styles.emptyState}><Bookmark size={28}/><h3>Your Watch List is empty</h3><p>Save a title here or in Rippple to start a queue.</p><Link to="/library?view=titles">Browse titles <ChevronRight size={16}/></Link></div>
       : !rows.length ? <p className={styles.empty}>No titles match these filters.</p>
       : <>
